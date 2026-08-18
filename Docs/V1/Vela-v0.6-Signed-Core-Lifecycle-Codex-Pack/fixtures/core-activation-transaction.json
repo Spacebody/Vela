@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "transactionID": "AA171C31-6B48-4803-A580-C4511F454A77",
+  "coreID": "v1.19.28-r1",
+  "phase": "probation",
+  "startedAt": "2026-07-13T00:00:00Z",
+  "snapshot": {
+    "previousCoreID": "factory:v1.19.28",
+    "backend": "tun",
+    "profileID": "6C489A3E-AAC7-476C-843D-FA8206BCA965",
+    "configurationGenerationID": "64631296-215D-401D-AD83-9F65904C182B"
+  },
+  "automaticRollbackAttempts": 0
+}

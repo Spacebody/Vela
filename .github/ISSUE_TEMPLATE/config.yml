@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security vulnerability report
+    url: https://github.com/Spacebody/Vela/security/advisories/new
+    about: Use GitHub Private Vulnerability Reporting when enabled. Never post exploit or secret details publicly.
+  - name: Vela Help and policies
+    url: https://github.com/Spacebody/Vela
+    about: Review offline Help, Support, Privacy, and known limitations before filing a public issue.

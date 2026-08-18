@@ -1,0 +1,42 @@
+name: Accessibility issue
+description: Report a keyboard, VoiceOver, contrast, motion, or text-size problem.
+title: "[Accessibility] "
+labels: ["accessibility", "needs-triage"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Vela version/build/channel and macOS version
+    validations:
+      required: true
+  - type: input
+    id: assistive_technology
+    attributes:
+      label: Assistive technology or setting
+      placeholder: "VoiceOver, Full Keyboard Access, Increased Contrast, Reduce Motion …"
+    validations:
+      required: true
+  - type: input
+    id: flow
+    attributes:
+      label: Affected screen and task
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps, expected behavior, and observed behavior
+      description: Do not include private network configuration or identifying data.
+    validations:
+      required: true
+  - type: input
+    id: workaround
+    attributes:
+      label: Workaround or safe recovery, if any
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: Any screenshot or description is free of credentials and private network/profile information.
+          required: true

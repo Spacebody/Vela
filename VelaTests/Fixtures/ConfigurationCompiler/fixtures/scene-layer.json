@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "60E9D209-D11B-4536-B4AB-178505047E0A",
+  "revision": 1,
+  "name": "Work scene",
+  "kind": "scene",
+  "enabled": true,
+  "operations": [
+    {
+      "id": "4A718391-3C2F-4A0C-8382-53B7C6212691",
+      "enabled": true,
+      "order": 10,
+      "kind": "deepMerge",
+      "path": "/dns",
+      "value": {
+        "respect-rules": true,
+        "proxy-server-nameserver": [
+          "https://1.1.1.1/dns-query"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "target", "sources", "stores", "guarantees", "evidence", "decision", "blockers"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "target": { "const": "1.0.0" },
+    "sources": { "type": "array", "minItems": 8, "maxItems": 8, "items": { "$ref": "#/$defs/source" } },
+    "stores": { "type": "array", "minItems": 21, "maxItems": 21, "items": { "$ref": "#/$defs/store" } },
+    "guarantees": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["idempotency", "faultMatrix", "downgradeGuard"],
+      "properties": {
+        "idempotency": { "$ref": "#/$defs/evidence" },
+        "faultMatrix": { "$ref": "#/$defs/evidence" },
+        "downgradeGuard": { "$ref": "#/$defs/evidence" }
+      }
+    },
+    "decision": { "enum": ["go", "noGo"] },
+    "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "store": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "path", "sha256"],
+      "properties": {
+        "id": {
+          "enum": [
+            "profileMetadata",
+            "localRawConfigurations",
+            "remoteRawConfigurations",
+            "profileRevisions",
+            "configurationOverrides",
+            "configurationLayers",
+            "ruleLayers",
+            "scenes",
+            "ssidSecretReferences",
+            "appSettings",
+            "helperSettings",
+            "appUpdateStore",
+            "appUpdateJournal",
+            "userCoreStore",
+            "rootCoreStore",
+            "rootCoreInstallJournal",
+            "rootRuntimeJournal",
+            "cliInstallMetadata",
+            "onboardingState",
+            "helpState",
+            "reliabilityEvidence"
+          ]
+        },
+        "status": { "enum": ["passed", "pending", "failed", "blockedAbsentSurface"] },
+        "path": { "type": ["string", "null"] },
+        "sha256": { "type": ["string", "null"] }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "status",
+        "producingTag",
+        "producingCommit",
+        "fixturePath",
+        "fixtureSHA256",
+        "generatorVersion",
+        "fixtureSchemaVersion"
+      ],
+      "properties": {
+        "version": { "type": "string" },
+        "status": { "enum": ["passed", "pending", "failed", "blockedMissingHistoricalFixture"] },
+        "producingTag": { "type": ["string", "null"] },
+        "producingCommit": { "type": ["string", "null"] },
+        "fixturePath": { "type": ["string", "null"] },
+        "fixtureSHA256": { "type": ["string", "null"] },
+        "generatorVersion": { "type": ["string", "null"] },
+        "fixtureSchemaVersion": { "type": ["integer", "null"], "minimum": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "path", "sha256"],
+      "properties": {
+        "status": { "enum": ["passed", "pending", "failed"] },
+        "path": { "type": ["string", "null"] },
+        "sha256": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

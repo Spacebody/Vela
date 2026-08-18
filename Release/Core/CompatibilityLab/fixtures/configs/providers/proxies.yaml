@@ -1,0 +1,2 @@
+proxies:
+  - {name: provider-direct-fixture, type: direct}

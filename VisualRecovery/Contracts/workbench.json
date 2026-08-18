@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "page": "workbench",
+  "allowedPaths": [
+    "Vela/Features/Configuration/**",
+    "Vela/Presentation/Configuration/**",
+    "Vela/Shared/Components/VelaCodeEditor.swift",
+    "VelaTests/ConfigurationWorkbench/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "workbench.loading",
+    "workbench.loaded",
+    "workbench.empty",
+    "workbench.pendingMutation",
+    "workbench.partialFailure",
+    "workbench.failure",
+    "workbench.stale",
+    "workbench.transitioning",
+    "workbench.rollbackFailed"
+  ],
+  "requiredStates": [
+    "loading",
+    "loaded",
+    "empty",
+    "pendingMutation",
+    "partialFailure",
+    "failure",
+    "stale",
+    "transitioning",
+    "rollbackFailed"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

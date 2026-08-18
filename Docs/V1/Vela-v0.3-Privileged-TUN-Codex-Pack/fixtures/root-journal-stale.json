@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "desiredState": "running",
+  "instanceID": "D437C5C7-F63D-4704-9234-2A684E86D92F",
+  "pid": 12345,
+  "configurationSHA256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "tunInterface": "utun99",
+  "ownerUID": 501,
+  "lastCleanShutdown": false
+}

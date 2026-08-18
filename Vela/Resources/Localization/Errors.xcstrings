@@ -1,0 +1,384 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "error.help.articleMissing.title" : {
+      "comment" : "Alert title shown when a bundled offline Help article cannot be found.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help Article Unavailable"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助文章不可用"
+          }
+        }
+      }
+    },
+    "error.help.integrityMismatch" : {
+      "comment" : "Help loading error. Preserve the integrity meaning and safe relative-path placeholder.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A bundled Help resource failed its integrity check: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捆绑的帮助资源未通过完整性检查：%@"
+          }
+        }
+      }
+    },
+    "error.help.invalidIndex" : {
+      "comment" : "Help loading error. The placeholder contains locally generated validation details.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The bundled Help index is invalid: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捆绑的帮助索引无效：%@"
+          }
+        }
+      }
+    },
+    "error.help.invalidUTF8" : {
+      "comment" : "Help loading error. Preserve UTF-8 and the safe relative-path placeholder.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A bundled Help resource is not valid UTF-8: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捆绑的帮助资源不是有效的 UTF-8：%@"
+          }
+        }
+      }
+    },
+    "error.help.resourceMissing" : {
+      "comment" : "Help loading error. The placeholder is a safe bundled relative path; preserve it exactly.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A bundled Help resource is missing: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少捆绑的帮助资源：%@"
+          }
+        }
+      }
+    },
+    "error.help.resourceTooLarge" : {
+      "comment" : "Help loading error. Preserve the byte-limit and safe relative-path placeholders.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A bundled Help resource exceeds %lld bytes: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捆绑的帮助资源超过 %lld 字节：%@"
+          }
+        }
+      }
+    },
+    "error.help.resourceUnsafe" : {
+      "comment" : "Help loading error. The placeholder is a safe bundled relative path; do not weaken the safety wording.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A bundled Help resource failed its local safety checks: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捆绑的帮助资源未通过本地安全检查：%@"
+          }
+        }
+      }
+    },
+    "error.help.unknownTopic" : {
+      "comment" : "Help navigation error. The placeholder is a stable Help topic ID and must not be translated.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Help topic does not exist: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助主题不存在：%@"
+          }
+        }
+      }
+    },
+    "error.policy.resourceUnavailable" : {
+      "comment" : "Policy viewer error shown when a required bundled public policy cannot be loaded.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The bundled policy document is unavailable."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捆绑的政策文档不可用。"
+          }
+        }
+      }
+    },
+    "error.policy.resourceUnsafe" : {
+      "comment" : "Policy viewer error shown when a bundled public policy fails size, path, or file-type checks.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The bundled policy document failed its local safety checks."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捆绑的政策文档未通过本地安全检查。"
+          }
+        }
+      }
+    },
+    "error.support.archiveUnavailable" : {
+      "comment" : "Support export error shown when a reviewed temporary archive no longer exists.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The prepared support archive is unavailable."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "准备好的支持归档不可用。"
+          }
+        }
+      }
+    },
+    "error.support.createFailed" : {
+      "comment" : "Support export error. The placeholder contains locally redacted failure detail.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The support bundle could not be created: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法创建支持包：%@"
+          }
+        }
+      }
+    },
+    "error.support.destinationDirectory" : {
+      "comment" : "Support save error requiring the user to select a file destination.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected support bundle destination is a directory."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所选支持包目标位置是一个目录。"
+          }
+        }
+      }
+    },
+    "error.support.export.title" : {
+      "comment" : "Alert title when local support-bundle preparation or saving fails.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support Export Failed"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持包导出失败"
+          }
+        }
+      }
+    },
+    "error.support.invalidPath" : {
+      "comment" : "Support export error. The placeholder is a rejected relative path; do not imply that export continued.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The support bundle contains an invalid path: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持包包含无效路径：%@"
+          }
+        }
+      }
+    },
+    "error.support.invalidUTF8" : {
+      "comment" : "Support export validation error for opt-in text content.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional support text is not valid UTF-8."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可选支持文本不是有效的 UTF-8。"
+          }
+        }
+      }
+    },
+    "error.support.sensitiveData" : {
+      "comment" : "Support export privacy error. State clearly that export was blocked.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sensitive data remained after redaction, so export was blocked."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "脱敏后仍存在敏感数据，因此已阻止导出。"
+          }
+        }
+      }
+    },
+    "error.support.sensitiveData.title" : {
+      "comment" : "Blocking title shown when support export still contains high-risk sensitive data after redaction.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sensitive Data Detected"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检测到敏感数据"
+          }
+        }
+      }
+    },
+    "error.support.tooLarge" : {
+      "comment" : "Support export limit error. Preserve the byte-count placeholder and fixed 10 MiB limit.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The support bundle is %lld bytes; the limit is 10 MiB."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持包大小为 %lld 字节；上限为 10 MiB。"
+          }
+        }
+      }
+    },
+    "error.support.tooManyFiles" : {
+      "comment" : "Support export limit error. Preserve the file-count placeholder and fixed 100-file limit.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The support bundle contains %lld files; the limit is 100."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持包包含 %lld 个文件；上限为 100 个。"
+          }
+        }
+      }
+    },
+    "error.support.unsafeStaging" : {
+      "comment" : "Support export safety error. Do not imply that any archive was saved.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The support bundle staging directory is unsafe."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持包暂存目录不安全。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

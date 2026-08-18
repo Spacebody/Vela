@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 3,
+  "buildStrategy": "YYYYMMDDNN",
+  "lastReviewedAt": "2026-07-14",
+  "builds": [],
+  "note": "No immutable App build-allocation ledger has been supplied to this checkout. Record every allocated build, including failed or withdrawn attempts, so the global high-water mark can never move backward."
+}

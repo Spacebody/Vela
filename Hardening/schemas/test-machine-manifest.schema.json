@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/test-machine-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "machineID", "dedicated", "hardwareCategory", "memoryGB", "macOSBuild", "architecture", "power", "thermalState", "userType", "capabilities", "signedBuildVerified", "syntheticDataOnly", "cleanupPreflightPassed", "serialNumberCollected", "realUserNameCollected"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "machineID": { "type": "string", "format": "uuid" },
+    "dedicated": { "type": "boolean" },
+    "hardwareCategory": { "type": "string", "minLength": 1 },
+    "memoryGB": { "type": "integer", "minimum": 4 },
+    "macOSBuild": { "type": "string", "minLength": 1 },
+    "architecture": { "const": "arm64" },
+    "power": { "enum": ["AC", "battery"] },
+    "thermalState": { "enum": ["nominal", "fair", "serious", "critical", "unknown"] },
+    "userType": { "enum": ["standard", "admin"] },
+    "capabilities": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "signedBuildVerified": { "type": "boolean" },
+    "syntheticDataOnly": { "const": true },
+    "cleanupPreflightPassed": { "type": "boolean" },
+    "serialNumberCollected": { "const": false },
+    "realUserNameCollected": { "const": false }
+  }
+}

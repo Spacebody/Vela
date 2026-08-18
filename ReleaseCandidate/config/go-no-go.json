@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "candidate": {
+    "version": null,
+    "build": null,
+    "commit": null
+  },
+  "gates": [
+    { "id": "stopShip", "status": "pending", "owner": "Release", "evidence": [] },
+    { "id": "contracts", "status": "pending", "owner": "Release", "evidence": [] },
+    { "id": "migration", "status": "pending", "owner": "Reliability", "evidence": [] },
+    { "id": "securityAudit", "status": "pending", "owner": "Security", "evidence": [] },
+    { "id": "soak", "status": "pending", "owner": "Reliability", "evidence": [] },
+    { "id": "performance", "status": "pending", "owner": "Performance", "evidence": [] },
+    { "id": "accessibilityPrivacy", "status": "pending", "owner": "Accessibility and Privacy", "evidence": [] },
+    { "id": "installation", "status": "pending", "owner": "Reliability", "evidence": [] },
+    { "id": "artifact", "status": "pending", "owner": "Release", "evidence": [] },
+    { "id": "supportIncident", "status": "pending", "owner": "Support", "evidence": [] }
+  ],
+  "decision": "noGo",
+  "decisionReason": "Required evidence and accountable approvals are incomplete.",
+  "approvals": []
+}

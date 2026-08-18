@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "requestID": "C02E8573-7B1C-4AF0-B034-952849B2E28C",
+  "helperProtocolMinimum": 1,
+  "helperProtocolMaximum": 1,
+  "helperVersion": "0.3.0",
+  "helperBuild": "300",
+  "daemonUID": 0,
+  "mihomoVersion": "v1.19.28",
+  "mihomoPlatform": "darwin",
+  "mihomoArchitecture": "arm64",
+  "rootDataSchemaVersion": 1,
+  "state": "stopped"
+}

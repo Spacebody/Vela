@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "assessedAt": "2026-07-14",
+  "issues": [],
+  "conditions": [
+    { "id": "securityContactUnprovisioned", "active": true, "evidence": "Release/config/documentation.json securityContact is null and bundled SECURITY policies are templates.", "owner": "Security" },
+    { "id": "privacyLegalReviewOutstanding", "active": true, "evidence": "V0.7 privacy, required-reason API, tracking, product, and legal review flags are not all approved.", "owner": "Privacy and Legal" },
+    { "id": "productionAppUpdateTrustUnprovisioned", "active": true, "evidence": "Release/config/release.json contains placeholder App feed/key values and no immutable production release evidence.", "owner": "Release" },
+    { "id": "productionCoreCatalogTrustUnprovisioned", "active": true, "evidence": "VelaIPC/CoreCatalogTrust.swift contains an empty production keyring and Core endpoints are unprovisioned.", "owner": "Security and Release" },
+    { "id": "releaseRequiredSurfacesAbsent", "active": true, "evidence": "Release requires CLI, Automation protocol, and Scene schema, while production compatibility and the generated architecture freeze truthfully record all three as absent/null.", "owner": "Product and Release" },
+    { "id": "releaseManifestArchitectureBindingMissing", "active": false, "evidence": "Release/scripts/generate_release_manifest.py binds source.architectureFreezeSHA256 to Hardening/config/architecture-freeze.json; verify_release_manifest.py compares the lowercase SHA-256, including negative coverage in validate_release_tooling.sh.", "owner": "Release" },
+    { "id": "historicalMigrationFixturesMissing", "active": true, "evidence": "No historical release tags or tag-generated V0.1 through V0.8 fixture artifacts exist in this checkout.", "owner": "Reliability" },
+    { "id": "performanceCalibrationMissing", "active": true, "evidence": "Hardening/config/performance-budgets.json is pending and has no approved absolute ceilings.", "owner": "Performance" },
+    { "id": "externalAuditIncomplete", "active": true, "evidence": "The audit packet is source-ready but no third-party engagement or verified finding report is present.", "owner": "Security" },
+    { "id": "soak24hIncomplete", "active": true, "evidence": "No uninterrupted 24-hour candidate run manifest and cleanup evidence is present.", "owner": "Reliability" },
+    { "id": "soak72hIncomplete", "active": true, "evidence": "No uninterrupted 72-hour candidate run manifest and cleanup evidence is present.", "owner": "Reliability" },
+    { "id": "multiUserLabIncomplete", "active": true, "evidence": "No physical-machine, two-user ownership/privacy evidence is present.", "owner": "Reliability and Security" },
+    { "id": "destructiveTunMatrixIncomplete", "active": true, "evidence": "Destructive TUN/System Proxy/sleep tests were deliberately not run in this development checkout.", "owner": "Reliability" },
+    { "id": "signedNotarizedBetaArtifactMissing", "active": true, "evidence": "No final V1.0 RC Developer ID signed, notarized, stapled App and DMG artifact has been produced.", "owner": "Release" },
+    { "id": "sbomProvenanceAttestationMissing", "active": true, "evidence": "No final V1.0 RC artifact/SBOM/provenance set exists; GitHub attestation cannot be verified before immutable artifacts exist in the protected workflow.", "owner": "Release" },
+    { "id": "criticalAccessibilityBlocker", "active": false, "evidence": "No known unresolved critical accessibility blocker is recorded; final physical accessibility regression is still required.", "owner": "Accessibility" },
+    { "id": "approvedBudgetExceeded", "active": false, "evidence": "No approved budget exists yet, so this condition cannot be asserted; performanceCalibrationMissing remains active.", "owner": "Performance" },
+    { "id": "tunRouteOrSystemProxyResidue", "active": false, "evidence": "No known residue is recorded; the dedicated destructive matrix remains incomplete.", "owner": "Reliability" },
+    { "id": "dataLossOrNonIdempotentMigration", "active": false, "evidence": "No known data-loss incident is recorded; historical migration evidence remains incomplete.", "owner": "Reliability" },
+    { "id": "updateCoreOrCodeSigningFailure", "active": false, "evidence": "No known verified bypass is recorded; production trust provisioning remains separately active.", "owner": "Security" }
+  ]
+}

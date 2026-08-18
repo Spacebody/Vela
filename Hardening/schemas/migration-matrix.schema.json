@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/migration-matrix.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "targetVersion", "fixturePolicy", "sources", "faults", "acceptance"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "targetVersion": { "const": "0.8.0" },
+    "fixturePolicy": { "const": "historicalTagGeneratorOnly" },
+    "sources": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "required", "status", "producingCommit", "generatorVersion", "fixtureSHA256", "fixturePath"],
+        "properties": {
+          "version": { "enum": ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7"] },
+          "required": { "const": true },
+          "status": { "enum": ["blockedMissingHistoricalGenerator", "generated", "validated"] },
+          "producingCommit": { "type": ["string", "null"], "pattern": "^[0-9a-f]{40}$" },
+          "generatorVersion": { "type": ["string", "null"], "minLength": 1 },
+          "fixtureSHA256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+          "fixturePath": { "type": ["string", "null"], "minLength": 1 }
+        }
+      }
+    },
+    "faults": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+    "acceptance": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } }
+  }
+}

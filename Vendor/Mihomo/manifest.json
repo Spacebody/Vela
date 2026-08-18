@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "component": "mihomo",
+  "version": "v1.19.29",
+  "releaseTag": "v1.19.29",
+  "releaseDateUTC": "2026-07-18T12:33:48Z",
+  "upstreamRepositoryURL": "https://github.com/MetaCubeX/mihomo",
+  "upstreamReleaseURL": "https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.29",
+  "upstreamSourceURL": "https://github.com/MetaCubeX/mihomo/tree/v1.19.29",
+  "upstreamSourceArchiveURL": "https://github.com/MetaCubeX/mihomo/archive/refs/tags/v1.19.29.tar.gz",
+  "license": "GPL-3.0",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "assetName": "mihomo-darwin-arm64-v1.19.29.gz",
+  "assetURL": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.29/mihomo-darwin-arm64-v1.19.29.gz",
+  "archiveSHA256": "4dc25df9e899f14161911302a8ee5fc9e202ed9c976fc405bf82c50ff27466ca",
+  "archiveSizeBytes": 15858351,
+  "executableName": "mihomo",
+  "bundleRelativePath": "Contents/Helpers/mihomo",
+  "metadataBundleRelativePath": "Contents/Resources/ThirdParty/Mihomo",
+  "minimumMacOSVersion": "15.0",
+  "supportedArchitectures": [
+    "arm64"
+  ],
+  "runtimeDownloadAllowed": false
+}

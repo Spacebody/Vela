@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "adrID": "ADR-RC-TRUST-INVALID",
+  "status": "accepted",
+  "issueID": "VELA-RC-102",
+  "changeClass": "releaseEngineering",
+  "firstAffectedVersion": "1.0.0-rc.2",
+  "summary": "This fixture is intentionally missing the required product-owner approval.",
+  "contractBinding": {
+    "baselineCanonicalSHA256": "9547780ead2cd169510d67e8981bb93ced503555d65d8c8805a8d4090d6289e5",
+    "currentCanonicalSHA256": "8fc0a2e38625aadd43983c51fb12c0c2f0a1127ca49a845316b0718301301003"
+  },
+  "changes": [
+    {
+      "path": "/trustRoots/sparkleEdDSA",
+      "classification": "securityProvisioning",
+      "breaking": false,
+      "rationale": "The trust-root category is unchanged while its production identifier is provisioned.",
+      "before": {
+        "kind": "sparkleEdDSA",
+        "identifier": null,
+        "status": "unprovisioned"
+      },
+      "after": {
+        "kind": "sparkleEdDSA",
+        "identifier": "production-app-update-key-v1",
+        "status": "configured"
+      }
+    }
+  ],
+  "compatibility": {
+    "cli": "No CLI surface exists in this release candidate.",
+    "appIntents": "No App Intent identifiers or entity identifiers change.",
+    "helper": "Helper protocol version and method registry remain unchanged.",
+    "automation": "No Automation protocol surface exists in this release candidate.",
+    "dataMigration": "No persisted user or root data schema changes.",
+    "appUpdate": "A new immutable release candidate build is required.",
+    "coreUpdate": "The Core Catalog key set remains unchanged.",
+    "documentation": "Release security documentation records the identifier."
+  },
+  "migrationAndRollback": "No data migration runs and rollback uses the previous immutable release artifact.",
+  "securityAndPrivacy": "The public identifier is non-secret and no private signing key is stored.",
+  "tests": [
+    "Regenerate current contracts and verify the exact trustRoots-only diff."
+  ],
+  "approvals": {
+    "releaseOwner": {
+      "approvedBy": "Release Owner Fixture",
+      "approvedAt": "2026-07-14T09:00:00+08:00"
+    },
+    "securityOwner": {
+      "approvedBy": "Security Owner Fixture",
+      "approvedAt": "2026-07-14T09:05:00+08:00"
+    }
+  }
+}

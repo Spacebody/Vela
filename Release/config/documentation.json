@@ -1,0 +1,53 @@
+{
+  "appBuild": 2026071403,
+  "appVersion": "1.0.0",
+  "archive": {
+    "resourcesPath": "Contents/Resources"
+  },
+  "catalogs": [
+    {
+      "name": "Localizable",
+      "path": "Localization/Localizable.xcstrings"
+    },
+    {
+      "name": "Errors",
+      "path": "Localization/Errors.xcstrings"
+    },
+    {
+      "name": "InfoPlist",
+      "path": "Localization/InfoPlist.xcstrings"
+    }
+  ],
+  "documentationManifest": "VelaDocumentationManifest.json",
+  "help": {
+    "articleHashes": "article-hashes.json",
+    "index": "help-index.json",
+    "maximumArticleBytes": 262144,
+    "root": "Help",
+    "searchIndexPattern": "search-index-{locale}.json"
+  },
+  "locales": [
+    "en",
+    "zh-Hans"
+  ],
+  "policies": {
+    "files": [
+      "ACCESSIBILITY.md",
+      "PRIVACY.md",
+      "SECURITY.md",
+      "SUPPORT.md"
+    ],
+    "root": "Policies"
+  },
+  "privacyManifest": "PrivacyInfo.xcprivacy",
+  "privacyReview": {
+    "requiredReasonAPIsReviewed": false,
+    "reviewedAt": null,
+    "reviewedBy": null,
+    "trackingAndDataReviewed": false
+  },
+  "resourceRoot": "Vela/Resources",
+  "schemaVersion": 1,
+  "securityContact": null,
+  "sourceDateEpoch": 1783987200
+}

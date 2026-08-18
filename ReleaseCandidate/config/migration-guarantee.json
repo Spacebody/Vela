@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "target": "1.0.0",
+  "sources": [
+    { "version": "0.1", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null },
+    { "version": "0.2", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null },
+    { "version": "0.3", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null },
+    { "version": "0.4", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null },
+    { "version": "0.5", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null },
+    { "version": "0.6", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null },
+    { "version": "0.7", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null },
+    { "version": "0.8", "status": "blockedMissingHistoricalFixture", "producingTag": null, "producingCommit": null, "fixturePath": null, "fixtureSHA256": null, "generatorVersion": null, "fixtureSchemaVersion": null }
+  ],
+  "stores": [
+    { "id": "profileMetadata", "status": "pending", "path": null, "sha256": null },
+    { "id": "localRawConfigurations", "status": "pending", "path": null, "sha256": null },
+    { "id": "remoteRawConfigurations", "status": "pending", "path": null, "sha256": null },
+    { "id": "profileRevisions", "status": "pending", "path": null, "sha256": null },
+    { "id": "configurationOverrides", "status": "pending", "path": null, "sha256": null },
+    { "id": "configurationLayers", "status": "pending", "path": null, "sha256": null },
+    { "id": "ruleLayers", "status": "pending", "path": null, "sha256": null },
+    { "id": "scenes", "status": "blockedAbsentSurface", "path": null, "sha256": null },
+    { "id": "ssidSecretReferences", "status": "pending", "path": null, "sha256": null },
+    { "id": "appSettings", "status": "pending", "path": null, "sha256": null },
+    { "id": "helperSettings", "status": "pending", "path": null, "sha256": null },
+    { "id": "appUpdateStore", "status": "pending", "path": null, "sha256": null },
+    { "id": "appUpdateJournal", "status": "pending", "path": null, "sha256": null },
+    { "id": "userCoreStore", "status": "pending", "path": null, "sha256": null },
+    { "id": "rootCoreStore", "status": "pending", "path": null, "sha256": null },
+    { "id": "rootCoreInstallJournal", "status": "pending", "path": null, "sha256": null },
+    { "id": "rootRuntimeJournal", "status": "pending", "path": null, "sha256": null },
+    { "id": "cliInstallMetadata", "status": "blockedAbsentSurface", "path": null, "sha256": null },
+    { "id": "onboardingState", "status": "pending", "path": null, "sha256": null },
+    { "id": "helpState", "status": "pending", "path": null, "sha256": null },
+    { "id": "reliabilityEvidence", "status": "pending", "path": null, "sha256": null }
+  ],
+  "guarantees": [
+    "backupBeforeMutation",
+    "atomicCommit",
+    "idempotent",
+    "noSilentDataLoss",
+    "keychainSecretsRemainInKeychain",
+    "newerSchemaWriteGuard",
+    "safeModeOnFailure"
+  ],
+  "evidence": {
+    "idempotency": { "status": "pending", "path": null, "sha256": null },
+    "faultMatrix": { "status": "pending", "path": null, "sha256": null },
+    "downgradeGuard": { "status": "pending", "path": null, "sha256": null }
+  },
+  "decision": "noGo",
+  "blockers": [
+    "Authentic tag-generated V0.1 through V0.8 fixtures and reviewed migration evidence are not present.",
+    "Scene Store and CLI install metadata are absent product surfaces, so their required V1 migration coverage cannot pass until release scope is resolved through change control."
+  ]
+}

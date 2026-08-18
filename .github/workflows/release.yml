@@ -1,0 +1,731 @@
+name: Protected Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: Build a private immutable candidate, or promote the exact staged bytes
+        required: true
+        type: choice
+        options:
+          - candidate-stage
+          - promotion
+      version:
+        description: Bundle marketing version, for example 1.0.0
+        required: true
+        type: string
+      build:
+        description: Monotonic YYYYMMDDNN build
+        required: true
+        type: string
+      channel:
+        description: Update channel
+        required: true
+        type: choice
+        options:
+          - beta
+          - stable
+      tag:
+        description: Exact signed/reviewed Git tag
+        required: true
+        type: string
+      prerelease_label:
+        description: Required for Beta/RC, empty for Stable
+        required: false
+        type: string
+      notes_path:
+        description: Reviewed release-notes Markdown path on the release checkout
+        required: false
+        type: string
+      feed_history_path:
+        description: Immutable prior feed archives/notes directory on the release Mac
+        required: false
+        type: string
+      prior_appcast_path:
+        description: Immutable signed prior feed snapshot named prior-appcast.xml
+        required: false
+        type: string
+      prior_appcast_sha256:
+        description: Reviewed SHA-256 of the immutable prior feed snapshot
+        required: false
+        type: string
+      migration_evidence_path:
+        description: Reviewed V0.1-V0.8 migration guarantee manifest on the release Mac
+        required: true
+        type: string
+      evidence_root_path:
+        description: Protected immutable candidate evidence directory outside the checkout
+        required: true
+        type: string
+      audit_evidence_path:
+        description: Candidate-bound external security-audit closure manifest
+        required: true
+        type: string
+      audit_summary_evidence_path:
+        description: Public audit summary bound by the private audit closure
+        required: false
+        type: string
+      go_no_go_evidence_path:
+        description: Candidate-bound stage or post-test/pre-attestation Go/No-Go packet
+        required: true
+        type: string
+      published_builds_path:
+        description: Immutable published-build high-water registry on the release Mac
+        required: true
+        type: string
+      support_matrix_path:
+        description: Reviewed V1 support matrix manifest on the release Mac
+        required: true
+        type: string
+      installation_matrix_path:
+        description: Candidate-bound install/upgrade/repair/uninstall matrix
+        required: true
+        type: string
+      candidate_stage_path:
+        description: Protected external candidate-stage directory, separate from evidence and public/output roots
+        required: true
+        type: string
+      promotion_output_root_path:
+        description: Durable protected 0700 parent outside the checkout for atomically sealed promotion output
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vela-production-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on:
+      - self-hosted
+      - macOS
+      - ARM64
+      - vela-release
+    outputs:
+      release_runner_name: ${{ steps.bind_release_runner.outputs.runner_name }}
+    environment: production
+    timeout-minutes: 180
+    steps:
+      # The `runner` expression context is unavailable while GitHub parses
+      # job-level `env`. Resolve the runner-owned temporary root at step runtime.
+      - name: Initialize isolated release paths
+        run: |
+          printf '%s\n' "${GITHUB_RUN_ID}" | /usr/bin/grep -Eq '^[0-9]+$'
+          printf '%s\n' "${GITHUB_RUN_ATTEMPT}" | /usr/bin/grep -Eq '^[0-9]+$'
+          test -n "${RUNNER_TEMP}"
+          printf 'VELA_CREDENTIAL_ROOT=%s/vela-release-credentials-%s-%s\n' \
+            "${RUNNER_TEMP}" "${GITHUB_RUN_ID}" "${GITHUB_RUN_ATTEMPT}" \
+            >>"${GITHUB_ENV}"
+
+      - name: Bind durable release machine
+        id: bind_release_runner
+        env:
+          EXPECTED_RELEASE_RUNNER_NAME: ${{ vars.VELA_RELEASE_RUNNER_NAME }}
+        run: |
+          test -n "${EXPECTED_RELEASE_RUNNER_NAME}"
+          test "${RUNNER_NAME}" = "${EXPECTED_RELEASE_RUNNER_NAME}"
+          printf 'runner_name=%s\n' "${RUNNER_NAME}" >>"${GITHUB_OUTPUT}"
+
+      # actions/checkout v4.2.2, pinned to the complete commit SHA.
+      - name: Check out exact release tag
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Assert clean protected Apple Silicon runner
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TAG_SIGNING_FINGERPRINT: ${{ vars.RELEASE_TAG_SIGNING_FINGERPRINT }}
+        run: |
+          test "$(uname -m)" = "arm64"
+          test -z "$(git status --porcelain)"
+          case "${RELEASE_TAG}" in
+            ""|*/*) echo "release tag must be an unqualified tag name" >&2; exit 1 ;;
+          esac
+          TAG_REF="refs/tags/${RELEASE_TAG}"
+          test "${GITHUB_REF}" = "${TAG_REF}"
+          test "${GITHUB_REF_PROTECTED}" = "true"
+          git show-ref --verify --quiet "${TAG_REF}"
+          test "$(git cat-file -t "${TAG_REF}")" = "tag"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "${TAG_REF}^{commit}")"
+          test "${GITHUB_SHA}" = "$(git rev-parse HEAD)"
+          EXPECTED_FINGERPRINT="$(printf '%s' "${RELEASE_TAG_SIGNING_FINGERPRINT}" | /usr/bin/tr '[:lower:]' '[:upper:]')"
+          printf '%s\n' "${EXPECTED_FINGERPRINT}" | /usr/bin/grep -Eq '^[0-9A-F]{40}([0-9A-F]{24})?$'
+          TAG_STATUS="$(/usr/bin/mktemp "${RUNNER_TEMP}/vela-release-tag-status.XXXXXX")"
+          if ! git verify-tag --raw "${TAG_REF}" >/dev/null 2>"${TAG_STATUS}"; then
+            /bin/rm -f "${TAG_STATUS}"
+            echo "release tag signature verification failed" >&2
+            exit 1
+          fi
+          /usr/bin/awk -v expected="${EXPECTED_FINGERPRINT}" '
+            $2 == "VALIDSIG" {
+              for (index = 3; index <= NF; index += 1) {
+                if (toupper($index) == expected) found = 1
+              }
+            }
+            END { exit(found ? 0 : 1) }
+          ' "${TAG_STATUS}"
+          /bin/rm -f "${TAG_STATUS}"
+
+      - name: Resolve exact release candidate identity
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_BUILD: ${{ inputs.build }}
+          RELEASE_CHANNEL: ${{ inputs.channel }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_PRERELEASE_LABEL: ${{ inputs.prerelease_label }}
+        run: |
+          printf '%s\n' "${RELEASE_VERSION}" | /usr/bin/grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+          printf '%s\n' "${RELEASE_BUILD}" | /usr/bin/grep -Eq '^20[0-9]{8}$'
+          case "${RELEASE_CHANNEL}" in
+            stable)
+              test "${RELEASE_TAG}" = "v${RELEASE_VERSION}"
+              test -z "${RELEASE_PRERELEASE_LABEL}"
+              CANDIDATE_VERSION="${RELEASE_VERSION}"
+              CANDIDATE_CHANNEL="stable"
+              ;;
+            beta)
+              VERSION_PATTERN="${RELEASE_VERSION//./\\.}"
+              [[ "${RELEASE_TAG}" =~ ^v${VERSION_PATTERN}-rc\.([1-9][0-9]*)$ ]]
+              RC_SEQUENCE="${BASH_REMATCH[1]}"
+              test "${RELEASE_PRERELEASE_LABEL}" = "RC ${RC_SEQUENCE}"
+              CANDIDATE_VERSION="${RELEASE_TAG#v}"
+              CANDIDATE_CHANNEL="rc"
+              ;;
+            *)
+              echo "unsupported release channel" >&2
+              exit 1
+              ;;
+          esac
+          {
+            printf 'VELA_RELEASE_CANDIDATE_VERSION=%s\n' "${CANDIDATE_VERSION}"
+            printf 'VELA_RELEASE_CANDIDATE_CHANNEL=%s\n' "${CANDIDATE_CHANNEL}"
+          } >>"${GITHUB_ENV}"
+
+      - name: Validate V0.7 source acceptance
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_BUILD: ${{ inputs.build }}
+        run: |
+          SOURCE_DATE_EPOCH="$(/usr/bin/python3 -c 'import json; print(json.load(open("Release/config/documentation.json", encoding="utf-8"))["sourceDateEpoch"])')"
+          export SOURCE_DATE_EPOCH
+          /usr/bin/python3 Release/scripts/validate_v07_acceptance.py --source \
+            --repository-root "${GITHUB_WORKSPACE}" \
+            --config Release/config/documentation.json \
+            --app-version "${RELEASE_VERSION}" \
+            --app-build "${RELEASE_BUILD}"
+
+      - name: Validate inherited hardening policy structure before secrets
+        run: |
+          /usr/bin/python3 Hardening/scripts/validate_hardening_config.py \
+            --repository-root "${GITHUB_WORKSPACE}"
+
+      - name: Enforce phase-correct V1 evidence before secrets
+        env:
+          RELEASE_PHASE: ${{ inputs.phase }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_BUILD: ${{ inputs.build }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          AUDIT_EVIDENCE: ${{ inputs.audit_evidence_path }}
+          GO_NO_GO_EVIDENCE: ${{ inputs.go_no_go_evidence_path }}
+          EVIDENCE_ROOT: ${{ inputs.evidence_root_path }}
+          MIGRATION_EVIDENCE: ${{ inputs.migration_evidence_path }}
+          PUBLISHED_BUILDS: ${{ inputs.published_builds_path }}
+          SUPPORT_MATRIX: ${{ inputs.support_matrix_path }}
+          INSTALLATION_MATRIX: ${{ inputs.installation_matrix_path }}
+          CANDIDATE_STAGE_PATH: ${{ inputs.candidate_stage_path }}
+        run: |
+          PHASE_ARGS=()
+          case "${RELEASE_PHASE}" in
+            candidate-stage) PHASE_ARGS+=(--candidate-stage) ;;
+            promotion)
+              PHASE_ARGS+=(--promotion --expect-reserved --candidate-stage-path "${CANDIDATE_STAGE_PATH}")
+              ;;
+            *) echo "unsupported release phase" >&2; exit 1 ;;
+          esac
+          ReleaseCandidate/scripts/preflight.sh \
+            --version "${RELEASE_VERSION}" \
+            --candidate-version "${VELA_RELEASE_CANDIDATE_VERSION}" \
+            --build "${RELEASE_BUILD}" \
+            --tag "${RELEASE_TAG}" \
+            --channel "${VELA_RELEASE_CANDIDATE_CHANNEL}" \
+            --evidence-dir "${EVIDENCE_ROOT}" \
+            --audit "${AUDIT_EVIDENCE}" \
+            --go-no-go "${GO_NO_GO_EVIDENCE}" \
+            --migration "${MIGRATION_EVIDENCE}" \
+            --published-builds "${PUBLISHED_BUILDS}" \
+            --support-matrix "${SUPPORT_MATRIX}" \
+            --installation-matrix "${INSTALLATION_MATRIX}" \
+            "${PHASE_ARGS[@]}"
+
+      - name: Atomically reserve candidate build number
+        if: inputs.phase == 'candidate-stage'
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_BUILD: ${{ inputs.build }}
+          RELEASE_CHANNEL: ${{ inputs.channel }}
+          PUBLISHED_BUILDS: ${{ inputs.published_builds_path }}
+        run: |
+          case "${RELEASE_CHANNEL}" in
+            beta) LEDGER_CHANNEL="rc" ;;
+            stable) LEDGER_CHANNEL="stable" ;;
+            *) exit 1 ;;
+          esac
+          /usr/bin/python3 ReleaseCandidate/scripts/manage_build_ledger.py \
+            --ledger "${PUBLISHED_BUILDS}" reserve \
+            --version "${VELA_RELEASE_CANDIDATE_VERSION}" \
+            --marketing-version "${RELEASE_VERSION}" \
+            --build "${RELEASE_BUILD}" \
+            --channel "${LEDGER_CHANNEL}"
+          printf 'VELA_BUILD_RESERVED_THIS_RUN=1\n' >>"${GITHUB_ENV}"
+
+      - name: Create ephemeral release credentials
+        if: inputs.phase == 'candidate-stage'
+        env:
+          DEVELOPER_ID_P12_BASE64: ${{ secrets.DEVELOPER_ID_P12_BASE64 }}
+          DEVELOPER_ID_P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          DEVELOPER_IDENTITY: ${{ vars.DEVELOPER_ID_APPLICATION_IDENTITY }}
+          NOTARY_API_KEY_P8_BASE64: ${{ secrets.NOTARY_API_KEY_P8_BASE64 }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+          SPARKLE_ED25519_PRIVATE_KEY: ${{ secrets.SPARKLE_ED25519_PRIVATE_KEY }}
+        run: |
+          umask 077
+          test -n "${DEVELOPER_ID_P12_BASE64}"
+          test -n "${DEVELOPER_ID_P12_PASSWORD}"
+          test -n "${DEVELOPER_IDENTITY}"
+          test -n "${NOTARY_API_KEY_P8_BASE64}"
+          test -n "${NOTARY_KEY_ID}"
+          test -n "${NOTARY_ISSUER_ID}"
+          test -n "${SPARKLE_ED25519_PRIVATE_KEY}"
+          case "${VELA_CREDENTIAL_ROOT}" in
+            "${RUNNER_TEMP}"/vela-release-credentials-*) ;;
+            *) echo "unsafe credential root" >&2; exit 1 ;;
+          esac
+          test ! -e "${VELA_CREDENTIAL_ROOT}"
+          test ! -L "${VELA_CREDENTIAL_ROOT}"
+          /bin/mkdir -m 0700 "${VELA_CREDENTIAL_ROOT}"
+          VELA_CREDENTIAL_ROOT="$(cd "${VELA_CREDENTIAL_ROOT}" && /bin/pwd -P)"
+
+          RELEASE_KEYCHAIN="${VELA_CREDENTIAL_ROOT}/release.keychain-db"
+          P12_FILE="${VELA_CREDENTIAL_ROOT}/developer-id.p12"
+          NOTARY_KEY_FILE="${VELA_CREDENTIAL_ROOT}/AuthKey.p8"
+          SPARKLE_KEY_FILE="${VELA_CREDENTIAL_ROOT}/sparkle-ed25519.key"
+          ORIGINAL_KEYCHAINS="${VELA_CREDENTIAL_ROOT}/original-keychains.txt"
+          /usr/bin/security list-keychains -d user >"${ORIGINAL_KEYCHAINS}"
+          printf '%s' "${DEVELOPER_ID_P12_BASE64}" | /usr/bin/base64 -D >"${P12_FILE}"
+          printf '%s' "${NOTARY_API_KEY_P8_BASE64}" | /usr/bin/base64 -D >"${NOTARY_KEY_FILE}"
+          # Sparkle's exported key file is itself a Base64 text value. Keep it
+          # encoded; `generate_appcast --ed-key-file` performs the decoding.
+          printf '%s\n' "${SPARKLE_ED25519_PRIVATE_KEY}" >"${SPARKLE_KEY_FILE}"
+          /bin/chmod 0600 "${P12_FILE}" "${NOTARY_KEY_FILE}" "${SPARKLE_KEY_FILE}" "${ORIGINAL_KEYCHAINS}"
+          test -s "${P12_FILE}"
+          test -s "${NOTARY_KEY_FILE}"
+          test -s "${SPARKLE_KEY_FILE}"
+          /usr/bin/grep -Fq -- '-----BEGIN PRIVATE KEY-----' "${NOTARY_KEY_FILE}"
+
+          KEYCHAIN_PASSWORD="$(/usr/bin/openssl rand -hex 32)"
+          /usr/bin/security create-keychain -p "${KEYCHAIN_PASSWORD}" "${RELEASE_KEYCHAIN}"
+          /usr/bin/security set-keychain-settings -lut 10800 "${RELEASE_KEYCHAIN}"
+          /usr/bin/security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${RELEASE_KEYCHAIN}"
+          /usr/bin/security import "${P12_FILE}" -k "${RELEASE_KEYCHAIN}" \
+            -P "${DEVELOPER_ID_P12_PASSWORD}" -T /usr/bin/codesign -T /usr/bin/security
+          /usr/bin/security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: -s -k "${KEYCHAIN_PASSWORD}" "${RELEASE_KEYCHAIN}" >/dev/null
+          /bin/chmod 0600 "${RELEASE_KEYCHAIN}"
+          /usr/bin/security list-keychains -d user -s "${RELEASE_KEYCHAIN}"
+          /usr/bin/security find-identity -p codesigning -v "${RELEASE_KEYCHAIN}" \
+            | /usr/bin/grep -Fq "\"${DEVELOPER_IDENTITY}\""
+
+          NOTARY_PROFILE="vela-notary-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          /usr/bin/xcrun notarytool store-credentials "${NOTARY_PROFILE}" \
+            --key "${NOTARY_KEY_FILE}" \
+            --key-id "${NOTARY_KEY_ID}" \
+            --issuer "${NOTARY_ISSUER_ID}" \
+            --keychain "${RELEASE_KEYCHAIN}" \
+            --validate
+          /bin/rm -f "${P12_FILE}" "${NOTARY_KEY_FILE}"
+
+          {
+            printf 'VELA_CREDENTIAL_ROOT=%s\n' "${VELA_CREDENTIAL_ROOT}"
+            printf 'VELA_RELEASE_KEYCHAIN=%s\n' "${RELEASE_KEYCHAIN}"
+            printf 'NOTARY_PROFILE=%s\n' "${NOTARY_PROFILE}"
+            printf 'SPARKLE_ED_KEY_FILE=%s\n' "${SPARKLE_KEY_FILE}"
+          } >>"${GITHUB_ENV}"
+
+      - name: Execute candidate stage or exact-byte promotion
+        id: execute_candidate
+        env:
+          VELA_RELEASE_EXECUTE: "YES"
+          RELEASE_PHASE: ${{ inputs.phase }}
+          SPARKLE_BIN: ${{ vars.SPARKLE_2_9_4_BIN }}
+          VELA_DEVELOPER_IDENTITY: ${{ vars.DEVELOPER_ID_APPLICATION_IDENTITY }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_BUILD: ${{ inputs.build }}
+          RELEASE_CHANNEL: ${{ inputs.channel }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_PRERELEASE_LABEL: ${{ inputs.prerelease_label }}
+          RELEASE_NOTES_PATH: ${{ inputs.notes_path }}
+          RELEASE_FEED_HISTORY_PATH: ${{ inputs.feed_history_path }}
+          RELEASE_PRIOR_APPCAST_PATH: ${{ inputs.prior_appcast_path }}
+          RELEASE_PRIOR_APPCAST_SHA256: ${{ inputs.prior_appcast_sha256 }}
+          RELEASE_MIGRATION_EVIDENCE_PATH: ${{ inputs.migration_evidence_path }}
+          RELEASE_EVIDENCE_ROOT_PATH: ${{ inputs.evidence_root_path }}
+          RELEASE_AUDIT_EVIDENCE_PATH: ${{ inputs.audit_evidence_path }}
+          RELEASE_AUDIT_SUMMARY_EVIDENCE_PATH: ${{ inputs.audit_summary_evidence_path }}
+          RELEASE_GO_NO_GO_EVIDENCE_PATH: ${{ inputs.go_no_go_evidence_path }}
+          RELEASE_PUBLISHED_BUILDS_PATH: ${{ inputs.published_builds_path }}
+          RELEASE_SUPPORT_MATRIX_PATH: ${{ inputs.support_matrix_path }}
+          RELEASE_INSTALLATION_MATRIX_PATH: ${{ inputs.installation_matrix_path }}
+          RELEASE_CANDIDATE_STAGE_PATH: ${{ inputs.candidate_stage_path }}
+          RELEASE_PROMOTION_OUTPUT_ROOT_PATH: ${{ inputs.promotion_output_root_path }}
+        run: |
+          PHASE_ARGS=()
+          case "${RELEASE_PHASE}" in
+            candidate-stage) PHASE_ARGS+=(--stage-candidate) ;;
+            promotion) PHASE_ARGS+=(--promote-candidate) ;;
+            *) exit 1 ;;
+          esac
+          ./Release/scripts/release.sh --execute "${PHASE_ARGS[@]}" \
+            --version "${RELEASE_VERSION}" \
+            --build "${RELEASE_BUILD}" \
+            --channel "${RELEASE_CHANNEL}" \
+            --tag "${RELEASE_TAG}" \
+            --prerelease-label "${RELEASE_PRERELEASE_LABEL}" \
+            --notes "${RELEASE_NOTES_PATH}" \
+            --feed-history "${RELEASE_FEED_HISTORY_PATH}" \
+            --prior-appcast "${RELEASE_PRIOR_APPCAST_PATH}" \
+            --prior-appcast-sha256 "${RELEASE_PRIOR_APPCAST_SHA256}" \
+            --migration "${RELEASE_MIGRATION_EVIDENCE_PATH}" \
+            --evidence-dir "${RELEASE_EVIDENCE_ROOT_PATH}" \
+            --audit "${RELEASE_AUDIT_EVIDENCE_PATH}" \
+            --audit-summary "${RELEASE_AUDIT_SUMMARY_EVIDENCE_PATH}" \
+            --go-no-go "${RELEASE_GO_NO_GO_EVIDENCE_PATH}" \
+            --published-builds "${RELEASE_PUBLISHED_BUILDS_PATH}" \
+            --support-matrix "${RELEASE_SUPPORT_MATRIX_PATH}" \
+            --installation-matrix "${RELEASE_INSTALLATION_MATRIX_PATH}" \
+            --candidate-stage "${RELEASE_CANDIDATE_STAGE_PATH}" \
+            --promotion-output-root "${RELEASE_PROMOTION_OUTPUT_ROOT_PATH}"
+
+      - name: Resolve immutable public release output
+        if: inputs.phase == 'promotion'
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_BUILD: ${{ inputs.build }}
+          RELEASE_CHANNEL: ${{ inputs.channel }}
+          PROMOTION_OUTPUT_ROOT: ${{ inputs.promotion_output_root_path }}
+        run: |
+          printf '%s\n' "${RELEASE_VERSION}" | /usr/bin/grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+          printf '%s\n' "${RELEASE_BUILD}" | /usr/bin/grep -Eq '^20[0-9]{8}$'
+          case "${RELEASE_CHANNEL}" in beta|stable) ;; *) exit 1 ;; esac
+          test -d "${PROMOTION_OUTPUT_ROOT}"
+          test ! -L "${PROMOTION_OUTPUT_ROOT}"
+          test "$(/usr/bin/stat -f '%u' "${PROMOTION_OUTPUT_ROOT}")" = "$(/usr/bin/id -u)"
+          test "$(/usr/bin/stat -f '%Lp' "${PROMOTION_OUTPUT_ROOT}")" = "700"
+          PROMOTION_OUTPUT_ROOT="$(cd "${PROMOTION_OUTPUT_ROOT}" && /bin/pwd -P)"
+          case "${PROMOTION_OUTPUT_ROOT}" in
+            "${GITHUB_WORKSPACE}"|"${GITHUB_WORKSPACE}"/*) exit 1 ;;
+          esac
+          FINAL_OUTPUT="${PROMOTION_OUTPUT_ROOT}/${RELEASE_VERSION}-${RELEASE_BUILD}-${RELEASE_CHANNEL}"
+          PUBLIC_OUTPUT="${FINAL_OUTPUT}/public"
+          PRIVATE_OUTPUT="${FINAL_OUTPUT}/private"
+          test -d "${PUBLIC_OUTPUT}"
+          test -d "${PRIVATE_OUTPUT}"
+          test -f "${PUBLIC_OUTPUT}/checksums.txt"
+          test -f "${PUBLIC_OUTPUT}/Vela-${VELA_RELEASE_CANDIDATE_VERSION}-arm64.dmg"
+          test -f "${PUBLIC_OUTPUT}/sbom-${VELA_RELEASE_CANDIDATE_VERSION}.spdx.json"
+          test -f "${PUBLIC_OUTPUT}/release-candidate-manifest-${VELA_RELEASE_CANDIDATE_VERSION}.json"
+          printf 'VELA_RELEASE_PUBLIC_OUTPUT=%s\n' "${PUBLIC_OUTPUT}" >>"${GITHUB_ENV}"
+          printf 'VELA_RELEASE_PRIVATE_OUTPUT=%s\n' "${PRIVATE_OUTPUT}" >>"${GITHUB_ENV}"
+          printf 'VELA_RELEASE_DMG=%s\n' "${PUBLIC_OUTPUT}/Vela-${VELA_RELEASE_CANDIDATE_VERSION}-arm64.dmg" >>"${GITHUB_ENV}"
+          printf 'VELA_RELEASE_SBOM=%s\n' "${PUBLIC_OUTPUT}/sbom-${VELA_RELEASE_CANDIDATE_VERSION}.spdx.json" >>"${GITHUB_ENV}"
+          printf 'VELA_RELEASE_RC_MANIFEST=%s\n' "${PUBLIC_OUTPUT}/release-candidate-manifest-${VELA_RELEASE_CANDIDATE_VERSION}.json" >>"${GITHUB_ENV}"
+
+      - name: Seal and verify exact public RC inventory
+        if: inputs.phase == 'promotion'
+        run: |
+          /usr/bin/python3 Release/scripts/generate_checksums.py verify \
+            --checksums "${VELA_RELEASE_PUBLIC_OUTPUT}/checksums.txt" \
+            --base-dir "${VELA_RELEASE_PUBLIC_OUTPUT}" \
+            --require-complete
+          ReleaseCandidate/scripts/scan_release_candidate.sh \
+            --public "${VELA_RELEASE_PUBLIC_OUTPUT}"
+          /usr/bin/python3 Release/scripts/scan_release_logs.py \
+            "${VELA_RELEASE_PUBLIC_OUTPUT}"
+          CHECKSUMS_SHA256="$(/usr/bin/shasum -a 256 "${VELA_RELEASE_PUBLIC_OUTPUT}/checksums.txt" | /usr/bin/awk '{print $1}')"
+          printf '%s\n' "${CHECKSUMS_SHA256}" | /usr/bin/grep -Eq '^[0-9a-f]{64}$'
+          printf 'VELA_RELEASE_CHECKSUMS_SHA256=%s\n' "${CHECKSUMS_SHA256}" >>"${GITHUB_ENV}"
+          /usr/bin/find "${VELA_RELEASE_PUBLIC_OUTPUT}" -type f -exec /bin/chmod 0444 {} +
+          /usr/bin/find "${VELA_RELEASE_PUBLIC_OUTPUT}" -type d -exec /bin/chmod 0555 {} +
+
+      - name: Confirm public output has no secret patterns
+        if: always() && inputs.phase == 'promotion'
+        run: |
+          if test -n "${VELA_RELEASE_PUBLIC_OUTPUT:-}" && test -d "${VELA_RELEASE_PUBLIC_OUTPUT}"; then
+            ./Release/scripts/scan_release_logs.py "${VELA_RELEASE_PUBLIC_OUTPUT}"
+          fi
+
+      - name: Consume incomplete candidate-stage build allocation
+        if: always() && inputs.phase == 'candidate-stage' && env.VELA_BUILD_RESERVED_THIS_RUN == '1' && steps.execute_candidate.outcome != 'success'
+        env:
+          RELEASE_BUILD: ${{ inputs.build }}
+          RELEASE_CHANNEL: ${{ inputs.channel }}
+          PUBLISHED_BUILDS: ${{ inputs.published_builds_path }}
+        run: |
+          case "${RELEASE_CHANNEL}" in
+            beta) LEDGER_CHANNEL="rc" ;;
+            stable) LEDGER_CHANNEL="stable" ;;
+            *) exit 1 ;;
+          esac
+          /usr/bin/python3 ReleaseCandidate/scripts/manage_build_ledger.py \
+            --ledger "${PUBLISHED_BUILDS}" finalize \
+            --version "${VELA_RELEASE_CANDIDATE_VERSION}" \
+            --build "${RELEASE_BUILD}" \
+            --channel "${LEDGER_CHANNEL}" \
+            --status failed
+
+      - name: Destroy ephemeral release credentials
+        if: always() && inputs.phase == 'candidate-stage'
+        run: |
+          umask 077
+          RUNNER_TEMP_CANONICAL="$(cd "${RUNNER_TEMP}" && /bin/pwd -P)"
+          case "${VELA_CREDENTIAL_ROOT}" in
+            "${RUNNER_TEMP_CANONICAL}"/vela-release-credentials-*) ;;
+            *) echo "refusing unsafe credential cleanup path" >&2; exit 1 ;;
+          esac
+          if test -L "${VELA_CREDENTIAL_ROOT}"; then
+            /bin/rm -f "${VELA_CREDENTIAL_ROOT}"
+            echo "credential root was replaced by a symlink" >&2
+            exit 1
+          fi
+          if test -d "${VELA_CREDENTIAL_ROOT}"; then
+            ORIGINAL_KEYCHAINS="${VELA_CREDENTIAL_ROOT}/original-keychains.txt"
+            if test -f "${ORIGINAL_KEYCHAINS}" && test ! -L "${ORIGINAL_KEYCHAINS}"; then
+              ORIGINAL=()
+              while IFS= read -r line; do
+                line="$(printf '%s\n' "${line}" | /usr/bin/sed 's/^[[:space:]]*"//;s/"[[:space:]]*$//')"
+                if test -n "${line}"; then
+                  ORIGINAL+=("${line}")
+                fi
+              done <"${ORIGINAL_KEYCHAINS}"
+              /usr/bin/security list-keychains -d user -s "${ORIGINAL[@]}" || true
+            fi
+            RELEASE_KEYCHAIN="${VELA_CREDENTIAL_ROOT}/release.keychain-db"
+            if test -f "${RELEASE_KEYCHAIN}" && test ! -L "${RELEASE_KEYCHAIN}"; then
+              /usr/bin/security lock-keychain "${RELEASE_KEYCHAIN}" || true
+              /usr/bin/security delete-keychain "${RELEASE_KEYCHAIN}" || true
+            fi
+            /bin/rm -f \
+              "${VELA_CREDENTIAL_ROOT}/developer-id.p12" \
+              "${VELA_CREDENTIAL_ROOT}/AuthKey.p8" \
+              "${VELA_CREDENTIAL_ROOT}/sparkle-ed25519.key" \
+              "${VELA_CREDENTIAL_ROOT}/original-keychains.txt"
+            /bin/rm -rf "${VELA_CREDENTIAL_ROOT}"
+          fi
+
+      # No attestation permission exists in this build/preparation job. The
+      # exact output is sealed outside the checkout before the next job starts.
+
+  attest:
+    if: inputs.phase == 'promotion'
+    needs: release
+    runs-on:
+      - self-hosted
+      - macOS
+      - ARM64
+      - vela-release
+    environment: production
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Bind attestation to the release machine
+        env:
+          EXPECTED_RELEASE_RUNNER_NAME: ${{ vars.VELA_RELEASE_RUNNER_NAME }}
+          RELEASE_RUNNER_NAME: ${{ needs.release.outputs.release_runner_name }}
+        run: |
+          test -n "${EXPECTED_RELEASE_RUNNER_NAME}"
+          test -n "${RELEASE_RUNNER_NAME}"
+          test "${RUNNER_NAME}" = "${EXPECTED_RELEASE_RUNNER_NAME}"
+          test "${RUNNER_NAME}" = "${RELEASE_RUNNER_NAME}"
+
+      # actions/checkout v4.2.2, pinned to the complete commit SHA.
+      - name: Check out exact attestation tag
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Assert exact protected attestation checkout
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TAG_SIGNING_FINGERPRINT: ${{ vars.RELEASE_TAG_SIGNING_FINGERPRINT }}
+        run: |
+          test "$(uname -m)" = "arm64"
+          test -z "$(git status --porcelain)"
+          case "${RELEASE_TAG}" in ""|*/*) exit 1 ;; esac
+          TAG_REF="refs/tags/${RELEASE_TAG}"
+          test "${GITHUB_REF}" = "${TAG_REF}"
+          test "${GITHUB_REF_PROTECTED}" = "true"
+          test "$(git cat-file -t "${TAG_REF}")" = "tag"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "${TAG_REF}^{commit}")"
+          test "${GITHUB_SHA}" = "$(git rev-parse HEAD)"
+          EXPECTED_FINGERPRINT="$(printf '%s' "${RELEASE_TAG_SIGNING_FINGERPRINT}" | /usr/bin/tr '[:lower:]' '[:upper:]')"
+          printf '%s\n' "${EXPECTED_FINGERPRINT}" | /usr/bin/grep -Eq '^[0-9A-F]{40}([0-9A-F]{24})?$'
+          TAG_STATUS="$(/usr/bin/mktemp "${RUNNER_TEMP}/vela-attestation-tag-status.XXXXXX")"
+          if ! git verify-tag --raw "${TAG_REF}" >/dev/null 2>"${TAG_STATUS}"; then
+            /bin/rm -f "${TAG_STATUS}"
+            exit 1
+          fi
+          /usr/bin/awk -v expected="${EXPECTED_FINGERPRINT}" '
+            $2 == "VALIDSIG" {
+              for (index = 3; index <= NF; index += 1) {
+                if (toupper($index) == expected) found = 1
+              }
+            }
+            END { exit(found ? 0 : 1) }
+          ' "${TAG_STATUS}"
+          /bin/rm -f "${TAG_STATUS}"
+
+      - name: Resolve durable immutable promotion bytes
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_BUILD: ${{ inputs.build }}
+          RELEASE_CHANNEL: ${{ inputs.channel }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_PRERELEASE_LABEL: ${{ inputs.prerelease_label }}
+          PROMOTION_OUTPUT_ROOT: ${{ inputs.promotion_output_root_path }}
+          EVIDENCE_ROOT: ${{ inputs.evidence_root_path }}
+        run: |
+          printf '%s\n' "${RELEASE_VERSION}" | /usr/bin/grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+          printf '%s\n' "${RELEASE_BUILD}" | /usr/bin/grep -Eq '^20[0-9]{8}$'
+          case "${RELEASE_CHANNEL}" in
+            stable)
+              test "${RELEASE_TAG}" = "v${RELEASE_VERSION}"
+              test -z "${RELEASE_PRERELEASE_LABEL}"
+              CANDIDATE_VERSION="${RELEASE_VERSION}"
+              ;;
+            beta)
+              VERSION_PATTERN="${RELEASE_VERSION//./\\.}"
+              [[ "${RELEASE_TAG}" =~ ^v${VERSION_PATTERN}-rc\.([1-9][0-9]*)$ ]]
+              test "${RELEASE_PRERELEASE_LABEL}" = "RC ${BASH_REMATCH[1]}"
+              CANDIDATE_VERSION="${RELEASE_TAG#v}"
+              ;;
+            *) exit 1 ;;
+          esac
+          for ROOT in "${PROMOTION_OUTPUT_ROOT}" "${EVIDENCE_ROOT}" "${EVIDENCE_ROOT}/private"; do
+            test -d "${ROOT}"
+            test ! -L "${ROOT}"
+            test "$(/usr/bin/stat -f '%u' "${ROOT}")" = "$(/usr/bin/id -u)"
+            test "$(/usr/bin/stat -f '%Lp' "${ROOT}")" = "700"
+          done
+          PROMOTION_OUTPUT_ROOT="$(cd "${PROMOTION_OUTPUT_ROOT}" && /bin/pwd -P)"
+          EVIDENCE_ROOT="$(cd "${EVIDENCE_ROOT}" && /bin/pwd -P)"
+          case "${PROMOTION_OUTPUT_ROOT}" in
+            "${GITHUB_WORKSPACE}"|"${GITHUB_WORKSPACE}"/*) exit 1 ;;
+          esac
+          case "${EVIDENCE_ROOT}" in
+            "${GITHUB_WORKSPACE}"|"${GITHUB_WORKSPACE}"/*) exit 1 ;;
+          esac
+          case "${PROMOTION_OUTPUT_ROOT}" in
+            "${EVIDENCE_ROOT}"|"${EVIDENCE_ROOT}"/*) exit 1 ;;
+          esac
+          case "${EVIDENCE_ROOT}" in
+            "${PROMOTION_OUTPUT_ROOT}"|"${PROMOTION_OUTPUT_ROOT}"/*) exit 1 ;;
+          esac
+          FINAL_OUTPUT="${PROMOTION_OUTPUT_ROOT}/${RELEASE_VERSION}-${RELEASE_BUILD}-${RELEASE_CHANNEL}"
+          test -d "${FINAL_OUTPUT}"
+          test ! -L "${FINAL_OUTPUT}"
+          test "$(/usr/bin/stat -f '%Lp' "${FINAL_OUTPUT}")" = "500"
+          PUBLIC_OUTPUT="${FINAL_OUTPUT}/public"
+          test -d "${PUBLIC_OUTPUT}"
+          test ! -L "${PUBLIC_OUTPUT}"
+          test -f "${PUBLIC_OUTPUT}/checksums.txt"
+          test -f "${PUBLIC_OUTPUT}/Vela-${CANDIDATE_VERSION}-arm64.dmg"
+          test -f "${PUBLIC_OUTPUT}/sbom-${CANDIDATE_VERSION}.spdx.json"
+          test -f "${PUBLIC_OUTPUT}/release-candidate-manifest-${CANDIDATE_VERSION}.json"
+          if /usr/bin/find -P "${FINAL_OUTPUT}" -type l -print -quit | /usr/bin/grep -q .; then exit 1; fi
+          {
+            printf 'VELA_RELEASE_CANDIDATE_VERSION=%s\n' "${CANDIDATE_VERSION}"
+            printf 'VELA_RELEASE_PUBLIC_OUTPUT=%s\n' "${PUBLIC_OUTPUT}"
+            printf 'VELA_RELEASE_DMG=%s\n' "${PUBLIC_OUTPUT}/Vela-${CANDIDATE_VERSION}-arm64.dmg"
+            printf 'VELA_RELEASE_SBOM=%s\n' "${PUBLIC_OUTPUT}/sbom-${CANDIDATE_VERSION}.spdx.json"
+            printf 'VELA_RELEASE_RC_MANIFEST=%s\n' "${PUBLIC_OUTPUT}/release-candidate-manifest-${CANDIDATE_VERSION}.json"
+            printf 'VELA_RELEASE_EVIDENCE_ROOT=%s\n' "${EVIDENCE_ROOT}"
+          } >>"${GITHUB_ENV}"
+
+      - name: Revalidate sealed public inventory before attestation
+        run: |
+          /usr/bin/python3 Release/scripts/generate_checksums.py verify \
+            --checksums "${VELA_RELEASE_PUBLIC_OUTPUT}/checksums.txt" \
+            --base-dir "${VELA_RELEASE_PUBLIC_OUTPUT}" \
+            --require-complete
+          ReleaseCandidate/scripts/scan_release_candidate.sh \
+            --public "${VELA_RELEASE_PUBLIC_OUTPUT}"
+          /usr/bin/python3 Release/scripts/scan_release_logs.py \
+            "${VELA_RELEASE_PUBLIC_OUTPUT}"
+          CHECKSUMS_SHA256="$(/usr/bin/shasum -a 256 "${VELA_RELEASE_PUBLIC_OUTPUT}/checksums.txt" | /usr/bin/awk '{print $1}')"
+          printf '%s\n' "${CHECKSUMS_SHA256}" | /usr/bin/grep -Eq '^[0-9a-f]{64}$'
+          printf 'VELA_RELEASE_CHECKSUMS_SHA256=%s\n' "${CHECKSUMS_SHA256}" >>"${GITHUB_ENV}"
+
+      # actions/attest v4.1.1, pinned to the complete commit SHA. Only this
+      # isolated job has OIDC/attestation write permissions.
+      - name: Attest release provenance
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-checksums: ${{ env.VELA_RELEASE_PUBLIC_OUTPUT }}/checksums.txt
+
+      - name: Attest checksum inventory
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-path: ${{ env.VELA_RELEASE_PUBLIC_OUTPUT }}/checksums.txt
+
+      - name: Attest DMG SBOM
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-path: ${{ env.VELA_RELEASE_DMG }}
+          sbom-path: ${{ env.VELA_RELEASE_SBOM }}
+
+      - name: Reverify bytes and record cryptographic attestation closure
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(/usr/bin/shasum -a 256 "${VELA_RELEASE_PUBLIC_OUTPUT}/checksums.txt" | /usr/bin/awk '{print $1}')" = \
+            "${VELA_RELEASE_CHECKSUMS_SHA256}"
+          /usr/bin/python3 Release/scripts/generate_checksums.py verify \
+            --checksums "${VELA_RELEASE_PUBLIC_OUTPUT}/checksums.txt" \
+            --base-dir "${VELA_RELEASE_PUBLIC_OUTPUT}" \
+            --require-complete
+          ReleaseCandidate/scripts/scan_release_candidate.sh \
+            --public "${VELA_RELEASE_PUBLIC_OUTPUT}"
+          ATTESTATION_OUTPUT="${VELA_RELEASE_EVIDENCE_ROOT}/private/attestation-verification-${VELA_RELEASE_CANDIDATE_VERSION}.json"
+          ATTESTATION_BUNDLE="${VELA_RELEASE_EVIDENCE_ROOT}/private/attestation-bundles-${VELA_RELEASE_CANDIDATE_VERSION}.jsonl"
+          ATTESTATION_TRUSTED_ROOT="${VELA_RELEASE_EVIDENCE_ROOT}/private/attestation-trusted-root-${VELA_RELEASE_CANDIDATE_VERSION}.jsonl"
+          test ! -e "${ATTESTATION_OUTPUT}"
+          test ! -L "${ATTESTATION_OUTPUT}"
+          test ! -e "${ATTESTATION_BUNDLE}"
+          test ! -L "${ATTESTATION_BUNDLE}"
+          test ! -e "${ATTESTATION_TRUSTED_ROOT}"
+          test ! -L "${ATTESTATION_TRUSTED_ROOT}"
+          ReleaseCandidate/scripts/verify_rc_attestations.sh \
+            --manifest "${VELA_RELEASE_RC_MANIFEST}" \
+            --artifacts-dir "${VELA_RELEASE_PUBLIC_OUTPUT}" \
+            --subject-checksums "${VELA_RELEASE_PUBLIC_OUTPUT}/checksums.txt" \
+            --bundle-output "${ATTESTATION_BUNDLE}" \
+            --trusted-root-output "${ATTESTATION_TRUSTED_ROOT}" \
+            --output "${ATTESTATION_OUTPUT}"
+          /bin/chmod 0600 \
+            "${ATTESTATION_OUTPUT}" "${ATTESTATION_BUNDLE}" "${ATTESTATION_TRUSTED_ROOT}"
+
+      # Publishing remains outside this credential-bearing job. The final
+      # accountable Go/No-Go and promotion closure consume these exact durable
+      # public bytes plus protected evidence and remain fail-closed.

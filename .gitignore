@@ -1,0 +1,96 @@
+# Xcode
+DerivedData/
+build/
+*.xcarchive/
+*.xcresult/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.profraw
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# App runtime data
+/runtime/
+/logs/
+
+# Secrets
+*.secret
+.env
+.env.*
+!.env.example
+*.cer
+*.crt
+*.key
+*.p8
+*.p12
+*.pem
+*.mobileprovision
+*.provisionprofile
+*.keychain-db
+
+# Packaged applications and distribution artifacts
+*.app/
+*.dmg
+*.pkg
+
+# Local agent instructions, skills, and code-intelligence indexes
+/AGENTS.md
+/CLAUDE.md
+/.agents/
+/.claude/
+/.codex/
+/.codegraph/
+/.gitnexus/
+/.impeccable/
+
+# Internal design, review, and generated evidence
+/Artifacts/
+/EngineeringReview/
+/Docs/
+/CODE_REVIEW_ARCHITECTURE_MAP.md
+/design-qa.md
+/configuration-workbench-*
+
+# Visual-recovery outputs are local. Contracts and deterministic fixtures remain public.
+/VisualRecovery/*
+!/VisualRecovery/Contracts/
+!/VisualRecovery/Contracts/**
+!/VisualRecovery/Fixtures/
+!/VisualRecovery/Fixtures/**
+!/VisualRecovery/Targets/
+!/VisualRecovery/Targets/**
+
+# Generated Mihomo supply-chain artifacts
+Vendor/Mihomo/cache/
+Vendor/Mihomo/bin/
+
+# Vela test fixture runtime
+.fixture-server.pid
+.fixture-server.log
+
+# Local diagnostics exports
+Diagnostics-*.json
+
+# Local review archives (source screenshots and reports are committed separately)
+VisualRecovery/*.zip
+
+# Generated Overview visual comparison screenshots and reports
+Artifacts/Overview/
+Artifacts/OverviewDesignQA-*/
+
+# Release staging and generated artifacts
+Release/staging/
+Release/output/
+Release/Core/staging/
+Release/Core/output/

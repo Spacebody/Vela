@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "targetVersion": "0.8.0",
+  "fixturePolicy": "historicalTagGeneratorOnly",
+  "sources": [
+    { "version": "0.1", "required": true, "status": "blockedMissingHistoricalGenerator", "producingCommit": null, "generatorVersion": null, "fixtureSHA256": null, "fixturePath": null },
+    { "version": "0.2", "required": true, "status": "blockedMissingHistoricalGenerator", "producingCommit": null, "generatorVersion": null, "fixtureSHA256": null, "fixturePath": null },
+    { "version": "0.3", "required": true, "status": "blockedMissingHistoricalGenerator", "producingCommit": null, "generatorVersion": null, "fixtureSHA256": null, "fixturePath": null },
+    { "version": "0.4", "required": true, "status": "blockedMissingHistoricalGenerator", "producingCommit": null, "generatorVersion": null, "fixtureSHA256": null, "fixturePath": null },
+    { "version": "0.5", "required": true, "status": "blockedMissingHistoricalGenerator", "producingCommit": null, "generatorVersion": null, "fixtureSHA256": null, "fixturePath": null },
+    { "version": "0.6", "required": true, "status": "blockedMissingHistoricalGenerator", "producingCommit": null, "generatorVersion": null, "fixtureSHA256": null, "fixturePath": null },
+    { "version": "0.7", "required": true, "status": "blockedMissingHistoricalGenerator", "producingCommit": null, "generatorVersion": null, "fixtureSHA256": null, "fixturePath": null }
+  ],
+  "faults": [
+    "crashBeforeWrite", "crashAfterWriteBeforeRename", "crashAfterRenameBeforeCommit",
+    "diskFull", "permissionDenied", "cancellation", "duplicateLaunch",
+    "missingKeychain", "corruptOptionalFile", "newerSchemaDowngradeGuard"
+  ],
+  "acceptance": [
+    "originalBackupRetained", "atomicCurrentStore", "noEmptyOverwrite",
+    "idempotentSecondLaunch", "secretsRemainInKeychain", "safeModeOnUnrecoverableFailure",
+    "noSilentDataDiscard", "newerSchemaPreservedReadOnly"
+  ]
+}

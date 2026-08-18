@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "product": {
+    "name": "Vela",
+    "project": "Vela.xcodeproj",
+    "scheme": "Vela",
+    "bundleIdentifier": "dev.yilin.Vela",
+    "helperIdentifier": "dev.yilin.Vela.Helper",
+    "cliName": "vela",
+    "minimumMacOS": "15.0",
+    "architecture": "arm64",
+    "teamIdentifier": "2E56T94S33",
+    "mihomoVersion": "v1.19.29",
+    "sparkleVersion": "2.9.4",
+    "yamsVersion": "6.2.2"
+  },
+  "toolchain": {
+    "xcodeVersion": "26.6",
+    "xcodeBuild": "17F113",
+    "swiftMajorVersion": 6
+  },
+  "versioning": {
+    "marketingVersion": "1.0.0",
+    "buildNumberStrategy": "YYYYMMDDNN"
+  },
+  "updates": {
+    "feedURL": "https://updates.example.invalid/vela/appcast.xml",
+    "publicEDKey": "__SPARKLE_ED25519_PUBLIC_KEY__",
+    "channels": [
+      "stable",
+      "beta"
+    ],
+    "allowedURLSchemes": [
+      "https"
+    ],
+    "requireSignedFeed": true,
+    "verifyBeforeExtraction": true,
+    "enableJavaScript": false,
+    "enableSystemProfiling": false,
+    "deltasEnabled": false
+  },
+  "paths": {
+    "packageResolved": "Vela.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+    "mihomoManifest": "Vendor/Mihomo/manifest.json",
+    "compatibility": "Release/config/compatibility.json",
+    "appcastPolicy": "Release/config/appcast-policy.json",
+    "thirdPartyComponents": "Release/config/third-party-components.json",
+    "exportOptions": "Release/config/ExportOptions.plist",
+    "staging": "Release/staging",
+    "output": "Release/output"
+  },
+  "releaseRequirements": {
+    "requiredComponents": [
+      "Vela",
+      "VelaHelper",
+      "mihomo",
+      "vela",
+      "Sparkle.framework"
+    ],
+    "requireCLI": true,
+    "requireAppIntents": true,
+    "requireAutomationProtocol": true,
+    "requireSceneSchema": true,
+    "requireSignedReleaseNotes": true,
+    "requireSignedAppcast": true
+  }
+}

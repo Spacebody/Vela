@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "product": {
+    "velaVersion": "0.6.0",
+    "velaBuild": 2026071302,
+    "bundleIdentifier": "dev.yilin.Vela.MihomoCore",
+    "teamIdentifier": "2E56T94S33",
+    "minimumMacOS": "15.0",
+    "architecture": "arm64"
+  },
+  "core": {
+    "coreID": "v1.19.28-r1",
+    "upstreamVersion": "v1.19.28",
+    "packageRevision": 1,
+    "seed": "Release/Core/config/upstream-seed-v1.19.28.json",
+    "compatibilityReport": null,
+    "dedicatedHostEvidence": null,
+    "performanceReview": null,
+    "license": "Vendor/Mihomo/LICENSE"
+  },
+  "catalog": {
+    "operation": "full",
+    "baseURL": null,
+    "catalogURL": null,
+    "catalogSignaturesURL": null,
+    "releaseNotesURL": null,
+    "sequence": null,
+    "priorCatalogSequence": null,
+    "priorCatalogURL": null,
+    "priorCatalogSHA256": null,
+    "status": "available",
+    "blockReason": null,
+    "statusTransitions": [],
+    "generatedAt": null,
+    "expiresAt": null,
+    "publishedAt": null,
+    "keySetVersion": 1,
+    "keyID": null,
+    "rotationKeyID": null,
+    "publicKeyring": null
+  },
+  "signing": {
+    "developerIDIdentity": null,
+    "notaryProfilePrefix": "vela-core-notary"
+  },
+  "paths": {
+    "staging": "Release/Core/staging",
+    "output": "Release/Core/output"
+  },
+  "stopShipReason": "Production values are intentionally null until the reviewed compatibility report, fixed public HTTPS Core/Catalog endpoints, immutable prior-Catalog provenance when sequence exceeds one, independent Ed25519 public key/key ID, and Developer ID identity are provisioned. The repository creates scanned public staging plus a complete verified private evidence archive and a seven-day operational artifact copy; remote atomic publication, durable private evidence retention, and staging-client feed integration remain STOP-SHIP until reviewed provider-specific publishers and retention credentials exist."
+}

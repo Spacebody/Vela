@@ -1,0 +1,13 @@
+mode: rule
+log-level: warning
+dns:
+  enable: true
+  listen: 127.0.0.1:0
+  enhanced-mode: redir-host
+  nameserver:
+    - 1.0.0.1
+proxies: []
+proxy-groups:
+  - {name: VELA-COMPAT, type: select, proxies: [DIRECT]}
+rules:
+  - MATCH,VELA-COMPAT

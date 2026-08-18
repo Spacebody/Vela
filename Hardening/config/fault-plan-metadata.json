@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "planID": "48f952c8-725c-4bfa-9752-d316c532e93a",
+  "releaseAllowed": false,
+  "scenarios": [
+    { "id": "profile-atomic-replace-low-disk", "preconditions": ["synthetic profile store", "previous revision is valid"], "cleanupID": "profile.removeSyntheticCandidate", "evidence": ["transaction result", "profile store hashes", "cleanup result"], "timeoutSeconds": 30 },
+    { "id": "keychain-read-unavailable", "preconditions": ["synthetic Keychain backend", "no production Keychain service"], "cleanupID": "keychain.removeSyntheticItems", "evidence": ["stable result code", "synthetic Keychain inventory"], "timeoutSeconds": 30 },
+    { "id": "subscription-http-429", "preconditions": ["URLProtocol fixture", "existing active revision"], "cleanupID": "subscription.cancelFixtureTasks", "evidence": ["request count", "retry deadline", "stable result code"], "timeoutSeconds": 60 },
+    { "id": "controller-start-timeout", "preconditions": ["owned synthetic Core process", "System Proxy and TUN off"], "cleanupID": "engine.stopOwnedTestProcess", "evidence": ["owned process state", "transition result", "cleanup result"], "timeoutSeconds": 30 },
+    { "id": "connections-websocket-disconnect", "preconditions": ["fixture WebSocket transport", "Connections page visible"], "cleanupID": "connections.cancelFixtureStreams", "evidence": ["stream count", "retry schedule", "task count"], "timeoutSeconds": 60 },
+    { "id": "configuration-validation-rejected", "preconditions": ["synthetic candidate", "last known-good configuration"], "cleanupID": "configuration.removeSyntheticCandidate", "evidence": ["candidate hash", "active hash", "stable result code"], "timeoutSeconds": 60 },
+    { "id": "support-export-permission-denied", "preconditions": ["synthetic diagnostic snapshot", "test filesystem"], "cleanupID": "support.removeSyntheticStaging", "evidence": ["test filesystem inventory", "stable result code"], "timeoutSeconds": 30 },
+    { "id": "update-journal-interruption", "preconditions": ["synthetic update journal", "no live Sparkle install"], "cleanupID": "update.removeSyntheticJournal", "evidence": ["journal phase", "recovery result", "cleanup result"], "timeoutSeconds": 60 },
+    { "id": "core-probation-owned-exit", "preconditions": ["signed dedicated test build", "synthetic owned test Core", "cleanup preflight passed"], "cleanupID": "core.restoreSyntheticInitialState", "evidence": ["Core Store state", "owned process identity", "rollback result"], "timeoutSeconds": 120 },
+    { "id": "helper-rpc-timeout", "preconditions": ["mock Helper client", "no live root Helper call"], "cleanupID": "helper.cancelMockConnection", "evidence": ["request ID", "timeout result", "mutation gate state"], "timeoutSeconds": 30 },
+    { "id": "system-proxy-verification-mismatch", "preconditions": ["signed dedicated test build", "captured initial proxy state", "cleanup preflight passed"], "cleanupID": "network.restoreInitialState", "evidence": ["pre/post proxy snapshot", "rollback result", "cleanup result"], "timeoutSeconds": 180 },
+    { "id": "tun-controller-timeout", "preconditions": ["signed dedicated test build", "Helper identity verified", "captured routes and proxy state", "cleanup preflight passed"], "cleanupID": "network.restoreInitialState", "evidence": ["owned interface inventory", "route diff", "proxy diff", "cleanup result"], "timeoutSeconds": 300 }
+  ]
+}

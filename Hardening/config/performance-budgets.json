@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "calibration": {
+    "status": "pending",
+    "referenceEnvironmentID": null,
+    "approvedBy": null,
+    "approvedAt": null,
+    "evidencePath": null
+  },
+  "relativeRegression": {
+    "medianPercent": 15,
+    "p95Percent": 20,
+    "memoryHighWaterPercent": 15
+  },
+  "budgets": [
+    { "id": "launch.main.cold", "unit": "milliseconds", "measurement": "process start to first meaningful main-window render", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "launch.menu.warm", "unit": "milliseconds", "measurement": "warm launch to meaningful menu-bar state", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "idle.menu.cpu", "unit": "percentCPU", "measurement": "menu-bar-only idle on AC at nominal thermal state", "minimumSamples": 3, "durationSeconds": 1800, "approvedAbsoluteCeiling": null },
+    { "id": "idle.window.cpu", "unit": "percentCPU", "measurement": "main window open and inactive", "minimumSamples": 3, "durationSeconds": 1800, "approvedAbsoluteCeiling": null },
+    { "id": "idle.userBackend.cpu", "unit": "percentCPU", "measurement": "user Core active with benign fixture traffic", "minimumSamples": 3, "durationSeconds": 1800, "approvedAbsoluteCeiling": null },
+    { "id": "idle.tunBackend.cpu", "unit": "percentCPU", "measurement": "TUN active on a dedicated signed test machine", "minimumSamples": 3, "durationSeconds": 1800, "approvedAbsoluteCeiling": null },
+    { "id": "idle.helper.cpu", "unit": "percentCPU", "measurement": "installed Helper idle with no transition", "minimumSamples": 3, "durationSeconds": 1800, "approvedAbsoluteCeiling": null },
+    { "id": "connections.10k.apply", "unit": "milliseconds", "measurement": "decode and apply a synthetic 10k connection snapshot", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "rules.50k.filter", "unit": "milliseconds", "measurement": "decode and filter a synthetic 50k rule set", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "workbench.20MiB.compile", "unit": "milliseconds", "measurement": "compile a synthetic 20 MiB workbench document", "minimumSamples": 5, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "workbench.rules50k", "unit": "milliseconds", "measurement": "compile a synthetic 50k rule configuration", "minimumSamples": 5, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "subscription.update", "unit": "milliseconds", "measurement": "fixture download through atomic profile commit", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "systemProxy.toTun", "unit": "milliseconds", "measurement": "controlled backend transition on dedicated machine", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "support.export.maximum", "unit": "milliseconds", "measurement": "maximum bounded synthetic support export including redaction", "minimumSamples": 5, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "help.search", "unit": "milliseconds", "measurement": "offline Help query over bundled index", "minimumSamples": 20, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "update.recovery", "unit": "milliseconds", "measurement": "synthetic App update journal recovery", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "core.recovery", "unit": "milliseconds", "measurement": "synthetic Core activation recovery", "minimumSamples": 10, "durationSeconds": null, "approvedAbsoluteCeiling": null },
+    { "id": "soak.memorySlope8h", "unit": "megabytesPerHour", "measurement": "linear RSS slope after warm-up during an uninterrupted 8h run", "minimumSamples": 1, "durationSeconds": 28800, "approvedAbsoluteCeiling": null },
+    { "id": "soak.fileDescriptorDelta", "unit": "count", "measurement": "post-cleanup FD delta during an uninterrupted soak", "minimumSamples": 1, "durationSeconds": 28800, "approvedAbsoluteCeiling": null },
+    { "id": "idle.networkWakeups", "unit": "wakeupsPerMinute", "measurement": "network wakeups during offline and online idle windows", "minimumSamples": 3, "durationSeconds": 1800, "approvedAbsoluteCeiling": null }
+  ]
+}

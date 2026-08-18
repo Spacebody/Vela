@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/performance-budget.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "calibration", "relativeRegression", "budgets"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "referenceEnvironmentID", "approvedBy", "approvedAt", "evidencePath"],
+      "properties": {
+        "status": { "enum": ["pending", "approved"] },
+        "referenceEnvironmentID": { "type": ["string", "null"], "minLength": 1 },
+        "approvedBy": { "type": ["string", "null"], "minLength": 1 },
+        "approvedAt": { "type": ["string", "null"], "format": "date-time" },
+        "evidencePath": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+    "relativeRegression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["medianPercent", "p95Percent", "memoryHighWaterPercent"],
+      "properties": {
+        "medianPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "p95Percent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "memoryHighWaterPercent": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "budgets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "unit", "measurement", "minimumSamples", "approvedAbsoluteCeiling"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][A-Za-z0-9.]{1,95}$" },
+          "unit": { "enum": ["milliseconds", "percentCPU", "megabytes", "megabytesPerHour", "count", "wakeupsPerMinute"] },
+          "measurement": { "type": "string", "minLength": 1 },
+          "minimumSamples": { "type": "integer", "minimum": 1 },
+          "durationSeconds": { "type": ["integer", "null"], "minimum": 1 },
+          "approvedAbsoluteCeiling": { "type": ["number", "null"], "exclusiveMinimum": 0 }
+        }
+      }
+    }
+  }
+}

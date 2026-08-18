@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/schemas/visual-baseline-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "baselines"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "baselines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targetID",
+          "page",
+          "state",
+          "appearance",
+          "locale",
+          "width",
+          "height",
+          "inspector",
+          "captureBoundary",
+          "sha256",
+          "targetPath",
+          "authority",
+          "approval"
+        ],
+        "properties": {
+          "targetID": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "page": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "type": "string",
+            "minLength": 1
+          },
+          "appearance": {
+            "enum": [
+              "light",
+              "dark"
+            ]
+          },
+          "locale": {
+            "enum": [
+              "en",
+              "zh-Hans"
+            ]
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "inspector": {
+            "enum": [
+              "open",
+              "closed",
+              "na"
+            ]
+          },
+          "captureBoundary": {
+            "enum": [
+              "mainWindow",
+              "settingsWindow",
+              "menu",
+              "sheet"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "targetPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "currentPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maskPath": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "authority": {
+            "enum": [
+              "structural",
+              "proposed",
+              "approved"
+            ]
+          },
+          "approval": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "approvedBy",
+              "approvedAt"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "notRequiredForAudit",
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "approvedBy": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "approvedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            }
+          },
+          "thresholds": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "rawChangedPercent": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "structuralChangedPercent": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "structuralRMSE": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "source": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "allowedDynamicRegions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

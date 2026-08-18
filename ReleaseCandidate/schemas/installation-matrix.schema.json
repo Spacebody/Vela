@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "candidate", "cases", "decision", "blockers"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "build", "commit", "artifact"],
+      "properties": {
+        "version": { "type": ["string", "null"] },
+        "build": { "type": ["integer", "null"] },
+        "commit": { "type": ["string", "null"] },
+        "artifact": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/artifact" }
+          ]
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 58,
+      "maxItems": 58,
+      "items": { "$ref": "#/$defs/case" }
+    },
+    "decision": { "enum": ["go", "noGo"] },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "filename", "sha256", "size"],
+      "properties": {
+        "kind": { "const": "dmg" },
+        "filename": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "phase", "status", "evidence"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "phase": { "enum": ["cleanInstall", "upgrade", "repair", "uninstall", "downgrade"] },
+        "status": { "enum": ["passed", "pending", "failed", "blockedAbsentSurface"] },
+        "evidence": {
+          "type": "array",
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/evidence" }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

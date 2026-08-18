@@ -1,0 +1,8 @@
+mode: rule
+proxies:
+  - name: broken
+    type: definitely-not-a-proxy-protocol
+    server: 192.0.2.1
+    port: 443
+rules:
+  - MATCH,broken

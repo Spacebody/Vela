@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/performance-results.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "environmentID", "build", "metrics"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["unmeasured", "measured", "approvedBaseline"] },
+    "environmentID": { "type": ["string", "null"], "minLength": 1 },
+    "build": { "type": ["integer", "null"], "minimum": 1 },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["samples", "median", "p95", "unit", "evidencePath"],
+        "properties": {
+          "samples": { "type": "integer", "minimum": 1 },
+          "median": { "type": "number", "minimum": 0 },
+          "p95": { "type": "number", "minimum": 0 },
+          "unit": { "type": "string", "minLength": 1 },
+          "evidencePath": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "sourceLanguage": "en",
+  "targetLanguages": [
+    "zh-Hans"
+  ],
+  "terms": [
+    {
+      "id": "vela",
+      "en": "Vela",
+      "zh-Hans": "Vela",
+      "notes": "Never translate."
+    },
+    {
+      "id": "mihomo",
+      "en": "Mihomo",
+      "zh-Hans": "Mihomo",
+      "notes": "Core project name."
+    },
+    {
+      "id": "configuration",
+      "en": "Configuration",
+      "zh-Hans": "配置",
+      "notes": "User-facing profile."
+    },
+    {
+      "id": "proxy",
+      "en": "Proxy",
+      "zh-Hans": "代理节点",
+      "notes": "Use 代理 for the mechanism."
+    },
+    {
+      "id": "proxy-group",
+      "en": "Proxy Group",
+      "zh-Hans": "代理组",
+      "notes": ""
+    },
+    {
+      "id": "proxy-provider",
+      "en": "Proxy Provider",
+      "zh-Hans": "代理供应商",
+      "notes": ""
+    },
+    {
+      "id": "rule-provider",
+      "en": "Rule Provider",
+      "zh-Hans": "规则供应商",
+      "notes": ""
+    },
+    {
+      "id": "scene",
+      "en": "Scene",
+      "zh-Hans": "场景",
+      "notes": ""
+    },
+    {
+      "id": "workbench",
+      "en": "Configuration Workbench",
+      "zh-Hans": "配置工作台",
+      "notes": ""
+    },
+    {
+      "id": "privileged-component",
+      "en": "Privileged Component",
+      "zh-Hans": "特权组件",
+      "notes": "User-facing VelaHelper."
+    },
+    {
+      "id": "core",
+      "en": "Core",
+      "zh-Hans": "内核",
+      "notes": ""
+    },
+    {
+      "id": "factory-core",
+      "en": "Factory Core",
+      "zh-Hans": "内置内核",
+      "notes": ""
+    },
+    {
+      "id": "known-good-core",
+      "en": "Known Good Core",
+      "zh-Hans": "已验证内核",
+      "notes": ""
+    },
+    {
+      "id": "system-proxy",
+      "en": "System Proxy",
+      "zh-Hans": "系统代理",
+      "notes": ""
+    },
+    {
+      "id": "tun",
+      "en": "TUN",
+      "zh-Hans": "TUN",
+      "notes": "Never translate."
+    },
+    {
+      "id": "rule-mode",
+      "en": "Rule Mode",
+      "zh-Hans": "规则模式",
+      "notes": ""
+    },
+    {
+      "id": "global-mode",
+      "en": "Global Mode",
+      "zh-Hans": "全局模式",
+      "notes": ""
+    },
+    {
+      "id": "direct-mode",
+      "en": "Direct Mode",
+      "zh-Hans": "直连模式",
+      "notes": ""
+    },
+    {
+      "id": "diagnostics",
+      "en": "Diagnostics",
+      "zh-Hans": "诊断",
+      "notes": ""
+    },
+    {
+      "id": "support-bundle",
+      "en": "Support Bundle",
+      "zh-Hans": "支持包",
+      "notes": ""
+    }
+  ]
+}

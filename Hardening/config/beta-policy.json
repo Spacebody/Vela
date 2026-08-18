@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "privacy": {
+    "remoteAnalytics": false,
+    "automaticCrashUpload": false,
+    "automaticEvidenceUpload": false,
+    "cohortTracking": false,
+    "remoteFeatureFlags": false
+  },
+  "waves": [
+    { "id": "dogfood", "entry": ["source and architecture gates pass", "Debug and Release build", "no active S0/S1"], "exit": ["signed test build", "non-destructive self-tests", "24h soak", "App/Core/TUN recovery matrix"] },
+    { "id": "invite", "entry": ["dogfood exit", "private security contact", "support triage ready"], "exit": ["all historical migration fixtures", "no residue or recovery-loop pattern", "Beta update path verified"] },
+    { "id": "publicBeta", "entry": ["external audit Critical/High resolved", "72h soak", "public policies reviewed", "previous Stable available", "stop-ship drill"], "exit": ["stable candidate criteria reviewed"] },
+    { "id": "stable", "entry": ["feature freeze", "all Stop-Ship conditions clear", "signed/notarized artifact", "provenance verified"], "exit": ["release owner go decision"] }
+  ],
+  "severity": {
+    "S0": "Security, privilege, signature, trust, secret, or supply-chain compromise",
+    "S1": "Data loss, migration corruption, network residue, rollback failure, crash/recovery loop, or ownership/privacy failure",
+    "S2": "Major feature failure or substantial performance, energy, or accessibility regression with safe recovery",
+    "S3": "Minor isolated, recoverable UI, localization, documentation, or performance defect"
+  }
+}

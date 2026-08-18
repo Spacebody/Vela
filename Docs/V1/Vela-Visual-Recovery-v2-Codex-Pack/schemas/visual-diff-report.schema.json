@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/schemas/visual-diff-report.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "target",
+    "current",
+    "dimensions",
+    "raw",
+    "structural",
+    "mask",
+    "decision",
+    "reasons",
+    "humanReviewRequired"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "current",
+        "match"
+      ],
+      "properties": {
+        "target": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "current": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "match": {
+          "type": "boolean"
+        }
+      }
+    },
+    "raw": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "structural": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "mask": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "thresholds": {
+      "type": "object"
+    },
+    "decision": {
+      "enum": [
+        "pass",
+        "fail",
+        "review"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "humanReviewRequired": {
+      "const": true
+    }
+  }
+}

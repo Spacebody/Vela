@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/schemas/fixture-registry.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "fixedDate",
+    "fixedUUIDSeed",
+    "isolation",
+    "fixtures"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "fixedDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "fixedUUIDSeed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "isolation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationSupport",
+        "network",
+        "keychain",
+        "privilegedHelper",
+        "systemProxy",
+        "tun",
+        "subscriptions"
+      ],
+      "properties": {
+        "applicationSupport": {
+          "const": "temporaryPerProcess"
+        },
+        "network": {
+          "const": "disabled"
+        },
+        "keychain": {
+          "const": "disabled"
+        },
+        "privilegedHelper": {
+          "const": "disabled"
+        },
+        "systemProxy": {
+          "const": "disabled"
+        },
+        "tun": {
+          "const": "disabled"
+        },
+        "subscriptions": {
+          "const": "disabled"
+        }
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "page",
+          "state",
+          "sensitiveData",
+          "dataSource",
+          "liveServicesAllowed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "page": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sensitiveData": {
+            "type": "boolean"
+          },
+          "dataSource": {
+            "const": "deterministicInMemory"
+          },
+          "liveServicesAllowed": {
+            "const": false
+          },
+          "description": {
+            "type": "string"
+          },
+          "dataPath": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

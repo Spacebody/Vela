@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "feed": "https://updates.example.invalid/vela/appcast.xml",
+  "minimumMacOS": "15.0.0",
+  "hardware": "arm64",
+  "channels": [
+    "stable",
+    "beta"
+  ],
+  "retainStable": 3,
+  "retainBeta": 5,
+  "deltasEnabled": false
+}

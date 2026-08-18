@@ -1,0 +1,3 @@
+vmess://example-one
+ss://example-two
+trojan://example-three

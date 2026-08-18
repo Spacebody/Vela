@@ -1,0 +1,23 @@
+# Vela Beta release checklist
+
+- [ ] Exact signed tag and clean source
+- [ ] Architecture freeze generated; diff approved by matching ADR
+- [ ] No new privilege/network/secret/trust category without Security review
+- [ ] Unit, integration, UI, security, and VelaIPC tests pass
+- [ ] Release binary fault-control scan passes
+- [ ] Authentic historical migration matrix and idempotency pass
+- [ ] 24h Beta soak and cleanup pass
+- [ ] Approved comparable-machine performance/energy/resource budgets pass
+- [ ] Signed dedicated TUN/System Proxy/network/sleep/multi-user matrix passes
+- [ ] No owned PID, TUN, route, proxy, Task, FD, socket, or temporary residue
+- [ ] Evidence privacy scan and Support redaction fixtures pass
+- [ ] CodeQL, Dependency Review, secret scan, Action pin, SBOM/license review pass
+- [ ] External audit Critical/High findings verified
+- [ ] No unresolved S0/S1 or active Stop-Ship condition
+- [ ] Help/localization/accessibility regression passes
+- [ ] Developer ID signatures, Hardened Runtime, notarization, and staple pass
+- [ ] App/Core update, rollback, recovery, and previous Stable availability pass
+- [ ] Public policies/private Security channel/known issues/support are ready
+- [ ] Artifact, release manifest, SBOM, checksum, and provenance agree
+- [ ] Stop-Ship incident drill is current
+- [ ] Release and Security/Reliability owners record go/no-go

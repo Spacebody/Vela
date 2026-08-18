@@ -1,0 +1,401 @@
+{
+  "schemaVersion": 1,
+  "contentSchemaVersion": 1,
+  "sourceLanguage": "en",
+  "supportedLocales": [
+    "en",
+    "zh-Hans"
+  ],
+  "categories": [
+    {
+      "id": "getting-started",
+      "order": 10
+    },
+    {
+      "id": "networking",
+      "order": 20
+    },
+    {
+      "id": "configuration",
+      "order": 30
+    },
+    {
+      "id": "automation",
+      "order": 40
+    },
+    {
+      "id": "maintenance",
+      "order": 50
+    },
+    {
+      "id": "troubleshooting",
+      "order": 60
+    },
+    {
+      "id": "reference",
+      "order": 70
+    }
+  ],
+  "articles": [
+    {
+      "id": "getting-started",
+      "category": "getting-started",
+      "order": 10,
+      "related": [
+        "configurations-and-subscriptions",
+        "system-proxy-vs-tun",
+        "diagnostics-and-support"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/getting-started.md",
+          "title": "Getting Started",
+          "keywords": [
+            "start",
+            "first run",
+            "configuration",
+            "proxy"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/getting-started.md",
+          "title": "开始使用",
+          "keywords": [
+            "开始",
+            "首次使用",
+            "配置",
+            "代理"
+          ]
+        }
+      }
+    },
+    {
+      "id": "configurations-and-subscriptions",
+      "category": "getting-started",
+      "order": 20,
+      "related": [
+        "getting-started",
+        "configuration-workbench",
+        "troubleshooting-network"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/configurations-and-subscriptions.md",
+          "title": "Configurations and Subscriptions",
+          "keywords": [
+            "configuration",
+            "subscription",
+            "YAML",
+            "update"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/configurations-and-subscriptions.md",
+          "title": "配置与订阅",
+          "keywords": [
+            "配置",
+            "订阅",
+            "YAML",
+            "更新"
+          ]
+        }
+      }
+    },
+    {
+      "id": "system-proxy-vs-tun",
+      "category": "networking",
+      "order": 10,
+      "related": [
+        "getting-started",
+        "troubleshooting-network",
+        "connections-and-routing"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/system-proxy-vs-tun.md",
+          "title": "System Proxy and TUN",
+          "keywords": [
+            "system proxy",
+            "TUN",
+            "UDP",
+            "privileged"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/system-proxy-vs-tun.md",
+          "title": "系统代理与 TUN",
+          "keywords": [
+            "系统代理",
+            "TUN",
+            "UDP",
+            "特权组件"
+          ]
+        }
+      }
+    },
+    {
+      "id": "connections-and-routing",
+      "category": "networking",
+      "order": 20,
+      "related": [
+        "system-proxy-vs-tun",
+        "configuration-workbench",
+        "troubleshooting-network"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/connections-and-routing.md",
+          "title": "Connections and Routing Explanations",
+          "keywords": [
+            "connections",
+            "rule",
+            "routing",
+            "proxy chain"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/connections-and-routing.md",
+          "title": "连接与路由解释",
+          "keywords": [
+            "连接",
+            "规则",
+            "路由",
+            "代理链"
+          ]
+        }
+      }
+    },
+    {
+      "id": "scenes-and-automation",
+      "category": "automation",
+      "order": 10,
+      "related": [
+        "system-proxy-vs-tun",
+        "cli-and-shortcuts",
+        "configuration-workbench"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/scenes-and-automation.md",
+          "title": "Scenes and Automation",
+          "keywords": [
+            "scene",
+            "automation",
+            "Wi-Fi",
+            "battery",
+            "time"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/scenes-and-automation.md",
+          "title": "场景与自动化",
+          "keywords": [
+            "场景",
+            "自动化",
+            "Wi-Fi",
+            "电池",
+            "时间"
+          ]
+        }
+      }
+    },
+    {
+      "id": "configuration-workbench",
+      "category": "configuration",
+      "order": 10,
+      "related": [
+        "configurations-and-subscriptions",
+        "scenes-and-automation",
+        "connections-and-routing"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/configuration-workbench.md",
+          "title": "Configuration Workbench",
+          "keywords": [
+            "workbench",
+            "layer",
+            "diff",
+            "provenance",
+            "rules"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/configuration-workbench.md",
+          "title": "配置工作台",
+          "keywords": [
+            "配置工作台",
+            "层",
+            "差异",
+            "来源",
+            "规则"
+          ]
+        }
+      }
+    },
+    {
+      "id": "diagnostics-and-support",
+      "category": "troubleshooting",
+      "order": 10,
+      "related": [
+        "troubleshooting-network",
+        "privacy-and-security",
+        "app-and-core-updates"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/diagnostics-and-support.md",
+          "title": "Diagnostics and Support",
+          "keywords": [
+            "diagnostics",
+            "repair",
+            "support bundle",
+            "logs"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/diagnostics-and-support.md",
+          "title": "诊断与支持",
+          "keywords": [
+            "诊断",
+            "修复",
+            "支持包",
+            "日志"
+          ]
+        }
+      }
+    },
+    {
+      "id": "troubleshooting-network",
+      "category": "troubleshooting",
+      "order": 20,
+      "related": [
+        "system-proxy-vs-tun",
+        "diagnostics-and-support",
+        "configurations-and-subscriptions"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/troubleshooting-network.md",
+          "title": "Troubleshooting Network Problems",
+          "keywords": [
+            "offline",
+            "cannot connect",
+            "DNS",
+            "route",
+            "rollback"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/troubleshooting-network.md",
+          "title": "排查网络问题",
+          "keywords": [
+            "无法联网",
+            "DNS",
+            "路由",
+            "回滚"
+          ]
+        }
+      }
+    },
+    {
+      "id": "app-and-core-updates",
+      "category": "maintenance",
+      "order": 10,
+      "related": [
+        "diagnostics-and-support",
+        "privacy-and-security",
+        "getting-started"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/app-and-core-updates.md",
+          "title": "App and Core Updates",
+          "keywords": [
+            "app update",
+            "core update",
+            "rollback",
+            "factory core"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/app-and-core-updates.md",
+          "title": "应用与内核更新",
+          "keywords": [
+            "应用更新",
+            "内核更新",
+            "回滚",
+            "内置内核"
+          ]
+        }
+      }
+    },
+    {
+      "id": "cli-and-shortcuts",
+      "category": "automation",
+      "order": 20,
+      "related": [
+        "scenes-and-automation",
+        "privacy-and-security",
+        "diagnostics-and-support"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/cli-and-shortcuts.md",
+          "title": "CLI and Shortcuts",
+          "keywords": [
+            "CLI",
+            "Shortcuts",
+            "App Intents",
+            "automation",
+            "JSON"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/cli-and-shortcuts.md",
+          "title": "CLI 与快捷指令",
+          "keywords": [
+            "CLI",
+            "快捷指令",
+            "自动化",
+            "JSON"
+          ]
+        }
+      }
+    },
+    {
+      "id": "privacy-and-security",
+      "category": "reference",
+      "order": 10,
+      "related": [
+        "diagnostics-and-support",
+        "app-and-core-updates",
+        "scenes-and-automation"
+      ],
+      "locales": {
+        "en": {
+          "path": "en/privacy-and-security.md",
+          "title": "Privacy and Security",
+          "keywords": [
+            "privacy",
+            "security",
+            "Keychain",
+            "analytics",
+            "support"
+          ]
+        },
+        "zh-Hans": {
+          "path": "zh-Hans/privacy-and-security.md",
+          "title": "隐私与安全",
+          "keywords": [
+            "隐私",
+            "安全",
+            "钥匙串",
+            "统计",
+            "支持"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "targetVersion": "0.8.0",
+  "baselineCommit": "4586ed5e6c3ca820b8739ae98a543ff01111c063",
+  "sourceState": "dirtyImplementation",
+  "releaseReady": false,
+  "artifact": null,
+  "inScope": [
+    "Vela App",
+    "VelaHelper and its 19-method XPC surface",
+    "user and privileged Mihomo integration boundary",
+    "configuration and subscription pipeline",
+    "System Proxy and TUN state machines",
+    "Sparkle App update integration",
+    "signed Core lifecycle and catalog integration",
+    "local persistence and migration",
+    "offline Help and Support redaction/export",
+    "V0.8 local evidence, self-test, Safe Mode, and DEBUG-only fault framework"
+  ],
+  "explicitlyAbsent": [
+    "production CLI",
+    "production Automation Socket",
+    "production App Intents",
+    "production Scene Store",
+    "Network Extension",
+    "remote analytics",
+    "automatic crash/evidence upload",
+    "remote feature flags"
+  ],
+  "outOfScope": [
+    "upstream Mihomo internals except Vela's integration and trust boundary",
+    "Apple platform internals",
+    "third-party servers and configurations selected by users",
+    "release private-key custody systems"
+  ]
+}

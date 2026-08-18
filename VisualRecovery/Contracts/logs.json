@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "page": "logs",
+  "allowedPaths": [
+    "Vela/Features/Logs/**",
+    "Vela/Presentation/Logs/**",
+    "Vela/Core/Telemetry/TelemetryModels.swift",
+    "Vela/Core/Telemetry/LogBuffer.swift",
+    "Vela/Core/Controller/MihomoControllerSession.swift",
+    "Vela/Core/Privileged/PrivilegedStartupLogs.swift",
+    "Vela/Core/Engine/EngineStore.swift",
+    "VelaTests/Telemetry/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "logs.loading",
+    "logs.loaded",
+    "logs.empty",
+    "logs.refreshing",
+    "logs.pendingMutation",
+    "logs.partialFailure",
+    "logs.failure",
+    "logs.offline",
+    "logs.stale",
+    "logs.permissionRequired",
+    "logs.transitioning",
+    "logs.rollbackFailed"
+  ],
+  "requiredStates": [
+    "loading",
+    "loaded",
+    "empty",
+    "refreshing",
+    "pendingMutation",
+    "partialFailure",
+    "failure",
+    "offline",
+    "stale",
+    "permissionRequired",
+    "transitioning",
+    "rollbackFailed"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

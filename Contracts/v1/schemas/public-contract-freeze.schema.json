@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/contracts/v1/public-contract-freeze.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedBy",
+    "app",
+    "identifiers",
+    "protocols",
+    "cli",
+    "appIntents",
+    "schemas",
+    "trustRoots",
+    "helpTopics",
+    "configuration",
+    "userDefaults",
+    "keychain",
+    "urlSchemes",
+    "absentSurfaces",
+    "sources"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "generatedBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "const": "generate_project_contracts.py"
+        },
+        "version": {
+          "const": 1
+        }
+      }
+    },
+    "app": {
+      "type": "object"
+    },
+    "identifiers": {
+      "type": "object"
+    },
+    "protocols": {
+      "type": "object"
+    },
+    "cli": {
+      "type": "object"
+    },
+    "appIntents": {
+      "type": "object"
+    },
+    "schemas": {
+      "type": "object"
+    },
+    "trustRoots": {
+      "type": "array"
+    },
+    "helpTopics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "configuration": {
+      "type": "object"
+    },
+    "userDefaults": {
+      "type": "array"
+    },
+    "keychain": {
+      "type": "array"
+    },
+    "urlSchemes": {
+      "type": "array"
+    },
+    "absentSurfaces": {
+      "type": "array"
+    },
+    "sources": {
+      "type": "array"
+    }
+  }
+}

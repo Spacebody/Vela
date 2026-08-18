@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "event": {
+    "kind": "badFixture",
+    "subscriptionURL": "https://example.invalid/sub?token=fixture-secret",
+    "SSID": "Private Fixture WiFi",
+    "host": "private.example.invalid",
+    "processPath": "/Users/private/Private.app"
+  }
+}

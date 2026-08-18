@@ -1,0 +1,68 @@
+{
+  "downloadTotal": 987654,
+  "uploadTotal": 123456,
+  "memory": 67108864,
+  "connections": [
+    {
+      "id": "7ab97c02-0abf-4d56-81da-6db56be1e9bd",
+      "metadata": {
+        "network": "tcp",
+        "type": "HTTP",
+        "sourceIP": "127.0.0.1",
+        "destinationIP": "203.0.113.10",
+        "sourceGeoIP": [],
+        "destinationGeoIP": ["US"],
+        "sourceIPASN": "",
+        "destinationIPASN": "AS64500",
+        "sourcePort": "54321",
+        "destinationPort": "443",
+        "inboundIP": "127.0.0.1",
+        "inboundPort": "7890",
+        "inboundName": "MIXED-IN",
+        "inboundUser": "",
+        "rematchName": "",
+        "host": "api.example.com",
+        "dnsMode": "normal",
+        "uid": 501,
+        "process": "ExampleApp",
+        "processPath": "/Applications/ExampleApp.app/Contents/MacOS/ExampleApp",
+        "specialProxy": "",
+        "specialRules": "",
+        "remoteDestination": "203.0.113.10:443",
+        "dscp": 0,
+        "sniffHost": "api.example.com"
+      },
+      "upload": 4096,
+      "download": 8192,
+      "start": "2026-07-11T03:00:00.123456Z",
+      "chains": ["US-01", "PROXY"],
+      "providerChains": ["airport"],
+      "rule": "DomainSuffix",
+      "rulePayload": "example.com"
+    },
+    {
+      "id": "770193f7-ee6d-4f0a-870b-e3a8e12e16af",
+      "metadata": {
+        "network": "udp",
+        "type": "Socks5",
+        "sourceIP": "127.0.0.1",
+        "destinationIP": "1.1.1.1",
+        "sourcePort": 55001,
+        "destinationPort": 53,
+        "host": "",
+        "dnsMode": "normal",
+        "uid": 0,
+        "process": "",
+        "processPath": "",
+        "sniffHost": ""
+      },
+      "upload": 128,
+      "download": 256,
+      "start": "2026-07-11T03:01:00Z",
+      "chains": ["DIRECT"],
+      "providerChains": [],
+      "rule": "Match",
+      "rulePayload": ""
+    }
+  ]
+}

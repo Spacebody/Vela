@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "resultCode": "success",
+  "managedProcessCount": 0,
+  "ownedInterfaceCount": 0,
+  "systemProxyMatches": true,
+  "routeStateMatches": true,
+  "temporaryResourcesRemoved": true
+}

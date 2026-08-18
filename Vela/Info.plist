@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>NSAccentColorName</key>
+    <string>AccentColor</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2026 Vela contributors.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Vela uses Location permission to read the name of your current Wi-Fi network for Scene automation. It doesn't scan nearby networks or read BSSID information.</string>
+
+    <key>VelaReleaseChannel</key>
+    <string>$(VELA_RELEASE_CHANNEL)</string>
+    <key>VelaPrereleaseLabel</key>
+    <string>$(VELA_PRERELEASE_LABEL)</string>
+    <key>VelaReleaseManifestRequired</key>
+    <string>$(VELA_RELEASE_MANIFEST_REQUIRED)</string>
+    <key>VelaCoreCatalogURL</key>
+    <string>$(VELA_CORE_CATALOG_URL)</string>
+    <key>VelaCoreCatalogSignaturesURL</key>
+    <string>$(VELA_CORE_CATALOG_SIGNATURES_URL)</string>
+
+    <key>SUFeedURL</key>
+    <string>$(VELA_SPARKLE_FEED_URL)</string>
+    <key>SUPublicEDKey</key>
+    <string>$(VELA_SPARKLE_PUBLIC_KEY)</string>
+    <key>SUVerifyUpdateBeforeExtraction</key>
+    <true/>
+    <key>SURequireSignedFeed</key>
+    <true/>
+    <key>SUEnableJavaScript</key>
+    <false/>
+    <key>SUEnableSystemProfiling</key>
+    <false/>
+    <key>SUAllowedURLSchemes</key>
+    <array>
+        <string>https</string>
+    </array>
+    <key>SUAutomaticallyUpdate</key>
+    <false/>
+    <key>SUAllowsAutomaticUpdates</key>
+    <true/>
+    <key>SUScheduledCheckInterval</key>
+    <integer>86400</integer>
+</dict>
+</plist>

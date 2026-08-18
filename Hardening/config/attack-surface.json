@@ -1,0 +1,129 @@
+{
+  "architectureManifestSHA256": "78180377556e3b1dc243ba39c9849d11240d666da5117eda7a1f8b8f4f4d9a5d",
+  "dataStores": [
+    {
+      "id": "userApplicationSupport",
+      "owner": "logged-in user",
+      "pathTemplate": "~/Library/Application Support/dev.yilin.Vela"
+    },
+    {
+      "id": "rootRuntimeAndCoreStore",
+      "owner": "root",
+      "pathTemplate": "/Library/Application Support/dev.yilin.Vela/Privileged"
+    },
+    {
+      "id": "subscriptionKeychain",
+      "owner": "logged-in user",
+      "service": "dev.yilin.Vela.subscription"
+    }
+  ],
+  "explicitlyAbsent": [
+    "productionCLI",
+    "productionAutomationSocket",
+    "productionAppIntents",
+    "productionSceneStore",
+    "networkExtension",
+    "remoteAnalytics",
+    "automaticCrashUpload",
+    "remoteFeatureFlags"
+  ],
+  "externalInputs": [
+    {
+      "controls": [
+        "size limits",
+        "YAML validation",
+        "protected path policy",
+        "mihomo -t"
+      ],
+      "id": "profileAndSubscriptionContent",
+      "trust": "untrusted user/provider content"
+    },
+    {
+      "controls": [
+        "HTTPS",
+        "signed feed",
+        "EdDSA",
+        "code signing",
+        "notarization"
+      ],
+      "id": "appUpdate",
+      "readiness": "stopShipUntilProductionFeedAndKey",
+      "trust": "untrusted network, trusted only after Sparkle verification"
+    },
+    {
+      "controls": [
+        "HTTPS",
+        "signature",
+        "sequence",
+        "expiry",
+        "hash",
+        "code signing"
+      ],
+      "id": "coreCatalog",
+      "readiness": "stopShipUntilProductionEndpointsAndKeyring",
+      "trust": "untrusted network, trusted only after raw-byte Ed25519 verification"
+    },
+    {
+      "controls": [
+        "manifest hash",
+        "bounded parser",
+        "external-link policy"
+      ],
+      "id": "bundledHelpAndPolicy",
+      "trust": "signed bundle resource"
+    }
+  ],
+  "localInterfaces": [
+    {
+      "authentication": "Apple code signature, exact App identifier and Team",
+      "bounded": true,
+      "endpoint": "dev.yilin.Vela.Helper",
+      "id": "helperXPC",
+      "transport": "Mach/XPC"
+    },
+    {
+      "authentication": "session controller secret",
+      "bounded": true,
+      "endpoint": "ephemeral loopback port",
+      "id": "mihomoController",
+      "transport": "loopback HTTP/WebSocket"
+    }
+  ],
+  "privilegedOperations": [
+    "prepare/stage/commit/abort fixed-root configuration start",
+    "start/stop/lease/cleanup owned privileged mihomo",
+    "bounded startup log retrieval",
+    "prepare/stage/commit/abort fixed-role signed Core install",
+    "list/refresh/remove/validate signed Core records"
+  ],
+  "processes": [
+    {
+      "binary": "Vela",
+      "id": "app",
+      "uid": "logged-in user"
+    },
+    {
+      "binary": "VelaHelper",
+      "id": "helper",
+      "uid": "root"
+    },
+    {
+      "binary": "mihomo",
+      "id": "userCore",
+      "owner": "Vela",
+      "uid": "logged-in user"
+    },
+    {
+      "binary": "mihomo",
+      "id": "privilegedCore",
+      "owner": "VelaHelper",
+      "uid": "root"
+    },
+    {
+      "binary": "Sparkle services",
+      "id": "sparkle",
+      "uid": "logged-in user"
+    }
+  ],
+  "schemaVersion": 1
+}

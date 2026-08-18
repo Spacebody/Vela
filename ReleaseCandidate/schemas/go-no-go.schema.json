@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "candidate", "gates", "decision", "decisionReason", "approvals"],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "build", "commit"],
+      "properties": {
+        "version": { "type": ["string", "null"] },
+        "build": { "type": ["integer", "null"] },
+        "commit": { "type": ["string", "null"] }
+      }
+    },
+    "gates": { "type": "array", "minItems": 10, "maxItems": 10, "items": { "$ref": "#/$defs/gate" } },
+    "decision": { "enum": ["go", "noGo", "pending"] },
+    "decisionReason": { "type": "string", "minLength": 1 },
+    "approvals": { "type": "array", "items": { "$ref": "#/$defs/approval" } }
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "owner", "evidence"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "owner": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/reference" } }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "approver", "approvedAt", "candidateVersion", "candidateBuild", "candidateCommit", "artifactSHA256"],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "approver": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "candidateVersion": { "type": "string", "minLength": 5 },
+        "candidateBuild": { "type": "integer", "minimum": 1 },
+        "candidateCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "artifactSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

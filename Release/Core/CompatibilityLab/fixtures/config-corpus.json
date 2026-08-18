@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "valid": [
+    "configs/minimum.yaml",
+    "configs/proxy-protocols.yaml",
+    "configs/providers.yaml",
+    "configs/dns-fake-ip.yaml",
+    "configs/dns-redir-host.yaml",
+    "configs/sniffer.yaml",
+    "configs/rule-workbench.yaml",
+    "configs/scenes-layers.yaml",
+    "configs/general-fields.yaml"
+  ],
+  "invalid": [
+    "configs/invalid-proxy.yaml",
+    "configs/invalid-rule.yaml"
+  ],
+  "generated": [
+    {"id": "large-config", "ruleCount": 10000}
+  ],
+  "supportFiles": [
+    "configs/providers/proxies.yaml",
+    "configs/providers/rules.yaml"
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "limitations": [
+    {
+      "id": "apple-silicon-only",
+      "severity": "informational",
+      "title": "Apple Silicon only",
+      "description": "Vela V1 supports arm64 Apple Silicon Macs and does not ship an Intel or Universal binary.",
+      "impact": {
+        "security": "none",
+        "data": "none",
+        "network": "none"
+      },
+      "workaround": null,
+      "helpTopicID": "getting-started",
+      "owner": "Product",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "macos-15-minimum",
+      "severity": "informational",
+      "title": "macOS 15 or later",
+      "description": "Vela V1 requires macOS 15 or later.",
+      "impact": {
+        "security": "none",
+        "data": "none",
+        "network": "none"
+      },
+      "workaround": null,
+      "helpTopicID": "getting-started",
+      "owner": "Product",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "tun-vpn-interaction",
+      "severity": "low",
+      "title": "TUN can conflict with another active VPN",
+      "description": "Simultaneous network tunnels can compete for routes or DNS ownership depending on the other VPN configuration.",
+      "impact": {
+        "security": "none",
+        "data": "none",
+        "network": "limited"
+      },
+      "workaround": "Stop the other VPN before enabling Vela TUN, or use Vela System Proxy mode.",
+      "helpTopicID": "system-proxy-vs-tun",
+      "owner": "Reliability",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "complete-mihomo-yaml-only",
+      "severity": "low",
+      "title": "Subscriptions must provide complete Mihomo YAML",
+      "description": "Vela does not convert provider-specific or partial subscription formats into a complete Mihomo configuration.",
+      "impact": {
+        "security": "none",
+        "data": "none",
+        "network": "limited"
+      },
+      "workaround": "Import a complete Mihomo YAML document from a trusted source.",
+      "helpTopicID": "configurations-and-subscriptions",
+      "owner": "Product",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "no-automatic-app-downgrade",
+      "severity": "informational",
+      "title": "No automatic App downgrade",
+      "description": "Vela does not silently install an older App over a newer data schema.",
+      "impact": {
+        "security": "none",
+        "data": "limited",
+        "network": "none"
+      },
+      "workaround": "Use the documented backup, export, last known-good official installer, and recovery flow before a manual downgrade.",
+      "helpTopicID": "app-and-core-updates",
+      "owner": "Release",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "factory-core-pinned",
+      "severity": "informational",
+      "title": "Factory Core is pinned to Mihomo v1.19.29",
+      "description": "The immutable Factory fallback remains Mihomo v1.19.29 for the V1 release line.",
+      "impact": {
+        "security": "none",
+        "data": "none",
+        "network": "none"
+      },
+      "workaround": "Use a compatible, unblocked Core supplied through the signed Vela Core Catalog when one is available.",
+      "helpTopicID": "app-and-core-updates",
+      "owner": "Release",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "ssid-location-permission",
+      "severity": "informational",
+      "title": "SSID automatic Scenes are not enabled in this RC",
+      "description": "This RC does not enable production Scenes or perform SSID matching. The Location usage description is reserved for the gated SSID path and does not mean that path is active.",
+      "impact": {
+        "security": "none",
+        "data": "none",
+        "network": "none"
+      },
+      "workaround": null,
+      "helpTopicID": "scenes-and-automation",
+      "owner": "Privacy",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "no-automatic-diagnostic-upload",
+      "severity": "informational",
+      "title": "Diagnostics are not uploaded automatically",
+      "description": "Vela keeps crash and support evidence local until the user explicitly exports and shares a redacted Support Bundle.",
+      "impact": {
+        "security": "none",
+        "data": "none",
+        "network": "none"
+      },
+      "workaround": null,
+      "helpTopicID": "diagnostics-and-support",
+      "owner": "Support",
+      "targetVersion": null,
+      "stopShip": false
+    },
+    {
+      "id": "beta-rc-prerelease-risk",
+      "severity": "low",
+      "title": "Beta and RC builds are prerelease software",
+      "description": "A Beta or RC may contain unresolved non-Stop-Ship regressions and receives best-effort support.",
+      "impact": {
+        "security": "none",
+        "data": "limited",
+        "network": "limited"
+      },
+      "workaround": "Keep a current backup and, if available, retain your last known-good official installer; use Stable for production-critical networking.",
+      "helpTopicID": "app-and-core-updates",
+      "owner": "Release",
+      "targetVersion": "1.0.0",
+      "stopShip": false
+    }
+  ]
+}

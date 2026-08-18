@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "profile": "mihomo-v1.19.28",
+  "rest": {
+    "/configs": {"requiredKeys": ["mode"], "type": "object"},
+    "/connections": {"requiredKeys": ["connections"], "type": "object"},
+    "/providers/proxies": {"requiredKeys": ["providers"], "type": "object"},
+    "/providers/rules": {"requiredKeys": ["providers"], "type": "object"},
+    "/proxies": {"requiredKeys": ["proxies"], "type": "object"},
+    "/rules": {"requiredKeys": ["rules"], "type": "object"},
+    "/version": {"requiredKeys": ["version"], "type": "object"}
+  },
+  "webSockets": {
+    "/connections": {"frame": "json-object"},
+    "/logs": {"frame": "json-object"},
+    "/traffic": {"frame": "json-object"}
+  }
+}

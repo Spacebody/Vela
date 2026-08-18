@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "activeCoreID": "factory:v1.19.28",
+  "previousKnownGoodCoreID": null,
+  "pinnedCoreID": null,
+  "highestCatalogSequence": 1,
+  "lastCatalogSHA256": "479a667d8b63b2b5d6a65d0d61e390bc10bdc40c055f78a86961d7ddc1bb22d6",
+  "installed": []
+}

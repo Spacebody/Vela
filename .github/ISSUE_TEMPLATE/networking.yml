@@ -1,0 +1,75 @@
+name: System Proxy, TUN, or recovery issue
+description: Report a networking transition or cleanup failure without private network data.
+title: "[Network] "
+labels: ["networking", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        A failure that leaves TUN, routes, System Proxy, or networking unusable after rollback
+        may be S1. Do not run killall, delete an unknown utun/route, or publish private network
+        state. Security vulnerabilities must use the private Security contact link.
+  - type: input
+    id: version
+    attributes:
+      label: Vela version, build, and channel
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: macOS version/build and Apple Silicon category
+      description: Omit serial number, account name, SSID, IP, and domain.
+    validations:
+      required: true
+  - type: dropdown
+    id: transition
+    attributes:
+      label: Operation
+      options: ["System Proxy start/stop", "TUN start/stop", "System Proxy to TUN", "TUN to System Proxy", "Sleep/wake", "Network offline/online", "App/Helper/Core recovery"]
+    validations:
+      required: true
+  - type: input
+    id: components
+    attributes:
+      label: Core ID/version and Helper protocol/version
+    validations:
+      required: true
+  - type: textarea
+    id: initial_state
+    attributes:
+      label: Initial and desired state
+      description: Use categories only; do not paste route tables or proxy host details.
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Steps and observed state
+    validations:
+      required: true
+  - type: input
+    id: reproducibility
+    attributes:
+      label: Reproducibility and regression range
+    validations:
+      required: true
+  - type: textarea
+    id: cleanup
+    attributes:
+      label: Rollback and cleanup result
+      description: Did Vela restore the prior mode, owned routes/interfaces, and System Proxy? Is networking usable?
+    validations:
+      required: true
+  - type: input
+    id: stable_code
+    attributes:
+      label: Stable result code/crash signature and Support Bundle ID
+      description: Do not paste raw logs, crashes, routes, or a bundle.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I removed credentials, private host/IP/domain/SSID, node/profile names, raw configuration, and unreviewed logs.
+          required: true

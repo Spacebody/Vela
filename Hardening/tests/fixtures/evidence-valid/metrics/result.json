@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "resultCode": "success",
+  "durationMilliseconds": 42,
+  "resourceSummary": {
+    "rssKB": 1024,
+    "threadCount": 4,
+    "fileDescriptorCount": 8,
+    "socketCount": 0
+  }
+}

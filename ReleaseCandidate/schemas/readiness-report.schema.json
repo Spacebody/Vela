@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "candidate", "decision", "gates", "migration", "audit", "knownLimitations", "blockers"],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "build", "commit"],
+      "properties": {
+        "version": { "type": "string", "minLength": 5 },
+        "build": { "type": "integer", "minimum": 1 },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "decision": { "enum": ["go", "noGo", "pending"] },
+    "gates": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "enum": ["stopShip", "contracts", "migration", "securityAudit", "soak", "performance", "accessibilityPrivacy", "installation", "artifact", "supportIncident"] },
+          "status": { "enum": ["pass", "fail", "pending", "unknown"] }
+        }
+      }
+    },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "sources", "stores"],
+      "properties": {
+        "decision": { "enum": ["go", "noGo"] },
+        "sources": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8"],
+          "properties": {
+            "0.1": { "$ref": "#/$defs/migrationStatus" },
+            "0.2": { "$ref": "#/$defs/migrationStatus" },
+            "0.3": { "$ref": "#/$defs/migrationStatus" },
+            "0.4": { "$ref": "#/$defs/migrationStatus" },
+            "0.5": { "$ref": "#/$defs/migrationStatus" },
+            "0.6": { "$ref": "#/$defs/migrationStatus" },
+            "0.7": { "$ref": "#/$defs/migrationStatus" },
+            "0.8": { "$ref": "#/$defs/migrationStatus" }
+          }
+        },
+        "stores": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileMetadata",
+            "localRawConfigurations",
+            "remoteRawConfigurations",
+            "profileRevisions",
+            "configurationOverrides",
+            "configurationLayers",
+            "ruleLayers",
+            "scenes",
+            "ssidSecretReferences",
+            "appSettings",
+            "helperSettings",
+            "appUpdateStore",
+            "appUpdateJournal",
+            "userCoreStore",
+            "rootCoreStore",
+            "rootCoreInstallJournal",
+            "rootRuntimeJournal",
+            "cliInstallMetadata",
+            "onboardingState",
+            "helpState",
+            "reliabilityEvidence"
+          ],
+          "properties": {
+            "profileMetadata": { "$ref": "#/$defs/storeStatus" },
+            "localRawConfigurations": { "$ref": "#/$defs/storeStatus" },
+            "remoteRawConfigurations": { "$ref": "#/$defs/storeStatus" },
+            "profileRevisions": { "$ref": "#/$defs/storeStatus" },
+            "configurationOverrides": { "$ref": "#/$defs/storeStatus" },
+            "configurationLayers": { "$ref": "#/$defs/storeStatus" },
+            "ruleLayers": { "$ref": "#/$defs/storeStatus" },
+            "scenes": { "$ref": "#/$defs/storeStatus" },
+            "ssidSecretReferences": { "$ref": "#/$defs/storeStatus" },
+            "appSettings": { "$ref": "#/$defs/storeStatus" },
+            "helperSettings": { "$ref": "#/$defs/storeStatus" },
+            "appUpdateStore": { "$ref": "#/$defs/storeStatus" },
+            "appUpdateJournal": { "$ref": "#/$defs/storeStatus" },
+            "userCoreStore": { "$ref": "#/$defs/storeStatus" },
+            "rootCoreStore": { "$ref": "#/$defs/storeStatus" },
+            "rootCoreInstallJournal": { "$ref": "#/$defs/storeStatus" },
+            "rootRuntimeJournal": { "$ref": "#/$defs/storeStatus" },
+            "cliInstallMetadata": { "$ref": "#/$defs/storeStatus" },
+            "onboardingState": { "$ref": "#/$defs/storeStatus" },
+            "helpState": { "$ref": "#/$defs/storeStatus" },
+            "reliabilityEvidence": { "$ref": "#/$defs/storeStatus" }
+          }
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "criticalHighOpenCount"],
+      "properties": {
+        "decision": { "enum": ["go", "noGo"] },
+        "criticalHighOpenCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "knownLimitations": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" }, "uniqueItems": true },
+    "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+  },
+  "$defs": {
+    "migrationStatus": {
+      "enum": ["passed", "pending", "failed", "blockedMissingHistoricalFixture"]
+    },
+    "storeStatus": {
+      "enum": ["passed", "pending", "failed", "blockedAbsentSurface"]
+    }
+  }
+}

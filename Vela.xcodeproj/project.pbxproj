@@ -1,0 +1,1321 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000003 /* Yams */; };
+		B20000000000000000000002 /* manifest.json in Embed Mihomo Metadata */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* manifest.json */; };
+		B20000000000000000000003 /* LICENSE in Embed Mihomo Metadata */ = {isa = PBXBuildFile; fileRef = B20000000000000000000013 /* LICENSE */; };
+		B20000000000000000000004 /* NOTICE.md in Embed Mihomo Metadata */ = {isa = PBXBuildFile; fileRef = B20000000000000000000014 /* NOTICE.md */; };
+		C30000000000000000000006 /* VelaHelper in Embed Privileged Helper */ = {isa = PBXBuildFile; fileRef = C30000000000000000000011 /* VelaHelper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		C30000000000000000000007 /* dev.yilin.Vela.Helper.plist in Embed LaunchDaemon */ = {isa = PBXBuildFile; fileRef = C30000000000000000000013 /* dev.yilin.Vela.Helper.plist */; };
+		C43C04743003214B00936665 /* VelaIPC in Frameworks */ = {isa = PBXBuildFile; productRef = C30000000000000000000061 /* VelaIPC */; };
+		C43C04753003214B00936665 /* VelaIPC in Frameworks */ = {isa = PBXBuildFile; productRef = C30000000000000000000062 /* VelaIPC */; };
+		C43C04763003214B00936665 /* VelaPrivilegedCore in Frameworks */ = {isa = PBXBuildFile; productRef = C30000000000000000000063 /* VelaPrivilegedCore */; };
+		C43C04773003214B00936665 /* VelaIPC in Frameworks */ = {isa = PBXBuildFile; productRef = C30000000000000000000064 /* VelaIPC */; };
+		C43C04783003214B00936665 /* VelaPrivilegedCore in Frameworks */ = {isa = PBXBuildFile; productRef = C30000000000000000000065 /* VelaPrivilegedCore */; };
+		D30000000000000000000001 /* VelaIPC in Frameworks */ = {isa = PBXBuildFile; productRef = D30000000000000000000061 /* VelaIPC */; };
+		D30000000000000000000002 /* VelaPrivilegedCore in Frameworks */ = {isa = PBXBuildFile; productRef = D30000000000000000000062 /* VelaPrivilegedCore */; };
+		E30000000000000000000001 /* VelaIPC in Frameworks */ = {isa = PBXBuildFile; productRef = E30000000000000000000061 /* VelaIPC */; };
+		F50000000000000000000001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F50000000000000000000003 /* Sparkle */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C43C05EB3003214B00936665 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C43CF9F33001FF9700936665 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C30000000000000000000040;
+			remoteInfo = VelaHelper;
+		};
+		C43C05EC3003214B00936665 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C43CF9F33001FF9700936665 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C30000000000000000000040;
+			remoteInfo = VelaHelper;
+		};
+		C43CFA093001FF9A00936665 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C43CF9F33001FF9700936665 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C43CF9FA3001FF9700936665;
+			remoteInfo = Vela;
+		};
+		C43CFA133001FF9A00936665 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C43CF9F33001FF9700936665 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C43CF9FA3001FF9700936665;
+			remoteInfo = Vela;
+		};
+		D30000000000000000000041 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C43CF9F33001FF9700936665 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C43CF9FA3001FF9700936665;
+			remoteInfo = Vela;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B20000000000000000000032 /* Embed Mihomo Metadata */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = ThirdParty/Mihomo;
+			dstSubfolderSpec = 7;
+			files = (
+				B20000000000000000000002 /* manifest.json in Embed Mihomo Metadata */,
+				B20000000000000000000003 /* LICENSE in Embed Mihomo Metadata */,
+				B20000000000000000000004 /* NOTICE.md in Embed Mihomo Metadata */,
+			);
+			name = "Embed Mihomo Metadata";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C30000000000000000000035 /* Embed Privileged Helper */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchServices;
+			dstSubfolderSpec = 1;
+			files = (
+				C30000000000000000000006 /* VelaHelper in Embed Privileged Helper */,
+			);
+			name = "Embed Privileged Helper";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C30000000000000000000036 /* Embed LaunchDaemon */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchDaemons;
+			dstSubfolderSpec = 1;
+			files = (
+				C30000000000000000000007 /* dev.yilin.Vela.Helper.plist in Embed LaunchDaemon */,
+			);
+			name = "Embed LaunchDaemon";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B20000000000000000000011 /* bin/mihomo */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = bin/mihomo; sourceTree = "<group>"; };
+		B20000000000000000000012 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		B20000000000000000000013 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		B20000000000000000000014 /* NOTICE.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTICE.md; sourceTree = "<group>"; };
+		C30000000000000000000011 /* VelaHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VelaHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		C30000000000000000000012 /* VelaHelperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VelaHelperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C30000000000000000000013 /* dev.yilin.Vela.Helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = dev.yilin.Vela.Helper.plist; sourceTree = "<group>"; };
+		C43CF9FB3001FF9700936665 /* Vela.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vela.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C43CFA083001FF9A00936665 /* VelaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VelaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C43CFA123001FF9A00936665 /* VelaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VelaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D30000000000000000000011 /* VelaPrivilegedIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VelaPrivilegedIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F50000000000000000000004 /* Exceptions for "Vela" folder in "Vela" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				Resources/Help/.DS_Store,
+				"Resources/Help/article-hashes.json",
+				"Resources/Help/en/app-and-core-updates.md",
+				"Resources/Help/en/cli-and-shortcuts.md",
+				"Resources/Help/en/configuration-workbench.md",
+				"Resources/Help/en/configurations-and-subscriptions.md",
+				"Resources/Help/en/connections-and-routing.md",
+				"Resources/Help/en/diagnostics-and-support.md",
+				"Resources/Help/en/getting-started.md",
+				"Resources/Help/en/privacy-and-security.md",
+				"Resources/Help/en/scenes-and-automation.md",
+				"Resources/Help/en/system-proxy-vs-tun.md",
+				"Resources/Help/en/troubleshooting-network.md",
+				"Resources/Help/help-index.json",
+				"Resources/Help/search-index-en.json",
+				"Resources/Help/search-index-zh-Hans.json",
+				"Resources/Help/zh-Hans/app-and-core-updates.md",
+				"Resources/Help/zh-Hans/cli-and-shortcuts.md",
+				"Resources/Help/zh-Hans/configuration-workbench.md",
+				"Resources/Help/zh-Hans/configurations-and-subscriptions.md",
+				"Resources/Help/zh-Hans/connections-and-routing.md",
+				"Resources/Help/zh-Hans/diagnostics-and-support.md",
+				"Resources/Help/zh-Hans/getting-started.md",
+				"Resources/Help/zh-Hans/privacy-and-security.md",
+				"Resources/Help/zh-Hans/scenes-and-automation.md",
+				"Resources/Help/zh-Hans/system-proxy-vs-tun.md",
+				"Resources/Help/zh-Hans/troubleshooting-network.md",
+				Resources/Localization/terminology.json,
+				Resources/Policies/.DS_Store,
+				Resources/Policies/en/ACCESSIBILITY.md,
+				Resources/Policies/en/PRIVACY.md,
+				Resources/Policies/en/SECURITY.md,
+				Resources/Policies/en/SUPPORT.md,
+				"Resources/Policies/zh-Hans/ACCESSIBILITY.md",
+				"Resources/Policies/zh-Hans/PRIVACY.md",
+				"Resources/Policies/zh-Hans/SECURITY.md",
+				"Resources/Policies/zh-Hans/SUPPORT.md",
+				Resources/ReleaseCandidate/baseline.json,
+				"Resources/ReleaseCandidate/known-limitations.json",
+				"Resources/ReleaseCandidate/public-contract-freeze.json",
+				"Resources/Schemas/documentation-manifest.schema.json",
+				"Resources/Schemas/help-index.schema.json",
+				"Resources/Schemas/onboarding-progress.schema.json",
+				"Resources/Schemas/support-bundle-manifest.schema.json",
+			);
+			target = C43CF9FA3001FF9700936665 /* Vela */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A90000000000000000000020 /* VelaVisualHarness */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VelaVisualHarness;
+			sourceTree = "<group>";
+		};
+		C30000000000000000000020 /* VelaHelper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VelaHelper;
+			sourceTree = "<group>";
+		};
+		C30000000000000000000021 /* VelaHelperTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VelaHelperTests;
+			sourceTree = "<group>";
+		};
+		C43CF9FD3001FF9700936665 /* Vela */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F50000000000000000000004 /* Exceptions for "Vela" folder in "Vela" target */,
+			);
+			path = Vela;
+			sourceTree = "<group>";
+		};
+		C43CFA0B3001FF9A00936665 /* VelaTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VelaTests;
+			sourceTree = "<group>";
+		};
+		C43CFA153001FF9A00936665 /* VelaUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VelaUITests;
+			sourceTree = "<group>";
+		};
+		D30000000000000000000020 /* VelaPrivilegedIntegrationTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VelaPrivilegedIntegrationTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C30000000000000000000031 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C43C04763003214B00936665 /* VelaPrivilegedCore in Frameworks */,
+				C43C04753003214B00936665 /* VelaIPC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C30000000000000000000033 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C43C04783003214B00936665 /* VelaPrivilegedCore in Frameworks */,
+				C43C04773003214B00936665 /* VelaIPC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CF9F83001FF9700936665 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F50000000000000000000001 /* Sparkle in Frameworks */,
+				C43C04743003214B00936665 /* VelaIPC in Frameworks */,
+				A10000000000000000000001 /* Yams in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CFA053001FF9A00936665 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E30000000000000000000001 /* VelaIPC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CFA0F3001FF9A00936665 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D30000000000000000000031 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D30000000000000000000001 /* VelaIPC in Frameworks */,
+				D30000000000000000000002 /* VelaPrivilegedCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B20000000000000000000020 /* Mihomo Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000012 /* manifest.json */,
+				B20000000000000000000013 /* LICENSE */,
+				B20000000000000000000014 /* NOTICE.md */,
+				B20000000000000000000011 /* bin/mihomo */,
+			);
+			name = "Mihomo Vendor";
+			path = Vendor/Mihomo;
+			sourceTree = "<group>";
+		};
+		C30000000000000000000022 /* Privileged Support */ = {
+			isa = PBXGroup;
+			children = (
+				C30000000000000000000013 /* dev.yilin.Vela.Helper.plist */,
+			);
+			name = "Privileged Support";
+			path = Configuration/Privileged;
+			sourceTree = "<group>";
+		};
+		C43CF9F23001FF9700936665 = {
+			isa = PBXGroup;
+			children = (
+				C43CF9FD3001FF9700936665 /* Vela */,
+				A90000000000000000000020 /* VelaVisualHarness */,
+				C43CFA0B3001FF9A00936665 /* VelaTests */,
+				C43CFA153001FF9A00936665 /* VelaUITests */,
+				C30000000000000000000020 /* VelaHelper */,
+				C30000000000000000000021 /* VelaHelperTests */,
+				D30000000000000000000020 /* VelaPrivilegedIntegrationTests */,
+				C30000000000000000000022 /* Privileged Support */,
+				B20000000000000000000020 /* Mihomo Vendor */,
+				C43CF9FC3001FF9700936665 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C43CF9FC3001FF9700936665 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C43CF9FB3001FF9700936665 /* Vela.app */,
+				C43CFA083001FF9A00936665 /* VelaTests.xctest */,
+				C43CFA123001FF9A00936665 /* VelaUITests.xctest */,
+				C30000000000000000000011 /* VelaHelper */,
+				C30000000000000000000012 /* VelaHelperTests.xctest */,
+				D30000000000000000000011 /* VelaPrivilegedIntegrationTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C30000000000000000000040 /* VelaHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C30000000000000000000052 /* Build configuration list for PBXNativeTarget "VelaHelper" */;
+			buildPhases = (
+				C30000000000000000000030 /* Sources */,
+				C30000000000000000000031 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C30000000000000000000020 /* VelaHelper */,
+			);
+			name = VelaHelper;
+			packageProductDependencies = (
+				C30000000000000000000062 /* VelaIPC */,
+				C30000000000000000000063 /* VelaPrivilegedCore */,
+			);
+			productName = VelaHelper;
+			productReference = C30000000000000000000011 /* VelaHelper */;
+			productType = "com.apple.product-type.tool";
+		};
+		C30000000000000000000041 /* VelaHelperTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C30000000000000000000055 /* Build configuration list for PBXNativeTarget "VelaHelperTests" */;
+			buildPhases = (
+				C30000000000000000000032 /* Sources */,
+				C30000000000000000000033 /* Frameworks */,
+				C30000000000000000000034 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C30000000000000000000045 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C30000000000000000000021 /* VelaHelperTests */,
+			);
+			name = VelaHelperTests;
+			packageProductDependencies = (
+				C30000000000000000000064 /* VelaIPC */,
+				C30000000000000000000065 /* VelaPrivilegedCore */,
+			);
+			productName = VelaHelperTests;
+			productReference = C30000000000000000000012 /* VelaHelperTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C43CF9FA3001FF9700936665 /* Vela */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C43CFA1C3001FF9A00936665 /* Build configuration list for PBXNativeTarget "Vela" */;
+			buildPhases = (
+				B20000000000000000000030 /* Verify Mihomo Core */,
+				C43CF9F73001FF9700936665 /* Sources */,
+				C43CF9F83001FF9700936665 /* Frameworks */,
+				C43CF9F93001FF9700936665 /* Resources */,
+				F70000000000000000000001 /* Embed V0.7 Hierarchical Resources */,
+				F50000000000000000000005 /* Embed Release Resources */,
+				B20000000000000000000032 /* Embed Mihomo Metadata */,
+				B20000000000000000000031 /* Embed and Sign Mihomo Core */,
+				C30000000000000000000035 /* Embed Privileged Helper */,
+				C30000000000000000000036 /* Embed LaunchDaemon */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C30000000000000000000043 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A90000000000000000000020 /* VelaVisualHarness */,
+				C43CF9FD3001FF9700936665 /* Vela */,
+			);
+			name = Vela;
+			packageProductDependencies = (
+				A10000000000000000000003 /* Yams */,
+				F50000000000000000000003 /* Sparkle */,
+				C30000000000000000000061 /* VelaIPC */,
+			);
+			productName = Vela;
+			productReference = C43CF9FB3001FF9700936665 /* Vela.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C43CFA073001FF9A00936665 /* VelaTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C43CFA1F3001FF9A00936665 /* Build configuration list for PBXNativeTarget "VelaTests" */;
+			buildPhases = (
+				C43CFA043001FF9A00936665 /* Sources */,
+				C43CFA053001FF9A00936665 /* Frameworks */,
+				C43CFA063001FF9A00936665 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C43CFA0A3001FF9A00936665 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C43CFA0B3001FF9A00936665 /* VelaTests */,
+			);
+			name = VelaTests;
+			packageProductDependencies = (
+				E30000000000000000000061 /* VelaIPC */,
+			);
+			productName = VelaTests;
+			productReference = C43CFA083001FF9A00936665 /* VelaTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C43CFA113001FF9A00936665 /* VelaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C43CFA223001FF9A00936665 /* Build configuration list for PBXNativeTarget "VelaUITests" */;
+			buildPhases = (
+				C43CFA0E3001FF9A00936665 /* Sources */,
+				C43CFA0F3001FF9A00936665 /* Frameworks */,
+				C43CFA103001FF9A00936665 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C43CFA143001FF9A00936665 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C43CFA153001FF9A00936665 /* VelaUITests */,
+			);
+			name = VelaUITests;
+			packageProductDependencies = (
+			);
+			productName = VelaUITests;
+			productReference = C43CFA123001FF9A00936665 /* VelaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		D30000000000000000000040 /* VelaPrivilegedIntegrationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C43C0F963003297E00936665 /* Build configuration list for PBXNativeTarget "VelaPrivilegedIntegrationTests" */;
+			buildPhases = (
+				D30000000000000000000030 /* Sources */,
+				D30000000000000000000031 /* Frameworks */,
+				D30000000000000000000032 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D30000000000000000000042 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D30000000000000000000020 /* VelaPrivilegedIntegrationTests */,
+			);
+			name = VelaPrivilegedIntegrationTests;
+			packageProductDependencies = (
+				D30000000000000000000061 /* VelaIPC */,
+				D30000000000000000000062 /* VelaPrivilegedCore */,
+			);
+			productName = VelaPrivilegedIntegrationTests;
+			productReference = D30000000000000000000011 /* VelaPrivilegedIntegrationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C43CF9F33001FF9700936665 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					C30000000000000000000040 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					C30000000000000000000041 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					C43CF9FA3001FF9700936665 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					C43CFA073001FF9A00936665 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = C43CF9FA3001FF9700936665;
+					};
+					C43CFA113001FF9A00936665 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = C43CF9FA3001FF9700936665;
+					};
+					D30000000000000000000040 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = C43CF9FA3001FF9700936665;
+					};
+				};
+			};
+			buildConfigurationList = C43CF9F63001FF9700936665 /* Build configuration list for PBXProject "Vela" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = C43CF9F23001FF9700936665;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A10000000000000000000002 /* XCRemoteSwiftPackageReference "Yams" */,
+				F50000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C43CF9FC3001FF9700936665 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C43CF9FA3001FF9700936665 /* Vela */,
+				C43CFA073001FF9A00936665 /* VelaTests */,
+				C43CFA113001FF9A00936665 /* VelaUITests */,
+				C30000000000000000000040 /* VelaHelper */,
+				C30000000000000000000041 /* VelaHelperTests */,
+				D30000000000000000000040 /* VelaPrivilegedIntegrationTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C30000000000000000000034 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CF9F93001FF9700936665 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CFA063001FF9A00936665 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CFA103001FF9A00936665 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D30000000000000000000032 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B20000000000000000000030 /* Verify Mihomo Core */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Scripts/Mihomo/verify-mihomo.sh",
+				"$(SRCROOT)/Vendor/Mihomo/manifest.json",
+				"$(SRCROOT)/Vendor/Mihomo/cache/mihomo-darwin-arm64-v1.19.29.gz",
+				"$(SRCROOT)/Vendor/Mihomo/bin/mihomo",
+				"$(SRCROOT)/Vendor/Mihomo/LICENSE",
+				"$(SRCROOT)/Vendor/Mihomo/NOTICE.md",
+			);
+			name = "Verify Mihomo Core";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "\"${SRCROOT}/Scripts/Mihomo/verify-mihomo.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B20000000000000000000031 /* Embed and Sign Mihomo Core */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Scripts/Mihomo/sign-embedded-mihomo.sh",
+				"$(SRCROOT)/Vendor/Mihomo/bin/mihomo",
+			);
+			name = "Embed and Sign Mihomo Core";
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Helpers/mihomo",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "\"${SRCROOT}/Scripts/Mihomo/sign-embedded-mihomo.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F50000000000000000000005 /* Embed Release Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Release/scripts/embed_release_resources.py",
+				"$(SRCROOT)/Release/scripts/verify_release_manifest.py",
+				"$(SRCROOT)/Release/THIRD_PARTY_NOTICES.md",
+				"$(SRCROOT)/Release/licenses/Sparkle-2.9.4-LICENSE.txt",
+				"$(SRCROOT)/Release/licenses/Yams-6.2.2-LICENSE.txt",
+				"$(VELA_RELEASE_MANIFEST_PATH)",
+			);
+			name = "Embed Release Resources";
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/VelaReleaseManifest.json",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/ThirdParty/Sparkle/LICENSE",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/ThirdParty/Yams/LICENSE",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/ThirdParty/THIRD_PARTY_NOTICES.md",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "\"${SRCROOT}/Release/scripts/embed_release_resources.py\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F70000000000000000000001 /* Embed V0.7 Hierarchical Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"$(SRCROOT)/Release/config/v07-resource-inputs.xcfilelist",
+			);
+			inputPaths = (
+				"$(SRCROOT)/Release/scripts/embed_v07_resources.py",
+			);
+			name = "Embed V0.7 Hierarchical Resources";
+			outputFileListPaths = (
+				"$(SRCROOT)/Release/config/v07-resource-outputs.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "/usr/bin/python3 \"${SRCROOT}/Release/scripts/embed_v07_resources.py\" --input-list \"${SRCROOT}/Release/config/v07-resource-inputs.xcfilelist\" --output-list \"${SRCROOT}/Release/config/v07-resource-outputs.xcfilelist\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C30000000000000000000030 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C30000000000000000000032 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CF9F73001FF9700936665 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CFA043001FF9A00936665 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C43CFA0E3001FF9A00936665 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D30000000000000000000030 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C30000000000000000000043 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C30000000000000000000040 /* VelaHelper */;
+			targetProxy = C43C05EB3003214B00936665 /* PBXContainerItemProxy */;
+		};
+		C30000000000000000000045 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C30000000000000000000040 /* VelaHelper */;
+			targetProxy = C43C05EC3003214B00936665 /* PBXContainerItemProxy */;
+		};
+		C43CFA0A3001FF9A00936665 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C43CF9FA3001FF9700936665 /* Vela */;
+			targetProxy = C43CFA093001FF9A00936665 /* PBXContainerItemProxy */;
+		};
+		C43CFA143001FF9A00936665 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C43CF9FA3001FF9700936665 /* Vela */;
+			targetProxy = C43CFA133001FF9A00936665 /* PBXContainerItemProxy */;
+		};
+		D30000000000000000000042 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C43CF9FA3001FF9700936665 /* Vela */;
+			targetProxy = D30000000000000000000041 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C30000000000000000000050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.Vela.Helper;
+				PRODUCT_NAME = VelaHelper;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		C30000000000000000000051 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_CODE_COVERAGE = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.Vela.Helper;
+				PRODUCT_NAME = VelaHelper;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		C30000000000000000000053 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.Vela.HelperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		C30000000000000000000054 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_CODE_COVERAGE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.Vela.HelperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		C43C0F923003296F00936665 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.Vela.PrivilegedIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vela.app/Contents/MacOS/Vela";
+				TEST_TARGET_NAME = Vela;
+			};
+			name = Debug;
+		};
+		C43C0F933003296F00936665 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_CODE_COVERAGE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.Vela.PrivilegedIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vela.app/Contents/MacOS/Vela";
+				TEST_TARGET_NAME = Vela;
+			};
+			name = Release;
+		};
+		C43CFA1A3001FF9A00936665 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+			};
+			name = Debug;
+		};
+		C43CFA1B3001FF9A00936665 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
+			};
+			name = Release;
+		};
+		C43CFA1D3001FF9A00936665 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Vela/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(VELA_APP_BUNDLE_IDENTIFIER)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				VELA_APP_BUNDLE_IDENTIFIER = dev.yilin.Vela;
+				VELA_CORE_CATALOG_SIGNATURES_URL = "";
+				VELA_CORE_CATALOG_URL = "";
+				VELA_PRERELEASE_LABEL = "RC Development";
+				VELA_RELEASE_CHANNEL = beta;
+				VELA_RELEASE_MANIFEST_REQUIRED = NO;
+				VELA_SPARKLE_FEED_URL = "https://updates.example.invalid/vela/appcast.xml";
+				VELA_SPARKLE_PUBLIC_KEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+			};
+			name = Debug;
+		};
+		C43CFA1E3001FF9A00936665 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_CODE_COVERAGE = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = "Visual*.swift";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Vela/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.Vela;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				VELA_CORE_CATALOG_SIGNATURES_URL = "";
+				VELA_CORE_CATALOG_URL = "";
+				VELA_PRERELEASE_LABEL = "RC 1";
+				VELA_RELEASE_CHANNEL = beta;
+				VELA_RELEASE_MANIFEST_REQUIRED = NO;
+			};
+			name = Release;
+		};
+		C43CFA203001FF9A00936665 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.VelaTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vela.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vela";
+			};
+			name = Debug;
+		};
+		C43CFA213001FF9A00936665 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.VelaTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vela.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vela";
+			};
+			name = Release;
+		};
+		C43CFA233001FF9A00936665 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.VelaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = Vela;
+			};
+			name = Debug;
+		};
+		C43CFA243001FF9A00936665 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2026071403;
+				DEVELOPMENT_TEAM = 2E56T94S33;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yilin.VelaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = Vela;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C30000000000000000000052 /* Build configuration list for PBXNativeTarget "VelaHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C30000000000000000000050 /* Debug */,
+				C30000000000000000000051 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C30000000000000000000055 /* Build configuration list for PBXNativeTarget "VelaHelperTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C30000000000000000000053 /* Debug */,
+				C30000000000000000000054 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C43C0F963003297E00936665 /* Build configuration list for PBXNativeTarget "VelaPrivilegedIntegrationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C43C0F923003296F00936665 /* Debug */,
+				C43C0F933003296F00936665 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C43CF9F63001FF9700936665 /* Build configuration list for PBXProject "Vela" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C43CFA1A3001FF9A00936665 /* Debug */,
+				C43CFA1B3001FF9A00936665 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C43CFA1C3001FF9A00936665 /* Build configuration list for PBXNativeTarget "Vela" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C43CFA1D3001FF9A00936665 /* Debug */,
+				C43CFA1E3001FF9A00936665 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C43CFA1F3001FF9A00936665 /* Build configuration list for PBXNativeTarget "VelaTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C43CFA203001FF9A00936665 /* Debug */,
+				C43CFA213001FF9A00936665 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C43CFA223001FF9A00936665 /* Build configuration list for PBXNativeTarget "VelaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C43CFA233001FF9A00936665 /* Debug */,
+				C43CFA243001FF9A00936665 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = VelaIPC;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A10000000000000000000002 /* XCRemoteSwiftPackageReference "Yams" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jpsim/Yams.git";
+			requirement = {
+				kind = exactVersion;
+				version = 6.2.2;
+			};
+		};
+		F50000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = exactVersion;
+				version = 2.9.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000003 /* Yams */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000000000000000000002 /* XCRemoteSwiftPackageReference "Yams" */;
+			productName = Yams;
+		};
+		C30000000000000000000061 /* VelaIPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaIPC;
+		};
+		C30000000000000000000062 /* VelaIPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaIPC;
+		};
+		C30000000000000000000063 /* VelaPrivilegedCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaPrivilegedCore;
+		};
+		C30000000000000000000064 /* VelaIPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaIPC;
+		};
+		C30000000000000000000065 /* VelaPrivilegedCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaPrivilegedCore;
+		};
+		D30000000000000000000061 /* VelaIPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaIPC;
+		};
+		D30000000000000000000062 /* VelaPrivilegedCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaPrivilegedCore;
+		};
+		E30000000000000000000061 /* VelaIPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000000000000000000060 /* XCLocalSwiftPackageReference "VelaIPC" */;
+			productName = VelaIPC;
+		};
+		F50000000000000000000003 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F50000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C43CF9F33001FF9700936665 /* Project object */;
+}

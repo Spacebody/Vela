@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "helperProtocol": {
+    "minimum": 2,
+    "maximum": 2
+  },
+  "automationProtocol": null,
+  "cliProtocol": null,
+  "schemas": {
+    "rootData": 3,
+    "profile": 2,
+    "configuration": 1,
+    "scene": null,
+    "updateJournal": 1
+  },
+  "components": {
+    "mihomo": "v1.19.29",
+    "sparkle": "2.9.4",
+    "helper": "0.6.0",
+    "cli": null
+  },
+  "notes": [
+    "Null values are intentional stop-ship markers until the production V0.4 CLI, Automation Socket, and SceneStore are present.",
+    "Do not replace these markers with fixture values that are not implemented by the application."
+  ]
+}

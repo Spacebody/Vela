@@ -1,0 +1,61 @@
+{
+  "providers": {
+    "Provider A": {
+      "name": "Provider A",
+      "type": "Proxy",
+      "vehicleType": "HTTP",
+      "proxies": [
+        {
+          "name": "Shared Node",
+          "type": "Trojan",
+          "alive": true,
+          "history": [
+            {"time": "2026-07-11T08:00:00Z", "delay": 42}
+          ]
+        },
+        {
+          "name": "Provider Only",
+          "type": "Shadowsocks",
+          "alive": true
+        },
+        {
+          "name": "Node / 中文?#%",
+          "type": "VLESS",
+          "alive": false
+        }
+      ],
+      "testUrl": "https://provider-a.example/generate_204",
+      "expectedStatus": "200/204",
+      "updatedAt": "2026-07-11T08:00:00Z",
+      "subscriptionInfo": {
+        "Upload": 1,
+        "Download": 2,
+        "Total": 3,
+        "Expire": 4
+      }
+    },
+    "Provider B": {
+      "name": "Provider B",
+      "type": "Proxy",
+      "vehicleType": "File",
+      "proxies": [
+        {
+          "name": "Shared Node",
+          "type": "WireGuard",
+          "alive": true
+        },
+        {
+          "name": "Provider B Only",
+          "type": "Hysteria2",
+          "alive": true
+        }
+      ],
+      "testUrl": "https://provider-b.example/generate_204",
+      "expectedStatus": "204"
+    },
+    "Partial Provider": {
+      "proxies": []
+    }
+  },
+  "futureTopLevelField": true
+}

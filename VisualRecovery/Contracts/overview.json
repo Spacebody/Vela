@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "page": "overview",
+  "allowedPaths": [
+    "Vela/Features/Overview/**",
+    "Vela/Presentation/Overview/**",
+    "VelaTests/Overview/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "overview.loading",
+    "overview.loadedHealthy",
+    "overview.empty",
+    "overview.refreshing",
+    "overview.pendingMutation",
+    "overview.partialFailure",
+    "overview.failure",
+    "overview.offlineNoConfiguration",
+    "overview.stale",
+    "overview.permissionRequired",
+    "overview.transitioning"
+  ],
+  "requiredStates": [
+    "loading",
+    "loaded",
+    "empty",
+    "refreshing",
+    "pendingMutation",
+    "partialFailure",
+    "failure",
+    "offline",
+    "stale",
+    "permissionRequired",
+    "transitioning"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

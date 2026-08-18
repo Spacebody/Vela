@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/schemas/documentation-manifest.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "appVersion",
+    "appBuild",
+    "locales",
+    "articles",
+    "policies"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "appVersion": {
+      "type": "string"
+    },
+    "appBuild": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "locales": {
+      "const": [
+        "en",
+        "zh-Hans"
+      ]
+    },
+    "articles": {
+      "type": "array"
+    },
+    "policies": {
+      "type": "array"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "machineID": "41a53f59-f311-4688-91ad-4fbf8f004ca7",
+  "dedicated": true,
+  "hardwareCategory": "Apple Silicon dedicated test category",
+  "memoryGB": 16,
+  "macOSBuild": "test-build",
+  "architecture": "arm64",
+  "power": "AC",
+  "thermalState": "nominal",
+  "userType": "admin",
+  "capabilities": ["signedBuild", "installedHelper", "tun", "systemProxy"],
+  "signedBuildVerified": true,
+  "syntheticDataOnly": true,
+  "cleanupPreflightPassed": true,
+  "serialNumberCollected": false,
+  "realUserNameCollected": false
+}

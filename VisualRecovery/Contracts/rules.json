@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "page": "rules",
+  "allowedPaths": [
+    "Vela/Features/Rules/**",
+    "Vela/Presentation/Rules/**",
+    "VelaTests/Rules/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "rules.loading",
+    "rules.loaded",
+    "rules.empty",
+    "rules.refreshing",
+    "rules.pendingMutation",
+    "rules.partialFailure",
+    "rules.failure",
+    "rules.stale",
+    "rules.transitioning"
+  ],
+  "requiredStates": [
+    "loading",
+    "loaded",
+    "empty",
+    "refreshing",
+    "pendingMutation",
+    "partialFailure",
+    "failure",
+    "stale",
+    "transitioning"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

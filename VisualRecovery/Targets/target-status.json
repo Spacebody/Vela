@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "status": "targetApprovalPending",
+  "approvedTargetCount": 0,
+  "pages": [
+    "overview",
+    "proxies",
+    "connections",
+    "rules",
+    "profiles",
+    "providers",
+    "scenes",
+    "workbench",
+    "diagnostics",
+    "logs",
+    "settings",
+    "tunFlow",
+    "menuBar",
+    "updateCoreRecovery",
+    "helpSupport"
+  ],
+  "reason": "The supplied poster and page crops are structural-only. No target image has human approval metadata, so they must not be used as pixel-accuracy baselines.",
+  "requiredBeforeApproval": [
+    "target image at the declared window, appearance, locale, state, and inspector configuration",
+    "target SHA-256",
+    "approvedBy",
+    "approvedAt",
+    "per-target thresholds",
+    "allowed dynamic regions",
+    "human visual review"
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/contracts/v1/contract-change-adr.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "adrID",
+    "status",
+    "issueID",
+    "changeClass",
+    "firstAffectedVersion",
+    "summary",
+    "contractBinding",
+    "changes",
+    "compatibility",
+    "migrationAndRollback",
+    "securityAndPrivacy",
+    "tests",
+    "approvals"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "adrID": {
+      "type": "string",
+      "minLength": 3
+    },
+    "status": {
+      "const": "accepted"
+    },
+    "issueID": {
+      "type": "string",
+      "minLength": 3
+    },
+    "changeClass": {
+      "enum": [
+        "securityFix",
+        "dataIntegrityFix",
+        "crashFix",
+        "reliabilityFix",
+        "performanceFix",
+        "accessibilityFix",
+        "localizationOrDocumentation",
+        "releaseEngineering"
+      ]
+    },
+    "firstAffectedVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 12
+    },
+    "contractBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baselineCanonicalSHA256",
+        "currentCanonicalSHA256"
+      ],
+      "properties": {
+        "baselineCanonicalSHA256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "currentCanonicalSHA256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "classification",
+          "breaking",
+          "rationale",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 2,
+            "pattern": "^/"
+          },
+          "classification": {
+            "enum": [
+              "compatibleAddition",
+              "semanticCorrection",
+              "securityProvisioning",
+              "bugFix",
+              "schemaVersionedChange"
+            ]
+          },
+          "breaking": {
+            "type": "boolean"
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 12
+          },
+          "before": {},
+          "after": {}
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cli",
+        "appIntents",
+        "helper",
+        "automation",
+        "dataMigration",
+        "appUpdate",
+        "coreUpdate",
+        "documentation"
+      ],
+      "properties": {
+        "cli": { "$ref": "#/$defs/meaningfulText" },
+        "appIntents": { "$ref": "#/$defs/meaningfulText" },
+        "helper": { "$ref": "#/$defs/meaningfulText" },
+        "automation": { "$ref": "#/$defs/meaningfulText" },
+        "dataMigration": { "$ref": "#/$defs/meaningfulText" },
+        "appUpdate": { "$ref": "#/$defs/meaningfulText" },
+        "coreUpdate": { "$ref": "#/$defs/meaningfulText" },
+        "documentation": { "$ref": "#/$defs/meaningfulText" }
+      }
+    },
+    "migrationAndRollback": {
+      "type": "string",
+      "minLength": 12
+    },
+    "securityAndPrivacy": {
+      "type": "string",
+      "minLength": 12
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 8
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "releaseOwner",
+        "securityOwner",
+        "productOwner"
+      ],
+      "properties": {
+        "releaseOwner": { "$ref": "#/$defs/approval" },
+        "securityOwner": { "$ref": "#/$defs/approval" },
+        "productOwner": { "$ref": "#/$defs/approval" }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "meaningfulText": {
+      "type": "string",
+      "minLength": 3
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvedBy",
+        "approvedAt"
+      ],
+      "properties": {
+        "approvedBy": {
+          "type": "string",
+          "minLength": 3
+        },
+        "approvedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

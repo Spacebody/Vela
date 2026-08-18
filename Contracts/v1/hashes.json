@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "appIntentRegistry": "app-intent-registry.json",
+  "appIntentRegistrySHA256": "0e5229fae5ef595f85b5554d6dc8d413520fd03f93e3b49ca75f953d79a95ea0",
+  "canonicalization": "UTF-8 JSON; sorted keys; no insignificant whitespace",
+  "publicContract": "public-contract-freeze.json",
+  "publicContractSHA256": "9547780ead2cd169510d67e8981bb93ced503555d65d8c8805a8d4090d6289e5",
+  "schemaVersion": 1
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "catalogSHA256": "370af0f31eda7fc2b323012f9abc0e250f85924c442f3972b352b7bb260388ac",
+  "signatures": [
+    {
+      "keyID": "TEST-ONLY-core-catalog-2026-a",
+      "algorithm": "ed25519",
+      "signature": "us0wQvl+JTjmUwmDDmxnad+h/ZO/Sc2Qqwxw9AbhERbQkPheBceQhJbpLU+nWFsK54SRy57M2r0McWlBqm+uCg=="
+    }
+  ]
+}

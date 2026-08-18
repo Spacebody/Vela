@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/audit-finding.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "severity", "status", "title", "scope", "description", "evidence", "owner", "targetBuild", "riskAcceptance"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^VELA-AUDIT-[0-9]{3,}$" },
+    "severity": { "enum": ["critical", "high", "medium", "low", "informational"] },
+    "status": { "enum": ["open", "fixInProgress", "fixedPendingVerification", "verified", "riskAccepted", "duplicate", "outOfScope"] },
+    "title": { "type": "string", "minLength": 1 },
+    "scope": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "owner": { "type": "string", "minLength": 1 },
+    "targetBuild": { "type": ["integer", "null"], "minimum": 1 },
+    "riskAcceptance": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["rationale", "expiresAt", "securityOwner", "releaseOwner"],
+      "properties": {
+        "rationale": { "type": "string", "minLength": 1 },
+        "expiresAt": { "type": "string", "format": "date" },
+        "securityOwner": { "type": "string", "minLength": 1 },
+        "releaseOwner": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

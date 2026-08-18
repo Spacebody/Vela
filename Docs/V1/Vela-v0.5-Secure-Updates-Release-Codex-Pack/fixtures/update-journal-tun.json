@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "updateID": "C9D36153-0E0C-4D06-B664-0B6AA99996BD",
+  "source": {
+    "version": "0.4.0",
+    "build": 2026063001
+  },
+  "target": {
+    "version": "0.5.0",
+    "build": 2026071209
+  },
+  "phase": "readyForInstaller",
+  "snapshot": {
+    "profileID": "6C489A3E-AAC7-476C-843D-FA8206BCA965",
+    "profileRevisionID": "34B9A390-21D4-4C9B-86BA-F0BC6F6209D6",
+    "sceneID": "3119147D-749D-4CA5-B41F-527671F66C0F",
+    "backend": "tun",
+    "systemProxyDesired": false,
+    "mihomoMode": "rule",
+    "automaticScenesEnabled": true,
+    "helperVersion": "0.4.0",
+    "helperProtocol": 1,
+    "configurationGenerationID": "64631296-215D-401D-AD83-9F65904C182B",
+    "proxySelections": [
+      {
+        "groupID": "runtime:PROXY",
+        "proxyID": "provider:airport:US-01"
+      }
+    ]
+  },
+  "startedAt": "2026-07-12T12:00:00Z",
+  "lastUpdatedAt": "2026-07-12T12:00:15Z",
+  "failure": null,
+  "recoveryAttempts": 0
+}

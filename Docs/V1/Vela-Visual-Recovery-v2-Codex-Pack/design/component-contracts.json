@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {
+      "id": "VelaStatusPill",
+      "states": [
+        "neutral",
+        "info",
+        "success",
+        "warning",
+        "error",
+        "pending",
+        "stale"
+      ],
+      "mustUseSemanticStatus": true
+    },
+    {
+      "id": "VelaMetricCard",
+      "variants": [
+        "compact",
+        "regular"
+      ],
+      "minimumHeight": 82
+    },
+    {
+      "id": "VelaStateBanner",
+      "states": [
+        "info",
+        "warning",
+        "error",
+        "recovery",
+        "permission",
+        "stale"
+      ]
+    },
+    {
+      "id": "VelaEmptyState",
+      "requirements": [
+        "title",
+        "detail",
+        "optionalPrimaryAction",
+        "optionalSecondaryAction"
+      ]
+    },
+    {
+      "id": "VelaInspectorSection",
+      "requirements": [
+        "title",
+        "content",
+        "consistentSpacing"
+      ]
+    },
+    {
+      "id": "VelaLoadingState",
+      "requirements": [
+        "preserveOldContentWhenRefreshing",
+        "scopeMutationDisablement"
+      ]
+    },
+    {
+      "id": "VelaTrafficSparkline",
+      "requirements": [
+        "boundedPoints",
+        "textSummary",
+        "VoiceOver",
+        "reducedMotion"
+      ]
+    },
+    {
+      "id": "VelaLatencyBadge",
+      "states": [
+        "unknown",
+        "testing",
+        "good",
+        "medium",
+        "slow",
+        "failed"
+      ]
+    },
+    {
+      "id": "VelaSensitiveText",
+      "requirements": [
+        "redactedByDefault",
+        "explicitReveal",
+        "copyRequiresAction"
+      ]
+    },
+    {
+      "id": "VelaConfirmationSheet",
+      "requirements": [
+        "impact",
+        "recovery",
+        "specificPrimaryAction"
+      ]
+    },
+    {
+      "id": "VelaResultSummary",
+      "requirements": [
+        "perItemResult",
+        "retryFailures",
+        "noAlertStorm"
+      ]
+    },
+    {
+      "id": "VelaCodeEditor",
+      "technology": "Narrow AppKit NSTextView wrapper only",
+      "requirements": [
+        "largeDocument",
+        "lineNumbers",
+        "search",
+        "selection",
+        "accessibleTitle"
+      ]
+    }
+  ]
+}

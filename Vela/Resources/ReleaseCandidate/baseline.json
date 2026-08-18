@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "marketingVersion": "1.0.0",
+  "platform": {
+    "minimumMacOS": "15.0",
+    "architectures": [
+      "arm64"
+    ]
+  },
+  "components": {
+    "mihomo": "v1.19.29",
+    "sparkle": "2.9.4"
+  },
+  "publicContractSHA256": "9547780ead2cd169510d67e8981bb93ced503555d65d8c8805a8d4090d6289e5",
+  "publicContractFileSHA256": "f7af0386d3c9360e231e5d797b44d0eae71ad8e69384b7969b00ccd4613884c4",
+  "architectureFreezeSHA256": "78180377556e3b1dc243ba39c9849d11240d666da5117eda7a1f8b8f4f4d9a5d",
+  "dataSchemaVersion": 3,
+  "helperProtocol": {
+    "minimum": 2,
+    "maximum": 2
+  },
+  "automationProtocol": null,
+  "publicContractResource": "public-contract-freeze.json",
+  "knownLimitationsResource": "known-limitations.json"
+}

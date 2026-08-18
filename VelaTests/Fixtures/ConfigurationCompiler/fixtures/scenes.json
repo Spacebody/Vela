@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "scenes": [
+    {
+      "schemaVersion": 1,
+      "id": "3119147D-749D-4CA5-B41F-527671F66C0F",
+      "name": "Work",
+      "enabled": true,
+      "priority": 50,
+      "backend": "tun",
+      "profileID": "6C489A3E-AAC7-476C-843D-FA8206BCA965",
+      "configurationLayerID": "60E9D209-D11B-4536-B4AB-178505047E0A",
+      "triggerGroups": [
+        {
+          "id": "348D0F68-76E9-4984-AF4B-C1B5A42F4630",
+          "triggers": [
+            {
+              "kind": "networkInterface",
+              "value": "wifi"
+            },
+            {
+              "kind": "wifiSSID",
+              "secretReference": "scene/3119147D/ssid",
+              "displayLabel": "Work Wi-Fi"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "4A926B2A-9D73-4333-96A9-A4755FEE519D",
+      "name": "Mobile Hotspot",
+      "enabled": true,
+      "priority": 30,
+      "backend": "systemProxy",
+      "profileID": null,
+      "configurationLayerID": null,
+      "triggerGroups": [
+        {
+          "id": "8D6B65F3-7063-471B-93D5-2DE01A427EA3",
+          "triggers": [
+            {
+              "kind": "networkExpensive",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

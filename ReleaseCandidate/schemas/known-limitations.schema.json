@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "version", "limitations"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/limitation" }
+    }
+  },
+  "$defs": {
+    "impact": { "enum": ["none", "limited", "material"] },
+    "limitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "severity", "title", "description", "impact", "workaround", "helpTopicID", "owner", "targetVersion", "stopShip"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "severity": { "enum": ["informational", "low", "medium"] },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "impact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["security", "data", "network"],
+          "properties": {
+            "security": { "$ref": "#/$defs/impact" },
+            "data": { "$ref": "#/$defs/impact" },
+            "network": { "$ref": "#/$defs/impact" }
+          }
+        },
+        "workaround": { "type": ["string", "null"] },
+        "helpTopicID": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "minLength": 1 },
+        "targetVersion": { "type": ["string", "null"] },
+        "stopShip": { "const": false }
+      }
+    }
+  }
+}

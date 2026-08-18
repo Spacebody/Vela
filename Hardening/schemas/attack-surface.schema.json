@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/attack-surface.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "architectureManifestSHA256",
+    "processes",
+    "localInterfaces",
+    "externalInputs",
+    "privilegedOperations",
+    "dataStores",
+    "explicitlyAbsent"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "architectureManifestSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "processes": { "$ref": "#/$defs/objectArray" },
+    "localInterfaces": { "$ref": "#/$defs/objectArray" },
+    "externalInputs": { "$ref": "#/$defs/objectArray" },
+    "privilegedOperations": { "$ref": "#/$defs/stringSet" },
+    "dataStores": { "$ref": "#/$defs/objectArray" },
+    "explicitlyAbsent": { "$ref": "#/$defs/stringSet" }
+  },
+  "$defs": {
+    "objectArray": { "type": "array", "items": { "type": "object" } },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

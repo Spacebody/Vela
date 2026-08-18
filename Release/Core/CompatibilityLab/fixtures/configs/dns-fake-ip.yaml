@@ -1,0 +1,16 @@
+mode: rule
+log-level: warning
+dns:
+  enable: true
+  listen: 127.0.0.1:0
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+  nameserver:
+    - 1.1.1.1
+proxies: []
+proxy-groups:
+  - {name: VELA-COMPAT, type: select, proxies: [DIRECT]}
+rules:
+  - MATCH,VELA-COMPAT

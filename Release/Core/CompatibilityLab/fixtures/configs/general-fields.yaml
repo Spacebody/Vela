@@ -1,0 +1,19 @@
+mode: rule
+log-level: warning
+allow-lan: false
+bind-address: 127.0.0.1
+ipv6: false
+keep-alive-idle: 15
+keep-alive-interval: 15
+find-process-mode: off
+global-client-fingerprint: chrome
+geodata-mode: false
+geo-auto-update: false
+external-controller-cors:
+  allow-origins: ['https://vela.invalid']
+  allow-private-network: false
+proxies: []
+proxy-groups:
+  - {name: VELA-COMPAT, type: select, proxies: [DIRECT]}
+rules:
+  - MATCH,VELA-COMPAT

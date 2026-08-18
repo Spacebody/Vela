@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 2,
+  "adrID": "ADR-RC-TRUST-001",
+  "status": "accepted",
+  "issueID": "VELA-RC-101",
+  "changeClass": "releaseEngineering",
+  "firstAffectedVersion": "1.0.0-rc.2",
+  "summary": "Provision the already-frozen Sparkle trust-root category with the reviewed production key identifier.",
+  "contractBinding": {
+    "baselineCanonicalSHA256": "9547780ead2cd169510d67e8981bb93ced503555d65d8c8805a8d4090d6289e5",
+    "currentCanonicalSHA256": "8fc0a2e38625aadd43983c51fb12c0c2f0a1127ca49a845316b0718301301003"
+  },
+  "changes": [
+    {
+      "path": "/trustRoots/sparkleEdDSA",
+      "classification": "securityProvisioning",
+      "breaking": false,
+      "rationale": "The trust-root category is unchanged; only its reviewed production identifier and provisioning status change.",
+      "before": {
+        "kind": "sparkleEdDSA",
+        "identifier": null,
+        "status": "unprovisioned"
+      },
+      "after": {
+        "kind": "sparkleEdDSA",
+        "identifier": "production-app-update-key-v1",
+        "status": "configured"
+      }
+    }
+  ],
+  "compatibility": {
+    "cli": "No CLI surface exists in this release candidate.",
+    "appIntents": "No App Intent identifiers or entity identifiers change.",
+    "helper": "Helper protocol version and method registry remain unchanged.",
+    "automation": "No Automation protocol surface exists in this release candidate.",
+    "dataMigration": "No persisted user or root data schema changes.",
+    "appUpdate": "Previously signed artifacts remain immutable and a new RC build is required.",
+    "coreUpdate": "The Core Catalog trust-root category and key-set version remain unchanged.",
+    "documentation": "Release security documentation records the provisioned key identifier."
+  },
+  "migrationAndRollback": "No data migration runs. Rollback uses the previous immutable release artifact and its matching signed feed.",
+  "securityAndPrivacy": "The public identifier is non-secret and the private signing key never enters the repository or generated contract.",
+  "tests": [
+    "Regenerate current contracts and verify the exact trustRoots-only diff.",
+    "Verify signed update acceptance and rejection with the approved public key."
+  ],
+  "approvals": {
+    "releaseOwner": {
+      "approvedBy": "Release Owner Fixture",
+      "approvedAt": "2026-07-14T09:00:00+08:00"
+    },
+    "securityOwner": {
+      "approvedBy": "Security Owner Fixture",
+      "approvedAt": "2026-07-14T09:05:00+08:00"
+    },
+    "productOwner": {
+      "approvedBy": "Product Owner Fixture",
+      "approvedAt": "2026-07-14T09:10:00+08:00"
+    }
+  }
+}

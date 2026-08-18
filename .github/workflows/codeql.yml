@@ -1,0 +1,50 @@
+name: CodeQL
+
+on:
+  pull_request:
+  push:
+    branches: [main, release/1.0]
+  schedule:
+    - cron: "17 3 * * 2"
+
+permissions:
+  contents: read
+  packages: read
+  security-events: write
+
+jobs:
+  analyze:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: swift
+            build_mode: manual
+            runner: macos-15
+          - language: actions
+            build_mode: none
+            runner: ubuntu-latest
+    steps:
+      # actions/checkout v4, pinned to a full upstream commit SHA.
+      - name: Check out trusted revision
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+
+      # github/codeql-action v3.37.0, pinned to a full upstream commit SHA.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@02c5e83432fe5497fd85b873b6c9f16a8578e1d9
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build_mode }}
+          queries: security-extended
+
+      - name: Build Swift targets
+        if: matrix.language == 'swift'
+        run: ./script/ci_build.sh
+
+      # github/codeql-action v3.37.0, pinned to a full upstream commit SHA.
+      - name: Analyze
+        uses: github/codeql-action/analyze@02c5e83432fe5497fd85b873b6c9f16a8578e1d9

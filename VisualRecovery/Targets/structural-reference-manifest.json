@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "authority": "structural-only",
+  "references": [
+    {
+      "page": "overview",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/01-overview@2x-structural.png",
+      "pixelWidth": 1064,
+      "pixelHeight": 674
+    },
+    {
+      "page": "proxies",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/02-proxies@2x-structural.png",
+      "pixelWidth": 958,
+      "pixelHeight": 674
+    },
+    {
+      "page": "connections",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/03-connections@2x-structural.png",
+      "pixelWidth": 968,
+      "pixelHeight": 674
+    },
+    {
+      "page": "rules",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/04-rules@2x-structural.png",
+      "pixelWidth": 764,
+      "pixelHeight": 470
+    },
+    {
+      "page": "profiles",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/05-profiles@2x-structural.png",
+      "pixelWidth": 694,
+      "pixelHeight": 470
+    },
+    {
+      "page": "providers",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/06-providers@2x-structural.png",
+      "pixelWidth": 648,
+      "pixelHeight": 470
+    },
+    {
+      "page": "scenes",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/07-scenes@2x-structural.png",
+      "pixelWidth": 842,
+      "pixelHeight": 470
+    },
+    {
+      "page": "workbench",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/08-workbench@2x-structural.png",
+      "pixelWidth": 1018,
+      "pixelHeight": 392
+    },
+    {
+      "page": "diagnostics",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/09-diagnostics@2x-structural.png",
+      "pixelWidth": 494,
+      "pixelHeight": 392
+    },
+    {
+      "page": "logs",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/10-logs@2x-structural.png",
+      "pixelWidth": 598,
+      "pixelHeight": 392
+    },
+    {
+      "page": "settings",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/11-settings@2x-structural.png",
+      "pixelWidth": 840,
+      "pixelHeight": 392
+    },
+    {
+      "page": "tunFlow",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/12-tun-flow@2x-structural.png",
+      "pixelWidth": 2160,
+      "pixelHeight": 234
+    },
+    {
+      "page": "menuBar",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/13-menu-bar@2x-structural.png",
+      "pixelWidth": 990,
+      "pixelHeight": 184
+    },
+    {
+      "page": "designSystem",
+      "path": "Docs/Vela-Visual-Recovery-v2-Codex-Pack/reference/pages/14-design-tokens@2x-structural.png",
+      "pixelWidth": 842,
+      "pixelHeight": 232
+    }
+  ]
+}

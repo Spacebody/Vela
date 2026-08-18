@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "hashes": {
+    "getting-started": {
+      "en": "e9c72548ca497e111d973de38f54c5a99f36522900b7581ac81eef175af45adf",
+      "zh-Hans": "b3dbcc3f71803161f4968d0d7fae42c1b75afd0e2172280a04cdc5c25e0d0153"
+    },
+    "configurations-and-subscriptions": {
+      "en": "d6a9c40c1bebf471be690beeed402cfc1a98d7aed99103210796dd76248f0b6a",
+      "zh-Hans": "7feab2cb02e8d53171adbaa498e1c1b27bf2d3fca069a5e0200fa63fd3b87c05"
+    },
+    "system-proxy-vs-tun": {
+      "en": "3bf6efdaa1e5422a8859b09eb5c98788f1071d8a3eb915777abf79fbe6fefd9f",
+      "zh-Hans": "ed93bcba1dd630827d9d0acdeef3d94d51a0d59ef472142c73a4b4f2b906556c"
+    },
+    "connections-and-routing": {
+      "en": "a1ac3973dd09dfcff2eb2f720cbe164ab5b1084bad2c80c4deb4b4db373d6adf",
+      "zh-Hans": "5b8e773c7b12a1f4d60c7281b7d14a5011eef20a06194aa5a5b92a21c3065690"
+    },
+    "scenes-and-automation": {
+      "en": "1410c96913f66584c12036288d56e06e0afe4261280b45105f714c90e322a9aa",
+      "zh-Hans": "e9bf6e446300e16bed0569124316ef18d79752b63f19d40fb5ad1fb69a9c6790"
+    },
+    "configuration-workbench": {
+      "en": "093aadcbda6f9a3148ae216b5ad389aab2c942d4b76319c97e9920ef389db276",
+      "zh-Hans": "4e7773f1765d55f4f9b1ba5ab71ce8b33a5cb5ce22639665be03261982c90e4f"
+    },
+    "diagnostics-and-support": {
+      "en": "d50db6d54dada47d3e83d7993ca7e7d49af953ee869e2ee4e76b848899dd4b82",
+      "zh-Hans": "8ea0e278af6ac2aee112c005049e85695c469ba7113705d2a7698704e83dc24c"
+    },
+    "troubleshooting-network": {
+      "en": "5ec2c592c441ef867627b031a1891f78db367f416d1f81e8395ad96b17147ed1",
+      "zh-Hans": "29747ffa114a48e9643681a17beb998d7ed9ed343a59ee79041a086a37aa38c3"
+    },
+    "app-and-core-updates": {
+      "en": "68fd1713fceb7d167f02b3f24b7205cbde7eb25023cd238327037a619333fccc",
+      "zh-Hans": "08e3d58f400c864767774fd044c630df47c520010d4a59b22c6b506f00bb3032"
+    },
+    "cli-and-shortcuts": {
+      "en": "37c4cd9a4e6977be2813ce98ab6c36186bf75d5510bfad1afce722259cc54cfa",
+      "zh-Hans": "30aadef2dd0857c0279bcc601f46b1d4f7ac6d49253c708e096d2739d31adc3a"
+    },
+    "privacy-and-security": {
+      "en": "10f24eb5ae2394b5310bb257ff52aa0d7d7a5e374e12cbec1806a76b4a5c157a",
+      "zh-Hans": "5e03bbd25a2be0f1e5080c501bdd826e4f5c70441838bd45f63e3a46d1b2d86d"
+    }
+  }
+}

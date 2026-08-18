@@ -1,0 +1,84 @@
+name: Release Hardening Gates
+
+on:
+  pull_request:
+  push:
+    branches: [main, release/1.0]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hardening-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-gates:
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      BASE_REVISION: ${{ github.event.pull_request.base.sha || github.event.before }}
+    steps:
+      # actions/checkout v4, pinned to a full upstream commit SHA.
+      - name: Check out full history for the freeze diff
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate architecture source and freeze diff
+        run: |
+          case "${BASE_REVISION}" in
+            ""|0000000000000000000000000000000000000000)
+              python3 Hardening/scripts/validate_architecture_freeze.py
+              ;;
+            *)
+              python3 Hardening/scripts/validate_architecture_freeze.py \
+                --base-revision "${BASE_REVISION}"
+              ;;
+          esac
+
+      - name: Validate schemas, truthful blockers, workflows, and tooling tests
+        run: |
+          python3 Hardening/scripts/validate_hardening_config.py
+          python3 Hardening/scripts/validate_github_workflows.py .github/workflows
+          python3 -m unittest discover -s Hardening/tests -p 'test_*.py'
+
+      - name: Validate Release Candidate tooling and contract tests
+        run: |
+          ReleaseCandidate/scripts/validate_release_candidate_tooling.sh
+          python3 -m unittest discover -s ReleaseCandidate/tests -p 'test_*.py'
+
+      - name: Prove soak orchestration is dry-run by default
+        run: python3 Hardening/scripts/run_soak_matrix.py Hardening/config/soak-matrix.json
+
+      - name: Compile all Python hardening tools
+        run: python3 -m compileall -q Hardening/scripts Hardening/tests
+
+  release-fault-scan:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - name: Initialize isolated build path
+        run: |
+          test -n "${RUNNER_TEMP}"
+          printf 'VELA_CI_BUILD_DERIVED_DATA=%s/Vela-Hardening-Release\n' \
+            "${RUNNER_TEMP}" >>"${GITHUB_ENV}"
+
+      # actions/checkout v4, pinned to a full upstream commit SHA.
+      - name: Check out trusted revision
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+
+      - name: Resolve locked dependencies
+        run: xcodebuild -resolvePackageDependencies -project Vela.xcodeproj -scheme Vela
+
+      - name: Refuse dependency-lock drift
+        run: git diff --exit-code -- Vela.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved VelaIPC/Package.resolved
+
+      - name: Build unsigned Release candidate for exclusion scan
+        run: ./script/ci_build.sh
+
+      - name: Prove every bundled Release Mach-O excludes DEBUG fault controls
+        run: Hardening/scripts/scan_release_fault_controls.sh "${VELA_CI_BUILD_DERIVED_DATA}/Build/Products/Release/Vela.app"

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "windows": [
+    {
+      "id": "minimum",
+      "width": 1040,
+      "height": 680,
+      "rules": [
+        "inspector collapsible",
+        "overview 2x2 metrics",
+        "secondary columns hidden",
+        "toolbar overflow allowed"
+      ]
+    },
+    {
+      "id": "default",
+      "width": 1280,
+      "height": 820,
+      "rules": [
+        "primary design target",
+        "inspector visible where applicable"
+      ]
+    },
+    {
+      "id": "large",
+      "width": 1600,
+      "height": 1000,
+      "rules": [
+        "tables expand",
+        "content does not become excessively wide",
+        "editor gains space"
+      ]
+    }
+  ],
+  "appearances": [
+    "light",
+    "dark"
+  ],
+  "locales": [
+    "en",
+    "zh-Hans"
+  ],
+  "accessibility": [
+    "standard",
+    "increasedContrast",
+    "reducedMotion",
+    "reducedTransparency"
+  ]
+}

@@ -1,0 +1,4 @@
+mode: rule
+proxies: []
+rules:
+  - THIS-IS-NOT-A-VALID-RULE

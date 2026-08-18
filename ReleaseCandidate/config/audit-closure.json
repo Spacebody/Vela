@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "scope": {
+    "baselineCommit": null,
+    "rcCommit": null,
+    "deltaReview": {
+      "status": "pending",
+      "path": null,
+      "sha256": null
+    }
+  },
+  "findings": [],
+  "publicSummary": {
+    "status": "pending",
+    "path": null,
+    "sha256": null
+  },
+  "decision": "noGo",
+  "blockers": [
+    "No external audit scope commit, verified findings registry, delta review, or public audit summary is present."
+  ]
+}

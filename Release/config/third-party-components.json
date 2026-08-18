@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {
+      "name": "Sparkle",
+      "version": "2.9.4",
+      "packageIdentity": "sparkle",
+      "downloadLocation": "https://github.com/sparkle-project/Sparkle/tree/2.9.4",
+      "licenseDeclared": "MIT AND BSD-2-Clause AND Zlib",
+      "licenseFile": "Release/licenses/Sparkle-2.9.4-LICENSE.txt"
+    },
+    {
+      "name": "Yams",
+      "version": "6.2.2",
+      "packageIdentity": "yams",
+      "downloadLocation": "https://github.com/jpsim/Yams/tree/6.2.2",
+      "licenseDeclared": "MIT",
+      "licenseFile": "Release/licenses/Yams-6.2.2-LICENSE.txt"
+    },
+    {
+      "name": "Mihomo",
+      "version": "v1.19.29",
+      "packageIdentity": null,
+      "downloadLocation": "https://github.com/MetaCubeX/mihomo/tree/v1.19.29",
+      "licenseDeclared": "GPL-3.0-only",
+      "licenseFile": "Vendor/Mihomo/LICENSE",
+      "manifest": "Vendor/Mihomo/manifest.json"
+    }
+  ]
+}

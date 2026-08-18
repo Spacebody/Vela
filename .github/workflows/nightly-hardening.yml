@@ -1,0 +1,77 @@
+name: Nightly Hardening
+
+on:
+  schedule:
+    - cron: "40 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-hardening
+  cancel-in-progress: false
+
+jobs:
+  non-destructive:
+    runs-on: macos-15
+    timeout-minutes: 180
+    env:
+      VELA_CI_RUN_UI_TESTS: "1"
+    steps:
+      - name: Initialize isolated nightly paths
+        run: |
+          test -n "${RUNNER_TEMP}"
+          {
+            printf 'VELA_CI_BUILD_DERIVED_DATA=%s/Vela-Nightly-Build\n' "${RUNNER_TEMP}"
+            printf 'VELA_CI_TEST_DERIVED_DATA=%s/Vela-Nightly-Tests\n' "${RUNNER_TEMP}"
+            printf 'VELA_CI_PACKAGE_SCRATCH=%s/VelaIPC-Nightly\n' "${RUNNER_TEMP}"
+            printf 'VELA_CI_MODULE_CACHE=%s/Vela-Nightly-ModuleCache\n' "${RUNNER_TEMP}"
+          } >>"${GITHUB_ENV}"
+
+      # actions/checkout v4, pinned to a full upstream commit SHA.
+      - name: Check out trusted revision
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Assert Apple Silicon and clean source
+        run: |
+          test "$(uname -m)" = "arm64"
+          test -z "$(git status --porcelain)"
+
+      - name: Run hardening source gates
+        run: |
+          python3 Hardening/scripts/validate_hardening_config.py
+          python3 Hardening/scripts/validate_github_workflows.py .github/workflows
+          python3 -m unittest discover -s Hardening/tests -p 'test_*.py'
+
+      - name: Run all non-privileged tests
+        run: ./script/ci_test.sh
+
+      - name: Build Debug and Release
+        run: ./script/ci_build.sh
+
+      - name: Prove Release excludes fault controls
+        run: Hardening/scripts/scan_release_fault_controls.sh "${VELA_CI_BUILD_DERIVED_DATA}/Build/Products/Release/Vela.app"
+
+      - name: Generate non-executed fault coverage matrix
+        run: |
+          python3 Hardening/scripts/generate_fault_matrix.py \
+            Hardening/config/fault-plan.json \
+            "${RUNNER_TEMP}/fault-matrix-not-run.json"
+
+      # actions/upload-artifact v4.6.2, pinned to a full upstream commit SHA.
+      - name: Upload bounded non-destructive gate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nightly-hardening-source-evidence
+          path: ${{ runner.temp }}/fault-matrix-not-run.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  # Real TUN/System Proxy mutation, sleep/wake, multi-user, and 8h/24h/72h
+  # uninterrupted soak require a protected dedicated physical Apple Silicon lab.
+  # They are intentionally not represented as successful GitHub-hosted jobs.

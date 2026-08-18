@@ -1,0 +1,342 @@
+{
+  "absentSurfaces": [
+    "productionAppIntents",
+    "productionAutomationSocket",
+    "productionCLI",
+    "productionSceneStore"
+  ],
+  "app": {
+    "architectures": [
+      "arm64"
+    ],
+    "minimumMacOS": "15.0"
+  },
+  "appIntents": {
+    "availability": "absent",
+    "entityTypes": [],
+    "enumTypes": [],
+    "intentTypeNames": [],
+    "shortcutIdentifiers": []
+  },
+  "cli": {
+    "availability": "absent",
+    "bundleIdentifier": null,
+    "commands": [],
+    "environmentVariables": [],
+    "errorCodes": {},
+    "exitCodes": {},
+    "options": [],
+    "protocol": null,
+    "schemaVersions": []
+  },
+  "configuration": {
+    "duplicatePolicies": [
+      "replace",
+      "deepMerge",
+      "error"
+    ],
+    "insertionPositions": [
+      "beginning",
+      "end"
+    ],
+    "layerKinds": [
+      "global",
+      "profile",
+      "scene",
+      "runtimeForced",
+      "privilegedSanitizer"
+    ],
+    "operationKinds": [
+      "set",
+      "remove",
+      "deepMerge",
+      "prependUnique",
+      "appendUnique",
+      "upsertNamed",
+      "removeNamed"
+    ]
+  },
+  "generatedBy": {
+    "name": "generate_project_contracts.py",
+    "version": 1
+  },
+  "helpTopics": [
+    "getting-started",
+    "configurations-and-subscriptions",
+    "system-proxy-vs-tun",
+    "connections-and-routing",
+    "scenes-and-automation",
+    "configuration-workbench",
+    "diagnostics-and-support",
+    "troubleshooting-network",
+    "app-and-core-updates",
+    "cli-and-shortcuts",
+    "privacy-and-security"
+  ],
+  "identifiers": {
+    "app": "dev.yilin.Vela",
+    "appGroup": null,
+    "cli": null,
+    "helper": "dev.yilin.Vela.Helper",
+    "helperMachService": "dev.yilin.Vela.Helper"
+  },
+  "keychain": [
+    {
+      "accountTemplate": "<profile-uuid>",
+      "service": "dev.yilin.Vela.subscription",
+      "valueCategory": "subscription URL and authentication envelope"
+    }
+  ],
+  "protocols": {
+    "automation": null,
+    "helper": {
+      "errorCodes": [
+        {
+          "name": "invalidPayload",
+          "value": 1001
+        },
+        {
+          "name": "payloadTooLarge",
+          "value": 1002
+        },
+        {
+          "name": "unsupportedSchema",
+          "value": 1003
+        },
+        {
+          "name": "incompatibleProtocol",
+          "value": 1004
+        },
+        {
+          "name": "unauthenticatedClient",
+          "value": 1005
+        },
+        {
+          "name": "ownerBusy",
+          "value": 1006
+        },
+        {
+          "name": "invalidSession",
+          "value": 1007
+        },
+        {
+          "name": "invalidState",
+          "value": 1008
+        },
+        {
+          "name": "invalidTransaction",
+          "value": 1009
+        },
+        {
+          "name": "unsafePath",
+          "value": 1010
+        },
+        {
+          "name": "resourceLimitExceeded",
+          "value": 1011
+        },
+        {
+          "name": "resourceIntegrityMismatch",
+          "value": 1012
+        },
+        {
+          "name": "unsupportedPrivilegedLocalResource",
+          "value": 1013
+        },
+        {
+          "name": "unsafeConfiguration",
+          "value": 1014
+        },
+        {
+          "name": "configurationValidationFailed",
+          "value": 1015
+        },
+        {
+          "name": "mihomoPreflightFailed",
+          "value": 1016
+        },
+        {
+          "name": "processStartFailed",
+          "value": 1017
+        },
+        {
+          "name": "processStopFailed",
+          "value": 1018
+        },
+        {
+          "name": "helperUnavailable",
+          "value": 1019
+        },
+        {
+          "name": "leaseExpired",
+          "value": 1020
+        },
+        {
+          "name": "cleanupFailed",
+          "value": 1021
+        },
+        {
+          "name": "manualRepairRequired",
+          "value": 1022
+        },
+        {
+          "name": "requestTimedOut",
+          "value": 1023
+        },
+        {
+          "name": "cancelled",
+          "value": 1024
+        },
+        {
+          "name": "coreCatalogRejected",
+          "value": 1025
+        },
+        {
+          "name": "coreCatalogReplay",
+          "value": 1026
+        },
+        {
+          "name": "coreInstallIncomplete",
+          "value": 1027
+        },
+        {
+          "name": "coreNotInstalled",
+          "value": 1028
+        },
+        {
+          "name": "coreInUse",
+          "value": 1029
+        },
+        {
+          "name": "corePreflightFailed",
+          "value": 1030
+        },
+        {
+          "name": "appUpdateInProgress",
+          "value": 1031
+        },
+        {
+          "name": "unsupportedOperation",
+          "value": 1032
+        },
+        {
+          "name": "internalFailure",
+          "value": 1099
+        }
+      ],
+      "errorDomain": "dev.yilin.Vela.HelperError",
+      "maximum": 2,
+      "methodCount": 19,
+      "methods": [
+        "handshake",
+        "status",
+        "prepareStart",
+        "stageConfiguration",
+        "stageResource",
+        "commitStart",
+        "abortStart",
+        "stop",
+        "renewLease",
+        "readLogBatch",
+        "cleanup",
+        "prepareCoreInstall",
+        "stageCoreFile",
+        "commitCoreInstall",
+        "abortCoreInstall",
+        "listInstalledCores",
+        "refreshCoreCatalog",
+        "removeCore",
+        "validateCore"
+      ],
+      "minimum": 2
+    }
+  },
+  "schemaVersion": 1,
+  "schemas": {
+    "configurationLayer": 1,
+    "coreData": 6,
+    "help": 1,
+    "onboarding": 1,
+    "profile": 2,
+    "releaseManifest": 1,
+    "rootCoreInstallTransaction": 3,
+    "rootCoreStore": 2,
+    "rootData": 3,
+    "rootStartTransaction": 4,
+    "scene": null,
+    "supportBundle": 1,
+    "updateJournal": 1,
+    "userCoreStore": 1,
+    "xpcPayload": 1
+  },
+  "sources": [
+    "Configuration/Privileged/dev.yilin.Vela.Helper.plist",
+    "Release/config/compatibility.json",
+    "Release/config/release.json",
+    "Vela.xcodeproj/project.pbxproj",
+    "Vela/Core/ConfigurationWorkbench/ConfigurationModels.swift",
+    "Vela/Core/CoreLifecycle/CoreLifecycleController.swift",
+    "Vela/Core/Hardening/PublicBetaEvidenceController.swift",
+    "Vela/Core/Hardening/PublicBetaSafeMode.swift",
+    "Vela/Core/Network/ConnectivityProbe.swift",
+    "Vela/Core/Persistence/ApplicationDirectories.swift",
+    "Vela/Core/Privileged/TunPreferences.swift",
+    "Vela/Core/Proxies/ProxyOperationState.swift",
+    "Vela/Core/Subscriptions/SubscriptionSecrets.swift",
+    "Vela/Core/Updates/UpdateController.swift",
+    "Vela/Resources/Help/help-index.json",
+    "VelaIPC/CoreCatalogTrust.swift",
+    "VelaIPC/Sources/VelaPrivilegedCore/FixedMihomoPreflight.swift",
+    "VelaIPC/Sources/VelaPrivilegedCore/PrivilegedDirectories.swift",
+    "VelaIPC/VelaHelperError.swift",
+    "VelaIPC/VelaHelperProtocol.swift",
+    "VelaIPC/VelaIPCConstants.swift",
+    "Vendor/Mihomo/manifest.json"
+  ],
+  "trustRoots": [
+    {
+      "identifier": "2E56T94S33",
+      "kind": "developerIDTeam",
+      "status": "configured"
+    },
+    {
+      "identifier": null,
+      "kind": "sparkleEdDSA",
+      "status": "unprovisioned"
+    },
+    {
+      "identifier": [],
+      "keySetVersion": 1,
+      "kind": "coreCatalogEd25519",
+      "status": "unprovisioned"
+    }
+  ],
+  "urlSchemes": [],
+  "userDefaults": [
+    {
+      "key": "VelaUpdateChannel",
+      "source": "Vela/Core/Updates/UpdateController.swift",
+      "valueSchema": "ReleaseChannel.rawValue"
+    },
+    {
+      "key": "dev.yilin.Vela.CoreCatalog.lastAutomaticCheckAttempt",
+      "source": "Vela/Core/CoreLifecycle/CoreLifecycleController.swift",
+      "valueSchema": "Date"
+    },
+    {
+      "key": "dev.yilin.Vela.PublicBeta.localEvidenceEnabled",
+      "source": "Vela/Core/Hardening/PublicBetaEvidenceController.swift",
+      "valueSchema": "Bool"
+    },
+    {
+      "key": "dev.yilin.Vela.PublicBeta.safeModeOnNextLaunch",
+      "source": "Vela/Core/Hardening/PublicBetaSafeMode.swift",
+      "valueSchema": "Bool"
+    },
+    {
+      "key": "privilegedTun.preferences.v1",
+      "source": "Vela/Core/Privileged/TunPreferences.swift",
+      "valueSchema": "TunPreferences"
+    }
+  ]
+}

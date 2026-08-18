@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "page": "connections",
+  "allowedPaths": [
+    "Vela/Features/Connections/**",
+    "Vela/Core/Connections/**",
+    "Vela/Presentation/Connections/**",
+    "VelaTests/Connections/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "connections.loading",
+    "connections.loaded",
+    "connections.empty",
+    "connections.refreshing",
+    "connections.pendingMutation",
+    "connections.partialFailure",
+    "connections.failure",
+    "connections.offline",
+    "connections.stale"
+  ],
+  "requiredStates": [
+    "loading",
+    "loaded",
+    "empty",
+    "refreshing",
+    "pendingMutation",
+    "partialFailure",
+    "failure",
+    "offline",
+    "stale"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

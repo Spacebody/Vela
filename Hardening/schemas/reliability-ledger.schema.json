@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/reliability-ledger.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "retention", "events"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maximumEvents", "maximumDays"],
+      "properties": {
+        "maximumEvents": { "type": "integer", "minimum": 1, "maximum": 5000 },
+        "maximumDays": { "type": "integer", "minimum": 1, "maximum": 30 }
+      }
+    },
+    "events": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": { "$ref": "#/$defs/event" }
+    }
+  },
+  "$defs": {
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventID", "occurredAt", "sessionID", "build", "channel", "kind", "phase", "resultCode"],
+      "properties": {
+        "eventID": { "type": "string", "format": "uuid" },
+        "occurredAt": { "type": "string", "format": "date-time" },
+        "sessionID": { "type": "string", "format": "uuid" },
+        "testRunID": { "type": ["string", "null"], "format": "uuid" },
+        "build": { "type": "integer", "minimum": 1 },
+        "channel": { "enum": ["development", "beta", "stable"] },
+        "kind": {
+          "enum": [
+            "launch", "engineTransition", "backendTransition", "configurationTransaction",
+            "profileUpdate", "sceneTransition", "appUpdate", "coreActivation", "coreProbation",
+            "recovery", "migration", "selfTest", "help", "supportExport"
+          ]
+        },
+        "phase": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]{0,63}$" },
+        "resultCode": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]{0,63}$" },
+        "durationMilliseconds": { "type": ["integer", "null"], "minimum": 0, "maximum": 86400000 },
+        "rollbackResult": { "type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}$" },
+        "crashSignatureSHA256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "configurationGenerationHash": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "resourceSummary": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "rssKB": { "type": "integer", "minimum": 0 },
+            "threadCount": { "type": "integer", "minimum": 0 },
+            "fileDescriptorCount": { "type": "integer", "minimum": 0 },
+            "socketCount": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}

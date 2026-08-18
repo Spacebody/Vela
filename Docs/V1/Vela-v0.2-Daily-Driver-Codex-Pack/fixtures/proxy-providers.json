@@ -1,0 +1,41 @@
+{
+  "providers": {
+    "airport": {
+      "name": "airport",
+      "type": "Proxy",
+      "vehicleType": "HTTP",
+      "proxies": [
+        {
+          "name": "US-01",
+          "type": "Shadowsocks",
+          "udp": true,
+          "history": []
+        },
+        {
+          "name": "JP-01",
+          "type": "Trojan",
+          "udp": true,
+          "history": []
+        }
+      ],
+      "testUrl": "https://www.gstatic.com/generate_204",
+      "expectedStatus": "204",
+      "updatedAt": "2026-07-11T02:00:00Z",
+      "subscriptionInfo": {
+        "Upload": 1024,
+        "Download": 2048,
+        "Total": 107374182400,
+        "Expire": 1893456000
+      }
+    },
+    "inline-provider": {
+      "name": "inline-provider",
+      "type": "Proxy",
+      "vehicleType": "Inline",
+      "proxies": [],
+      "testUrl": "",
+      "expectedStatus": "",
+      "updatedAt": "2026-07-11T02:00:00Z"
+    }
+  }
+}

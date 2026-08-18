@@ -1,0 +1,14 @@
+mode: rule
+log-level: warning
+proxies:
+  - {name: ss-fixture, type: ss, server: 192.0.2.10, port: 443, cipher: aes-128-gcm, password: fixture-only}
+  - {name: socks-fixture, type: socks5, server: 192.0.2.11, port: 1080}
+  - {name: http-fixture, type: http, server: 192.0.2.12, port: 8080}
+  - {name: vmess-fixture, type: vmess, server: 192.0.2.13, port: 443, uuid: 00000000-0000-4000-8000-000000000001, alterId: 0, cipher: auto}
+  - {name: trojan-fixture, type: trojan, server: 192.0.2.14, port: 443, password: fixture-only, sni: example.invalid}
+proxy-groups:
+  - name: VELA-COMPAT
+    type: select
+    proxies: [DIRECT, ss-fixture, socks-fixture, http-fixture, vmess-fixture, trojan-fixture]
+rules:
+  - MATCH,VELA-COMPAT

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "active": true,
+  "targetRelease": "1.0.0",
+  "defaultDecision": "deny",
+  "normalMergeContractImpact": "none",
+  "allowedChangeClasses": [
+    "securityFix",
+    "dataIntegrityFix",
+    "crashFix",
+    "reliabilityFix",
+    "performanceFix",
+    "accessibilityFix",
+    "localizationOrDocumentation",
+    "releaseEngineering"
+  ],
+  "forbiddenAdditions": [
+    "featureFlag",
+    "appDestination",
+    "appIntentIdentifier",
+    "cliCommand",
+    "automationCommand",
+    "helperRPC",
+    "networkEndpointCategory",
+    "permission",
+    "keychainSecretType",
+    "persistentSchema",
+    "trustRoot",
+    "bundledExecutableOrFramework",
+    "updateChannel",
+    "coreChannel"
+  ],
+  "requiredChangeMetadata": [
+    "changeClass",
+    "issueID",
+    "severity",
+    "userImpact",
+    "securityImpact",
+    "contractImpact",
+    "migrationImpact",
+    "testEvidence",
+    "releaseNoteImpact",
+    "reviewer"
+  ],
+  "contractChangeApproval": {
+    "adrRequired": true,
+    "newReleaseCandidateRequired": true,
+    "fullMigrationAndUpdateMatrixRequired": true,
+    "requiredApprovals": [
+      "releaseOwner",
+      "securityOwner",
+      "productOwner"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/stop-ship-policy.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "rules"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "blocks", "description"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]{1,95}$" },
+          "severities": { "type": "array", "uniqueItems": true, "items": { "enum": ["S0", "S1", "S2", "S3"] } },
+          "condition": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]{1,95}$" },
+          "blocks": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["dogfood", "invite", "publicBeta", "stable"] } },
+          "description": { "type": "string", "minLength": 1 }
+        },
+        "anyOf": [ { "required": ["severities"] }, { "required": ["condition"] } ]
+      }
+    }
+  }
+}

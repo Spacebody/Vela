@@ -1,0 +1,11 @@
+proxy-providers:
+  bad:
+    type: file
+    path: ../../../../etc/passwd
+proxy-groups:
+  - name: PROXY
+    type: select
+    use:
+      - bad
+rules:
+  - MATCH,DIRECT

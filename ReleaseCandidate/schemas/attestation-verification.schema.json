@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "repository", "signerWorkflow", "source", "bundle", "trustedRoot", "subjectChecksums", "subjects", "verifiedAt", "result"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "repository": { "const": "Spacebody/Vela" },
+    "signerWorkflow": { "const": "github.com/Spacebody/Vela/.github/workflows/release.yml" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "ref"],
+      "properties": {
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "ref": { "type": "string", "pattern": "^refs/tags/v" }
+      }
+    },
+    "bundle": { "$ref": "#/$defs/file" },
+    "trustedRoot": { "$ref": "#/$defs/file" },
+    "subjectChecksums": { "$ref": "#/$defs/file" },
+    "subjects": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/file" } },
+    "verifiedAt": { "type": "string", "format": "date-time" },
+    "result": { "const": "verifiedByGitHubCLIWithOfflineBundle" }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "sha256", "size"],
+      "properties": {
+        "filename": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+mode: rule
+log-level: warning
+allow-lan: false
+unified-delay: true
+tcp-concurrent: true
+profile:
+  store-selected: false
+  store-fake-ip: false
+proxies: []
+proxy-groups:
+  - {name: SCENE-WORK, type: select, proxies: [DIRECT]}
+  - {name: VELA-COMPAT, type: select, proxies: [SCENE-WORK, DIRECT]}
+rules:
+  - DOMAIN-SUFFIX,corp.example.invalid,SCENE-WORK
+  - MATCH,VELA-COMPAT

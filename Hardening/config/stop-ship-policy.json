@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "rules": [
+    { "id": "securityCritical", "severities": ["S0"], "blocks": ["dogfood", "invite", "publicBeta", "stable"], "description": "Any unresolved exploitable security, privilege, signature, secret, or supply-chain issue blocks every wave." },
+    { "id": "reliabilityCritical", "severities": ["S1"], "blocks": ["dogfood", "invite", "publicBeta", "stable"], "description": "Any unresolved data-loss, residue, rollback, crash-loop, or ownership failure blocks every wave." },
+    { "id": "privateSecurityContact", "condition": "securityContactUnprovisioned", "blocks": ["invite", "publicBeta", "stable"], "description": "A reviewed private vulnerability-reporting channel is required." },
+    { "id": "privacyLegalReview", "condition": "privacyLegalReviewOutstanding", "blocks": ["publicBeta", "stable"], "description": "Public privacy/security/support text requires the recorded human reviews." },
+    { "id": "appUpdateTrust", "condition": "productionAppUpdateTrustUnprovisioned", "blocks": ["dogfood", "invite", "publicBeta", "stable"], "description": "The production App feed and Sparkle trust root must be provisioned and verified." },
+    { "id": "coreCatalogTrust", "condition": "productionCoreCatalogTrustUnprovisioned", "blocks": ["dogfood", "invite", "publicBeta", "stable"], "description": "The production Core endpoints and independent Ed25519 keyring must be provisioned and verified." },
+    { "id": "requiredSurfaces", "condition": "releaseRequiredSurfacesAbsent", "blocks": ["invite", "publicBeta", "stable"], "description": "A candidate cannot claim the Release contract while the required CLI, Automation protocol, and Scene schema are absent." },
+    { "id": "architectureBinding", "condition": "releaseManifestArchitectureBindingMissing", "blocks": ["invite", "publicBeta", "stable"], "description": "The immutable Release manifest must bind the exact approved architecture-freeze SHA." },
+    { "id": "migrationEvidence", "condition": "historicalMigrationFixturesMissing", "blocks": ["invite", "publicBeta", "stable"], "description": "Authentic V0.1 through V0.7 generated migration fixtures and idempotency evidence are required." },
+    { "id": "performanceCalibration", "condition": "performanceCalibrationMissing", "blocks": ["invite", "publicBeta", "stable"], "description": "No absolute performance ceiling is enforceable until a reference machine is calibrated and approved." },
+    { "id": "externalAudit", "condition": "externalAuditIncomplete", "blocks": ["publicBeta", "stable"], "description": "External audit and verification of Critical/High findings are required." },
+    { "id": "soak24h", "condition": "soak24hIncomplete", "blocks": ["invite", "publicBeta", "stable"], "description": "A real uninterrupted 24-hour Beta soak with passing cleanup is required." },
+    { "id": "soak72h", "condition": "soak72hIncomplete", "blocks": ["publicBeta", "stable"], "description": "A real uninterrupted 72-hour RC soak with passing cleanup is required." },
+    { "id": "multiUserLab", "condition": "multiUserLabIncomplete", "blocks": ["publicBeta", "stable"], "description": "Signed physical-machine multi-user ownership and privacy evidence is required." },
+    { "id": "destructiveNetworkLab", "condition": "destructiveTunMatrixIncomplete", "blocks": ["invite", "publicBeta", "stable"], "description": "Signed, dedicated-machine TUN/System Proxy transition and residue evidence is required." },
+    { "id": "signedArtifact", "condition": "signedNotarizedBetaArtifactMissing", "blocks": ["invite", "publicBeta", "stable"], "description": "The candidate artifact must be Developer ID signed, notarized, and stapled." },
+    { "id": "provenance", "condition": "sbomProvenanceAttestationMissing", "blocks": ["publicBeta", "stable"], "description": "The final artifact, release manifest, SBOM, and available provenance must agree; GitHub attestation is required only when produced by the protected GitHub workflow." },
+    { "id": "accessibility", "condition": "criticalAccessibilityBlocker", "blocks": ["publicBeta", "stable"], "description": "A critical accessibility blocker in a main flow is Stop-Ship." },
+    { "id": "performanceRegression", "condition": "approvedBudgetExceeded", "blocks": ["invite", "publicBeta", "stable"], "description": "A regression over an approved comparable-machine budget is Stop-Ship." },
+    { "id": "networkResidue", "condition": "tunRouteOrSystemProxyResidue", "blocks": ["dogfood", "invite", "publicBeta", "stable"], "description": "Owned TUN, route, or system proxy residue is Stop-Ship." },
+    { "id": "migrationDataLoss", "condition": "dataLossOrNonIdempotentMigration", "blocks": ["dogfood", "invite", "publicBeta", "stable"], "description": "Data loss, silent discard, or non-idempotent migration is Stop-Ship." },
+    { "id": "trustFailure", "condition": "updateCoreOrCodeSigningFailure", "blocks": ["dogfood", "invite", "publicBeta", "stable"], "description": "Any App/Core update or code-signing trust failure is Stop-Ship." }
+  ]
+}

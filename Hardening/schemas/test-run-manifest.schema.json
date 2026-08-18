@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Spacebody/Vela/Hardening/schemas/test-run-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runID", "createdAt", "source", "components", "environment", "tests", "cleanup"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runID": { "type": "string", "format": "uuid" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": ["string", "null"], "format": "date-time" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tag", "build", "channel", "dirty", "architectureFreezeSHA256"],
+      "properties": {
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tag": { "type": ["string", "null"], "minLength": 1 },
+        "build": { "type": "integer", "minimum": 1 },
+        "channel": { "enum": ["development", "beta", "stable"] },
+        "dirty": { "type": "boolean" },
+        "architectureFreezeSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["app", "helper", "helperProtocol", "cli", "mihomo", "core"],
+      "properties": {
+        "app": { "type": "string", "minLength": 1 },
+        "helper": { "type": "string", "minLength": 1 },
+        "helperProtocol": { "type": "integer", "minimum": 1 },
+        "cli": { "type": ["string", "null"] },
+        "mihomo": { "type": "string", "minLength": 1 },
+        "core": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]{0,95}$" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["machineID", "hardwareCategory", "memoryGB", "macOSBuild", "architecture", "power", "thermalState", "userType", "locale", "appearance", "accessibility", "networkScenario", "serialNumberCollected", "realUserNameCollected", "syntheticDataOnly"],
+      "properties": {
+        "machineID": { "type": "string", "format": "uuid" },
+        "hardwareCategory": { "type": "string", "minLength": 1 },
+        "memoryGB": { "type": "integer", "minimum": 4 },
+        "macOSBuild": { "type": "string", "minLength": 1 },
+        "architecture": { "const": "arm64" },
+        "power": { "enum": ["AC", "battery"] },
+        "thermalState": { "enum": ["nominal", "fair", "serious", "critical", "unknown"] },
+        "userType": { "enum": ["standard", "admin"] },
+        "locale": { "type": "string", "minLength": 2 },
+        "appearance": { "enum": ["light", "dark", "highContrastLight", "highContrastDark"] },
+        "accessibility": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "networkScenario": { "type": "string", "pattern": "^[a-z][A-Za-z0-9.-]{0,63}$" },
+        "serialNumberCollected": { "const": false },
+        "realUserNameCollected": { "const": false },
+        "syntheticDataOnly": { "const": true }
+      }
+    },
+    "faultPlan": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["sha256", "seed"],
+      "properties": {
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "seed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "evidence"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][A-Za-z0-9._-]{0,127}$" },
+          "status": { "enum": ["notRun", "passed", "failed", "blocked", "cancelled"] },
+          "durationSeconds": { "type": ["number", "null"], "minimum": 0 },
+          "evidence": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/evidenceFile" } },
+          "stableResultCode": { "type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}$" }
+        }
+      }
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "managedPIDs", "ownedTunInterfaces", "systemProxyMatches", "routeStateMatches", "temporaryResourcesRemoved", "evidence"],
+      "properties": {
+        "status": { "enum": ["notRun", "passed", "failed"] },
+        "managedPIDs": { "type": "array", "maxItems": 0 },
+        "ownedTunInterfaces": { "type": "array", "maxItems": 0 },
+        "systemProxyMatches": { "type": "boolean" },
+        "routeStateMatches": { "type": "boolean" },
+        "temporaryResourcesRemoved": { "type": "boolean" },
+        "evidence": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/evidenceFile" } }
+      }
+    }
+  },
+  "$defs": {
+    "evidenceFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "size", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "size": { "type": "integer", "minimum": 0, "maximum": 20971520 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "name": "Vela V0.3 Privileged TUN Codex Pack",
+  "generatedAt": "2026-07-12",
+  "target": {
+    "app": "Vela",
+    "minimumMacOS": "15.0",
+    "architecture": [
+      "arm64"
+    ],
+    "mihomo": "v1.19.28",
+    "distribution": "Developer ID"
+  },
+  "features": [
+    "SMAppService LaunchDaemon",
+    "authenticated NSXPC",
+    "privileged Mihomo backend",
+    "macOS TUN",
+    "transactional backend switching",
+    "lease and crash recovery",
+    "signing and notarization"
+  ],
+  "excluded": [
+    "Intel",
+    "Universal Binary",
+    "Rosetta",
+    "Network Extension",
+    "Kill Switch",
+    "app split tunneling",
+    "runtime Mihomo update",
+    "arbitrary privileged shell"
+  ]
+}

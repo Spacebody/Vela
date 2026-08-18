@@ -1,0 +1,24 @@
+mixed-port: 7890
+mode: rule
+dns:
+  enable: true
+  nameserver:
+    - 1.1.1.1
+proxy-providers:
+  local-proxies:
+    type: file
+    path: ./providers/proxies.yaml
+rule-providers:
+  local-rules:
+    type: file
+    behavior: domain
+    format: yaml
+    path: ./providers/rules.yaml
+proxy-groups:
+  - name: PROXY
+    type: select
+    use:
+      - local-proxies
+rules:
+  - RULE-SET,local-rules,PROXY
+  - MATCH,DIRECT

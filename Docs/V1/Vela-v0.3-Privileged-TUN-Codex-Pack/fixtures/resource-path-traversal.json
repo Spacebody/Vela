@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "transactionID": "30D63F2F-EA86-47B7-B414-FA9B6FAB771E",
+  "logicalID": "bad-provider",
+  "relativeDestination": "../../etc/passwd",
+  "expectedSize": 12,
+  "expectedSHA256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "kind": "proxyProvider"
+}

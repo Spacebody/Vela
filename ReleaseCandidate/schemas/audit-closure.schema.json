@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scope", "findings", "publicSummary", "decision", "blockers"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baselineCommit", "rcCommit", "deltaReview"],
+      "properties": {
+        "baselineCommit": { "type": ["string", "null"] },
+        "rcCommit": { "type": ["string", "null"] },
+        "deltaReview": { "$ref": "#/$defs/evidence" }
+      }
+    },
+    "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" } },
+    "publicSummary": { "$ref": "#/$defs/evidence" },
+    "decision": { "enum": ["go", "noGo"] },
+    "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "path", "sha256"],
+      "properties": {
+        "status": { "enum": ["verified", "pending", "failed"] },
+        "path": { "type": ["string", "null"] },
+        "sha256": { "type": ["string", "null"] }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "severity", "status", "affectedBuild", "component", "description", "proof", "fixCommit", "regressionTest", "retestEvidence", "owner", "disclosure", "riskAcceptance"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^VELA-AUDIT-[0-9]{3,}$" },
+        "severity": { "enum": ["critical", "high", "medium", "low", "informational"] },
+        "status": { "enum": ["open", "fixInProgress", "fixedPendingVerification", "verified", "riskAccepted", "outOfScope"] },
+        "affectedBuild": { "type": ["integer", "null"] },
+        "component": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "proof": { "type": "array", "items": { "$ref": "#/$defs/reference" } },
+        "fixCommit": { "type": ["string", "null"] },
+        "regressionTest": { "type": ["string", "null"] },
+        "retestEvidence": { "type": "array", "items": { "$ref": "#/$defs/reference" } },
+        "owner": { "type": "string", "minLength": 1 },
+        "disclosure": { "enum": ["private", "publicSummary", "notApplicable"] },
+        "riskAcceptance": { "type": ["object", "null"] }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string" }
+      }
+    }
+  }
+}

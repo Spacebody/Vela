@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "candidate", "source", "freeze", "quality", "artifacts", "signing", "provenance"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "marketingVersion", "build", "channel", "appUpdateChannel", "prereleaseLabel"],
+      "properties": {
+        "version": { "type": "string", "minLength": 5 },
+        "marketingVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "build": { "type": "integer", "minimum": 1 },
+        "channel": { "enum": ["rc", "stable"] },
+        "appUpdateChannel": { "enum": ["beta", "stable"] },
+        "prereleaseLabel": { "type": ["string", "null"] }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tag", "dirty"],
+      "properties": {
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tag": { "type": "string", "minLength": 2 },
+        "dirty": { "const": false }
+      }
+    },
+    "freeze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publicContract", "architecture", "documentation", "privacy"],
+      "properties": {
+        "publicContract": { "$ref": "#/$defs/file" },
+        "architecture": { "$ref": "#/$defs/file" },
+        "documentation": { "$ref": "#/$defs/file" },
+        "privacy": { "$ref": "#/$defs/file" }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stopShip", "contracts", "migration", "securityAudit", "soak", "performance", "accessibilityPrivacy", "installation", "artifact", "supportIncident"],
+      "properties": {
+        "stopShip": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "contracts": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "migration": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "securityAudit": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "soak": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "performance": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "accessibilityPrivacy": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "installation": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "artifact": { "enum": ["pass", "fail", "pending", "unknown"] },
+        "supportIncident": { "enum": ["pass", "fail", "pending", "unknown"] }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["releaseManifest", "dmg", "sbom", "appcast", "checksums", "migrationGuarantee", "auditSummary", "knownLimitations"],
+      "properties": {
+        "releaseManifest": { "$ref": "#/$defs/file" },
+        "dmg": { "$ref": "#/$defs/file" },
+        "sbom": { "$ref": "#/$defs/file" },
+        "appcast": { "$ref": "#/$defs/file" },
+        "checksums": { "$ref": "#/$defs/file" },
+        "migrationGuarantee": { "$ref": "#/$defs/file" },
+        "auditSummary": { "$ref": "#/$defs/file" },
+        "knownLimitations": { "$ref": "#/$defs/file" }
+      }
+    },
+    "signing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["certificateSHA256", "appNotary", "dmgNotary", "bundleVerificationRequired"],
+      "properties": {
+        "certificateSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "appNotary": { "$ref": "#/$defs/notary" },
+        "dmgNotary": { "$ref": "#/$defs/notary" },
+        "bundleVerificationRequired": { "const": true }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["toolchain", "workflow", "attestation"],
+      "properties": {
+        "toolchain": { "type": "object" },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["repository", "runID", "runnerClass"],
+          "properties": {
+            "repository": { "type": ["string", "null"] },
+            "runID": { "type": ["string", "null"] },
+            "runnerClass": { "type": "string", "minLength": 1 }
+          }
+        },
+        "attestation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "evidence", "subjects", "policy"],
+          "properties": {
+            "status": { "const": "pendingExternal" },
+            "evidence": { "anyOf": [{ "$ref": "#/$defs/file" }, { "type": "null" }] },
+            "subjects": { "type": "array", "items": { "$ref": "#/$defs/subject" } },
+            "policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["workflowPath", "environment", "verificationRepository", "requiredPermissions"],
+              "properties": {
+                "workflowPath": { "const": ".github/workflows/release.yml" },
+                "environment": { "const": "production" },
+                "verificationRepository": { "const": "Spacebody/Vela" },
+                "requiredPermissions": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": { "enum": ["id-token:write", "attestations:write", "artifact-metadata:write"] },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "sha256", "size"],
+      "properties": {
+        "filename": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "notary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["submissionID", "status"],
+      "properties": {
+        "submissionID": { "type": "string", "minLength": 1 },
+        "status": { "const": "Accepted" }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "sha256"],
+      "properties": {
+        "filename": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

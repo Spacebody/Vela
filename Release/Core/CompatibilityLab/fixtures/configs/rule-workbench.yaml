@@ -1,0 +1,11 @@
+mode: rule
+log-level: warning
+proxies: []
+proxy-groups:
+  - {name: VELA-COMPAT, type: select, proxies: [DIRECT]}
+rules:
+  - DOMAIN-SUFFIX,example.com,VELA-COMPAT
+  - DOMAIN,api.example.net,DIRECT
+  - IP-CIDR,192.0.2.0/24,REJECT,no-resolve
+  - GEOIP,LAN,DIRECT,no-resolve
+  - MATCH,VELA-COMPAT

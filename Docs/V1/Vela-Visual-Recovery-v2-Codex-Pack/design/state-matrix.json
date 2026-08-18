@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "states": [
+    "loading",
+    "loaded",
+    "empty",
+    "refreshing",
+    "pendingMutation",
+    "partialFailure",
+    "failure",
+    "offline",
+    "stale",
+    "permissionRequired",
+    "transitioning",
+    "rollbackFailed"
+  ],
+  "features": {
+    "overview": [
+      "loading",
+      "loaded",
+      "empty",
+      "partialFailure",
+      "offline",
+      "stale",
+      "permissionRequired",
+      "transitioning"
+    ],
+    "proxies": [
+      "loading",
+      "loaded",
+      "empty",
+      "refreshing",
+      "pendingMutation",
+      "partialFailure",
+      "failure",
+      "offline",
+      "stale"
+    ],
+    "connections": [
+      "loading",
+      "loaded",
+      "empty",
+      "refreshing",
+      "pendingMutation",
+      "partialFailure",
+      "failure",
+      "offline",
+      "stale"
+    ],
+    "rules": [
+      "loading",
+      "loaded",
+      "empty",
+      "refreshing",
+      "pendingMutation",
+      "partialFailure",
+      "failure",
+      "stale"
+    ],
+    "profiles": [
+      "loading",
+      "loaded",
+      "empty",
+      "refreshing",
+      "pendingMutation",
+      "partialFailure",
+      "failure",
+      "permissionRequired"
+    ],
+    "providers": [
+      "loading",
+      "loaded",
+      "empty",
+      "refreshing",
+      "pendingMutation",
+      "partialFailure",
+      "failure"
+    ],
+    "scenes": [
+      "loading",
+      "loaded",
+      "empty",
+      "pendingMutation",
+      "partialFailure",
+      "failure",
+      "permissionRequired",
+      "transitioning",
+      "rollbackFailed"
+    ],
+    "workbench": [
+      "loading",
+      "loaded",
+      "empty",
+      "pendingMutation",
+      "partialFailure",
+      "failure",
+      "stale",
+      "transitioning",
+      "rollbackFailed"
+    ],
+    "diagnostics": [
+      "loading",
+      "loaded",
+      "partialFailure",
+      "failure",
+      "pendingMutation",
+      "stale",
+      "permissionRequired"
+    ],
+    "logs": [
+      "loading",
+      "loaded",
+      "empty",
+      "refreshing",
+      "failure",
+      "stale"
+    ],
+    "settings": [
+      "loaded",
+      "pendingMutation",
+      "partialFailure",
+      "failure",
+      "permissionRequired"
+    ],
+    "tunFlow": [
+      "loading",
+      "pendingMutation",
+      "failure",
+      "permissionRequired",
+      "transitioning",
+      "rollbackFailed"
+    ]
+  }
+}

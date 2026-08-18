@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "system": "Vela Visual Recovery v2",
+  "appearance": {
+    "followSystemByDefault": true,
+    "supported": [
+      "light",
+      "dark",
+      "increasedContrast",
+      "reducedTransparency"
+    ]
+  },
+  "colors": {
+    "accent": {
+      "light": "#007AFF",
+      "dark": "#0A84FF"
+    },
+    "success": {
+      "light": "#248A3D",
+      "dark": "#30D158"
+    },
+    "warning": {
+      "light": "#C93400",
+      "dark": "#FF9F0A"
+    },
+    "error": {
+      "light": "#D70015",
+      "dark": "#FF453A"
+    },
+    "info": {
+      "light": "#007AFF",
+      "dark": "#64D2FF"
+    },
+    "surfaces": "Use semantic macOS window/sidebar/control/content/separator colors; never fixed black/white roots."
+  },
+  "spacing": {
+    "2xs": 2,
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "base": 16,
+    "lg": 20,
+    "xl": 24,
+    "2xl": 32
+  },
+  "radius": {
+    "controlGroup": 6,
+    "panel": 10,
+    "large": 12,
+    "pill": "capsule"
+  },
+  "typography": {
+    "pageTitle": {
+      "size": 20,
+      "weight": "semibold"
+    },
+    "sectionTitle": {
+      "size": 13,
+      "weight": "semibold"
+    },
+    "body": {
+      "size": 13,
+      "weight": "regular"
+    },
+    "table": {
+      "size": 12,
+      "weight": "regular"
+    },
+    "caption": {
+      "size": 11,
+      "weight": "regular"
+    },
+    "metric": {
+      "size": 18,
+      "weight": "semibold"
+    },
+    "code": {
+      "size": 12,
+      "design": "monospaced"
+    }
+  },
+  "window": {
+    "minimum": {
+      "width": 1040,
+      "height": 680
+    },
+    "default": {
+      "width": 1280,
+      "height": 820
+    },
+    "large": {
+      "width": 1600,
+      "height": 1000
+    },
+    "sidebar": {
+      "minimum": 188,
+      "ideal": 204,
+      "maximum": 232
+    },
+    "inspector": {
+      "minimum": 280,
+      "ideal": 320,
+      "maximum": 380
+    }
+  },
+  "density": {
+    "sidebarRow": 29,
+    "tableRow": 30,
+    "compactControl": 24,
+    "toolbar": "native macOS",
+    "contentPadding": 16,
+    "sectionGap": 20
+  },
+  "motion": {
+    "fast": 0.12,
+    "standard": 0.18,
+    "slow": 0.24,
+    "respectReduceMotion": true
+  },
+  "rules": [
+    "Use native control metrics unless the approved target explicitly requires a custom component.",
+    "No one-off color, radius, padding or typography constants in feature views.",
+    "No card-per-row treatment for tables or sidebars.",
+    "No fixed dark sidebar background.",
+    "Status must include text/icon, never color alone."
+  ]
+}

@@ -1,0 +1,179 @@
+name: Protected Core Catalog Incident
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Exact signed and reviewed Vela incident tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vela-core-production-ingest
+  cancel-in-progress: false
+
+jobs:
+  incident:
+    runs-on:
+      - self-hosted
+      - macOS
+      - ARM64
+      - vela-release
+    environment: core-production
+    timeout-minutes: 30
+    steps:
+      # The `runner` expression context is not available while GitHub parses
+      # job-level `env`. Resolve the runner-owned temporary root at step runtime
+      # and publish only the four bounded paths to subsequent steps.
+      - name: Initialize isolated incident paths
+        run: |
+          printf '%s\n' "${GITHUB_RUN_ID}" | /usr/bin/grep -Eq '^[0-9]+$'
+          printf '%s\n' "${GITHUB_RUN_ATTEMPT}" | /usr/bin/grep -Eq '^[0-9]+$'
+          test -n "${RUNNER_TEMP}"
+          RUN_SUFFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          {
+            printf 'VELA_CORE_CREDENTIAL_ROOT=%s/vela-core-incident-credentials-%s\n' "${RUNNER_TEMP}" "${RUN_SUFFIX}"
+            printf 'VELA_CORE_PUBLIC=%s/vela-core-incident-public-%s\n' "${RUNNER_TEMP}" "${RUN_SUFFIX}"
+            printf 'VELA_CORE_PRIOR_CATALOG=%s/vela-core-incident-prior-%s.json\n' "${RUNNER_TEMP}" "${RUN_SUFFIX}"
+            printf 'VELA_CORE_EVIDENCE_ROOT=%s/vela-core-incident-evidence-%s\n' "${RUNNER_TEMP}" "${RUN_SUFFIX}"
+          } >>"${GITHUB_ENV}"
+
+      # actions/checkout v4.2.2, pinned to the complete commit SHA.
+      - name: Check out trusted incident tag
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Assert signed tag and catalog-only incident config
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TAG_SIGNING_FINGERPRINT: ${{ vars.RELEASE_TAG_SIGNING_FINGERPRINT }}
+        run: |
+          test "$(uname -m)" = "arm64"
+          test -z "$(git status --porcelain)"
+          case "${RELEASE_TAG}" in
+            ""|*/*) echo "release tag must be an unqualified tag name" >&2; exit 1 ;;
+          esac
+          TAG_REF="refs/tags/${RELEASE_TAG}"
+          git show-ref --verify --quiet "${TAG_REF}"
+          test "$(git cat-file -t "${TAG_REF}")" = "tag"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "${TAG_REF}^{commit}")"
+          EXPECTED_FINGERPRINT="$(printf '%s' "${RELEASE_TAG_SIGNING_FINGERPRINT}" | /usr/bin/tr '[:lower:]' '[:upper:]')"
+          printf '%s\n' "${EXPECTED_FINGERPRINT}" | /usr/bin/grep -Eq '^[0-9A-F]{40}([0-9A-F]{24})?$'
+          TAG_STATUS="$(/usr/bin/mktemp "${RUNNER_TEMP}/vela-core-incident-tag-status.XXXXXX")"
+          if ! git verify-tag --raw "${TAG_REF}" >/dev/null 2>"${TAG_STATUS}"; then
+            /bin/rm -f "${TAG_STATUS}"
+            echo "incident tag signature verification failed" >&2
+            exit 1
+          fi
+          /usr/bin/awk -v expected="${EXPECTED_FINGERPRINT}" '
+            $2 == "VALIDSIG" {
+              for (index = 3; index <= NF; index += 1) {
+                if (toupper($index) == expected) found = 1
+              }
+            }
+            END { exit(found ? 0 : 1) }
+          ' "${TAG_STATUS}"
+          /bin/rm -f "${TAG_STATUS}"
+          test "$(/usr/bin/python3 -c 'import json; print(json.load(open("Release/Core/config/core-release.json", encoding="utf-8"))["catalog"]["operation"])')" = "incident"
+          ./Release/Core/validate_core_release_config.py --production
+
+      - name: Acquire immutable prior Core Catalog
+        run: |
+          VELA_CORE_RELEASE_EXECUTE=YES ./Release/Core/acquire_prior_core_catalog.sh --execute \
+            --output "${VELA_CORE_PRIOR_CATALOG}"
+
+      - name: Create ephemeral Catalog incident credentials
+        env:
+          CORE_CATALOG_ED25519_PRIVATE_KEY: ${{ secrets.CORE_CATALOG_ED25519_PRIVATE_KEY }}
+          CORE_CATALOG_ROTATION_ED25519_PRIVATE_KEY: ${{ secrets.CORE_CATALOG_ROTATION_ED25519_PRIVATE_KEY }}
+        run: |
+          umask 077
+          test -n "${CORE_CATALOG_ED25519_PRIVATE_KEY}"
+          case "${VELA_CORE_CREDENTIAL_ROOT}" in
+            "${RUNNER_TEMP}"/vela-core-incident-credentials-*) ;;
+            *) echo "unsafe Core incident credential root" >&2; exit 1 ;;
+          esac
+          /bin/mkdir -m 0700 "${VELA_CORE_CREDENTIAL_ROOT}"
+          PRIMARY_KEY="${VELA_CORE_CREDENTIAL_ROOT}/core-catalog-ed25519.key"
+          ROTATION_KEY="${VELA_CORE_CREDENTIAL_ROOT}/core-catalog-rotation-ed25519.key"
+          ROTATION_KEY_ID="$(/usr/bin/python3 -c 'import json; value=json.load(open("Release/Core/config/core-release.json", encoding="utf-8"))["catalog"]["rotationKeyID"]; print("" if value is None else value)')"
+          printf '%s\n' "${CORE_CATALOG_ED25519_PRIVATE_KEY}" >"${PRIMARY_KEY}"
+          /bin/chmod 0600 "${PRIMARY_KEY}"
+          if test -n "${ROTATION_KEY_ID}"; then
+            test -n "${CORE_CATALOG_ROTATION_ED25519_PRIVATE_KEY}"
+            printf '%s\n' "${CORE_CATALOG_ROTATION_ED25519_PRIVATE_KEY}" >"${ROTATION_KEY}"
+            /bin/chmod 0600 "${ROTATION_KEY}"
+          else
+            test -z "${CORE_CATALOG_ROTATION_ED25519_PRIVATE_KEY}"
+          fi
+          {
+            printf 'VELA_CORE_CATALOG_KEY_FILE=%s\n' "${PRIMARY_KEY}"
+            if test -n "${ROTATION_KEY_ID}"; then
+              printf 'VELA_CORE_CATALOG_ROTATION_KEY_FILE=%s\n' "${ROTATION_KEY}"
+            fi
+          } >>"${GITHUB_ENV}"
+
+      - name: Stage signed catalog-only incident
+        run: |
+          INCIDENT_ARGS=(
+            --staging
+            --prior-catalog "${VELA_CORE_PRIOR_CATALOG}"
+            --output "${VELA_CORE_PUBLIC}"
+            --private-key-file "${VELA_CORE_CATALOG_KEY_FILE}"
+          )
+          if test -n "${VELA_CORE_CATALOG_ROTATION_KEY_FILE:-}"; then
+            INCIDENT_ARGS+=(--rotation-private-key-file "${VELA_CORE_CATALOG_ROTATION_KEY_FILE}")
+          fi
+          VELA_CORE_RELEASE_EXECUTE=YES ./Release/Core/publish_core_incident.sh "${INCIDENT_ARGS[@]}"
+
+      - name: Create and verify private incident evidence
+        run: |
+          ./Release/Core/create_core_release_evidence.py \
+            --repository-root "${GITHUB_WORKSPACE}" \
+            --config Release/Core/config/core-release.json \
+            --public-directory "${VELA_CORE_PUBLIC}" \
+            --prior-catalog "${VELA_CORE_PRIOR_CATALOG}" \
+            --archive-output "${VELA_CORE_EVIDENCE_ROOT}/vela-core-incident-private-evidence.zip" \
+            --manifest-output "${VELA_CORE_EVIDENCE_ROOT}/private-release-manifest.json"
+          ./Release/Core/validate_core_release_evidence.py \
+            "${VELA_CORE_EVIDENCE_ROOT}/vela-core-incident-private-evidence.zip" \
+            --manifest "${VELA_CORE_EVIDENCE_ROOT}/private-release-manifest.json"
+
+      # actions/upload-artifact v4.6.2, pinned to the complete commit SHA.
+      - name: Upload immutable public incident staging
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: vela-core-incident-staging
+          path: ${{ runner.temp }}/vela-core-incident-public-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload short-lived private incident evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: vela-core-incident-private-evidence
+          path: ${{ runner.temp }}/vela-core-incident-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Destroy ephemeral incident credentials and private evidence
+        if: always()
+        run: |
+          case "${VELA_CORE_CREDENTIAL_ROOT}" in
+            "${RUNNER_TEMP}"/vela-core-incident-credentials-*) /bin/rm -rf "${VELA_CORE_CREDENTIAL_ROOT}" ;;
+            *) echo "refusing unsafe incident credential cleanup" >&2; exit 1 ;;
+          esac
+          case "${VELA_CORE_PRIOR_CATALOG}" in
+            "${RUNNER_TEMP}"/vela-core-incident-prior-*.json) /bin/rm -f "${VELA_CORE_PRIOR_CATALOG}" ;;
+            *) echo "refusing unsafe incident prior cleanup" >&2; exit 1 ;;
+          esac
+          case "${VELA_CORE_EVIDENCE_ROOT}" in
+            "${RUNNER_TEMP}"/vela-core-incident-evidence-*) /bin/rm -rf "${VELA_CORE_EVIDENCE_ROOT}" ;;
+            *) echo "refusing unsafe incident evidence cleanup" >&2; exit 1 ;;
+          esac

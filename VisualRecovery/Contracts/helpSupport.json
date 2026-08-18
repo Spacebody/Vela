@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "page": "helpSupport",
+  "allowedPaths": [
+    "Vela/Features/Help/**",
+    "Vela/Features/Support/**",
+    "Vela/Resources/Help/**",
+    "Vela/Resources/Policies/**",
+    "VelaTests/Help/**",
+    "VelaTests/Support/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "helpSupport.loading",
+    "helpSupport.loaded",
+    "helpSupport.empty",
+    "helpSupport.failure",
+    "helpSupport.offline"
+  ],
+  "requiredStates": [
+    "loading",
+    "loaded",
+    "empty",
+    "failure",
+    "offline"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

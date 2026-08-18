@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "VELA-AUDIT-000",
+  "severity": "informational",
+  "status": "open",
+  "title": "Replace with a concise finding title",
+  "scope": "Replace with the affected trust boundary",
+  "description": "Replace with impact, preconditions, reproduction, and remediation guidance.",
+  "evidence": ["Replace with a stable test/evidence reference, never a credential or user value."],
+  "owner": "unassigned",
+  "targetBuild": null,
+  "riskAcceptance": null
+}

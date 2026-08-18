@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "platform": {
+    "minimumMacOS": "15.0",
+    "architectures": [
+      "arm64"
+    ]
+  },
+  "appVersions": [
+    {
+      "range": "currentStable",
+      "support": "full"
+    },
+    {
+      "range": "previousStable",
+      "support": "upgradeAndRecoveryGuidance"
+    },
+    {
+      "range": "betaOrRC",
+      "support": "bestEffort"
+    }
+  ],
+  "cores": {
+    "factory": "supported",
+    "signedCatalogCompatible": "supported",
+    "blocked": "unsupportedForActivation",
+    "arbitraryExternal": "unsupported"
+  },
+  "unsupported": [
+    "Intel",
+    "UniversalBinary",
+    "modifiedHelper",
+    "repackagedUnsignedApp",
+    "arbitraryCore",
+    "manualRootStoreModification",
+    "forcedDowngradeOverNewerSchema"
+  ],
+  "responseSLA": null
+}

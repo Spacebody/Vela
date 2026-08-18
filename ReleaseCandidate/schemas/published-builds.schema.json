@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "buildStrategy", "lastReviewedAt", "builds", "note"],
+  "properties": {
+    "schemaVersion": { "const": 3 },
+    "buildStrategy": { "const": "YYYYMMDDNN" },
+    "lastReviewedAt": { "type": "string", "format": "date" },
+    "builds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "build", "channel", "status", "artifactSHA256", "recordedAt", "statusUpdatedAt"],
+        "properties": {
+          "version": { "type": "string", "minLength": 5 },
+          "build": { "type": "integer", "minimum": 1 },
+          "channel": { "enum": ["rc", "stable"] },
+          "status": { "enum": ["allocated", "failed", "withdrawn", "published"] },
+          "artifactSHA256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+          "recordedAt": { "type": "string", "format": "date-time" },
+          "statusUpdatedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "note": { "type": "string", "minLength": 1 }
+  }
+}

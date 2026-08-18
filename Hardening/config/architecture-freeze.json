@@ -1,0 +1,222 @@
+{
+  "absentSurfaces": [
+    "productionCLI",
+    "productionAutomationSocket",
+    "productionAppIntents",
+    "productionSceneStore",
+    "networkExtension",
+    "remoteAnalytics",
+    "automaticCrashUpload",
+    "remoteFeatureFlags"
+  ],
+  "bundledComponents": [
+    {
+      "architecture": "arm64",
+      "build": "2026071403",
+      "name": "Vela",
+      "version": "1.0.0"
+    },
+    {
+      "architecture": "arm64",
+      "build": "2026071302",
+      "name": "VelaHelper",
+      "version": "0.6.0"
+    },
+    {
+      "architecture": "arm64",
+      "name": "mihomo",
+      "runtimeDownloadAllowed": false,
+      "version": "v1.19.29"
+    },
+    {
+      "name": "Sparkle",
+      "revision": "b6496a74a087257ef5e6da1c5b29a447a60f5bd7",
+      "version": "2.9.4"
+    }
+  ],
+  "capabilities": [
+    "userMihomoProcess",
+    "privilegedMihomoProcess",
+    "systemProxy",
+    "tun",
+    "genericPasswordKeychain",
+    "subscriptionHTTP",
+    "sparkleAppUpdate",
+    "signedCoreLifecycle",
+    "offlineHelp",
+    "localSupportExport"
+  ],
+  "filesystem": {
+    "arbitraryCommandAccepted": false,
+    "arbitraryPIDAccepted": false,
+    "arbitraryRootPathAccepted": false,
+    "bundlePaths": [
+      "Vela.app/Contents/Helpers/mihomo",
+      "Vela.app/Contents/Library/LaunchServices/VelaHelper",
+      "Vela.app/Contents/Library/LaunchDaemons/dev.yilin.Vela.Helper.plist"
+    ],
+    "privilegedRoots": [
+      "/Library/Application Support/dev.yilin.Vela/Privileged"
+    ],
+    "userRoots": [
+      "~/Library/Application Support/dev.yilin.Vela"
+    ]
+  },
+  "generatorVersion": 1,
+  "identifiers": {
+    "appGroup": null,
+    "appIntentIdentifiers": [],
+    "application": "dev.yilin.Vela",
+    "cli": null,
+    "helper": "dev.yilin.Vela.Helper",
+    "helperMachService": "dev.yilin.Vela.Helper"
+  },
+  "keychainCategories": [
+    {
+      "accountTemplate": "<profile-uuid>",
+      "service": "dev.yilin.Vela.subscription",
+      "valueCategory": "subscription URL and authentication envelope"
+    }
+  ],
+  "networkEndpointCategories": [
+    {
+      "id": "loopbackController",
+      "origin": "fixed loopback endpoint allocated by Vela",
+      "scheme": "http/ws"
+    },
+    {
+      "id": "userConfiguredSubscriptionOrProvider",
+      "origin": "explicit user configuration",
+      "scheme": "https; http only after explicit insecure opt-in"
+    },
+    {
+      "id": "signedAppUpdateFeed",
+      "origin": "release configuration",
+      "scheme": "https",
+      "status": "unprovisioned"
+    },
+    {
+      "id": "signedCoreCatalogAndArtifacts",
+      "origin": "release configuration and signed catalog",
+      "scheme": "https",
+      "status": "unprovisioned"
+    },
+    {
+      "hosts": [
+        "cp.cloudflare.com",
+        "www.gstatic.com"
+      ],
+      "id": "fixedConnectivityProbe",
+      "origin": "Vela source allowlist",
+      "scheme": "https"
+    },
+    {
+      "id": "userOpenedExternalLink",
+      "origin": "explicit user action",
+      "scheme": "https"
+    }
+  ],
+  "product": {
+    "architectures": [
+      "arm64"
+    ],
+    "build": "2026071403",
+    "marketingVersion": "1.0.0",
+    "minimumMacOS": "15.0"
+  },
+  "protocols": {
+    "automation": null,
+    "cli": null,
+    "helper": {
+      "maximum": 2,
+      "methodCount": 19,
+      "methods": [
+        "handshake",
+        "status",
+        "prepareStart",
+        "stageConfiguration",
+        "stageResource",
+        "commitStart",
+        "abortStart",
+        "stop",
+        "renewLease",
+        "readLogBatch",
+        "cleanup",
+        "prepareCoreInstall",
+        "stageCoreFile",
+        "commitCoreInstall",
+        "abortCoreInstall",
+        "listInstalledCores",
+        "refreshCoreCatalog",
+        "removeCore",
+        "validateCore"
+      ],
+      "minimum": 2
+    }
+  },
+  "releaseSecurity": {
+    "appSandbox": false,
+    "explicitEntitlementsFile": false,
+    "hardenedRuntime": true,
+    "privacyManifest": "Vela/Resources/PrivacyInfo.xcprivacy"
+  },
+  "schemaVersion": 1,
+  "schemas": {
+    "configurationLayer": 1,
+    "coreData": 6,
+    "help": 1,
+    "onboarding": 1,
+    "profile": 2,
+    "releaseManifest": 1,
+    "rootCoreInstallTransaction": 3,
+    "rootCoreStore": 2,
+    "rootData": 3,
+    "rootStartTransaction": 4,
+    "scene": null,
+    "supportBundle": 1,
+    "updateJournal": 1,
+    "userCoreStore": 1,
+    "xpcPayload": 1
+  },
+  "sources": [
+    "VelaIPC/VelaIPCConstants.swift",
+    "VelaIPC/VelaHelperProtocol.swift",
+    "Vela.xcodeproj/project.pbxproj",
+    "Release/config/compatibility.json",
+    "Release/config/release.json",
+    "Vendor/Mihomo/manifest.json",
+    "VelaIPC/CoreCatalogTrust.swift",
+    "Vela/Core/Subscriptions/SubscriptionSecrets.swift",
+    "Vela/Core/Persistence/ApplicationDirectories.swift",
+    "VelaIPC/Sources/VelaPrivilegedCore/PrivilegedDirectories.swift",
+    "VelaIPC/Sources/VelaPrivilegedCore/FixedMihomoPreflight.swift",
+    "Vela/Core/Network/ConnectivityProbe.swift",
+    "Vela/Core/Proxies/ProxyOperationState.swift",
+    "Configuration/Privileged/dev.yilin.Vela.Helper.plist"
+  ],
+  "surfaceDiscovery": {
+    "filesystemLiteralSHA256": "63a19fe6bfdafff8445368ed24f8cd46d9a87d706879792d46cf31e02cd231b9",
+    "scannedFileCount": 295,
+    "securitySignalSHA256": "b001a9acfd85c5dfd2292c05cd72b655eca51271cc567489fd09e703a3f64214",
+    "sourcePathListSHA256": "235a0e3f2f70b199574501c33f7bacc64283761b099cac1d5541937205c507b7",
+    "urlLiteralSHA256": "20f5dd654ffe3594338ed7464ab61f8a75cfa85aa67424446d1a5a5ab851f873"
+  },
+  "trustRoots": [
+    {
+      "identifier": "2E56T94S33",
+      "kind": "developerIDTeam",
+      "status": "configured"
+    },
+    {
+      "identifier": null,
+      "kind": "sparkleEdDSA",
+      "status": "unprovisioned"
+    },
+    {
+      "identifier": [],
+      "keySetVersion": 1,
+      "kind": "coreCatalogEd25519",
+      "status": "unprovisioned"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+mode: rule
+log-level: warning
+ipv6: false
+proxies: []
+proxy-groups:
+  - name: VELA-COMPAT
+    type: select
+    proxies:
+      - DIRECT
+rules:
+  - MATCH,VELA-COMPAT

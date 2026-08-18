@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "version": "v1.19.28",
+  "tag": "v1.19.28",
+  "commit": "cbd11db",
+  "assetName": "mihomo-darwin-arm64-v1.19.28.gz",
+  "assetURL": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.28/mihomo-darwin-arm64-v1.19.28.gz",
+  "archiveSHA256": "40cdae2fab4b18df15f40eaa9dc3af70ab3d8be7f77164ae1e5f1af3a2a4fb44",
+  "archiveSizeBytes": 15963072,
+  "sourceURL": "https://github.com/MetaCubeX/mihomo/tree/v1.19.28",
+  "licenseURL": "https://github.com/MetaCubeX/mihomo/blob/v1.19.28/LICENSE"
+}

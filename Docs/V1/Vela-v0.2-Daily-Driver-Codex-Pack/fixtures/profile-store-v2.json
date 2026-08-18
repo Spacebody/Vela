@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "profiles": [
+    {
+      "id": "0F6EF4B0-46C1-4CC0-B9C7-1BB752B38A10",
+      "displayName": "Local Profile",
+      "sourceKind": "localFile",
+      "sourceFileName": "config.yaml",
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "currentRevisionID": null,
+      "previousRevisionIDs": [],
+      "remote": null
+    }
+  ],
+  "selectedProfileID": "0F6EF4B0-46C1-4CC0-B9C7-1BB752B38A10"
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "page": "updateCoreRecovery",
+  "allowedPaths": [
+    "Vela/Features/Settings/**",
+    "Vela/Features/Diagnostics/**",
+    "Vela/Presentation/UpdateCore/**",
+    "VelaTests/Updates/**",
+    "VelaTests/CoreLifecycle/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "updateCoreRecovery.loaded",
+    "updateCoreRecovery.pendingMutation",
+    "updateCoreRecovery.partialFailure",
+    "updateCoreRecovery.failure",
+    "updateCoreRecovery.permissionRequired",
+    "updateCoreRecovery.transitioning",
+    "updateCoreRecovery.rollbackFailed"
+  ],
+  "requiredStates": [
+    "loaded",
+    "pendingMutation",
+    "partialFailure",
+    "failure",
+    "permissionRequired",
+    "transitioning",
+    "rollbackFailed"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

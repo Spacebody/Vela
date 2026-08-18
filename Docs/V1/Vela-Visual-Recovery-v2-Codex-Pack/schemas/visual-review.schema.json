@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/schemas/visual-review.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "targetID",
+    "reviewer",
+    "status",
+    "categories",
+    "remainingDifferences"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "targetID": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "reviewer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "approved",
+        "changesRequested",
+        "rejected"
+      ]
+    },
+    "categories": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "structure",
+        "alignment",
+        "spacing",
+        "typography",
+        "controls",
+        "stateAccuracy",
+        "responsive",
+        "lightDark",
+        "localization"
+      ],
+      "properties": {
+        "structure": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "alignment": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "spacing": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "typography": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "controls": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "stateAccuracy": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "responsive": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "lightDark": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "localization": {
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        }
+      }
+    },
+    "remainingDifferences": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

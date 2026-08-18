@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "runID": "59c5c38b-ea9a-4c11-b731-e7550c0e8dfb",
+  "createdAt": "2026-07-14T00:00:00+00:00",
+  "completedAt": "2026-07-14T00:01:00+00:00",
+  "source": {
+    "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "tag": "v0.8.0-beta.1",
+    "build": 2026071402,
+    "channel": "beta",
+    "dirty": false,
+    "architectureFreezeSHA256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "components": {
+    "app": "0.8.0",
+    "helper": "0.6.0",
+    "helperProtocol": 2,
+    "cli": null,
+    "mihomo": "v1.19.28",
+    "core": "factory-v1.19.28"
+  },
+  "environment": {
+    "machineID": "77690ba0-28b3-49d8-9a5d-f5664e78a827",
+    "hardwareCategory": "Apple Silicon test category",
+    "memoryGB": 16,
+    "macOSBuild": "test-build",
+    "architecture": "arm64",
+    "power": "AC",
+    "thermalState": "nominal",
+    "userType": "standard",
+    "locale": "en",
+    "appearance": "dark",
+    "accessibility": [],
+    "networkScenario": "offline",
+    "serialNumberCollected": false,
+    "realUserNameCollected": false,
+    "syntheticDataOnly": true
+  },
+  "faultPlan": null,
+  "tests": [
+    {
+      "id": "fixture.nonDestructive",
+      "status": "passed",
+      "durationSeconds": 1.5,
+      "evidence": [
+        {
+          "path": "metrics/result.json",
+          "size": 202,
+          "sha256": "ba4ce1d156f671da03c5ebf166a4c9ef49c15af6f6cf4d7a581bd329b745044b"
+        }
+      ],
+      "stableResultCode": "success"
+    }
+  ],
+  "cleanup": {
+    "status": "passed",
+    "managedPIDs": [],
+    "ownedTunInterfaces": [],
+    "systemProxyMatches": true,
+    "routeStateMatches": true,
+    "temporaryResourcesRemoved": true,
+    "evidence": [
+      {
+        "path": "cleanup.json",
+        "size": 204,
+        "sha256": "b77cee2b74787b8f1b9a6362a17017e8195457c6fad006ee99f5608c50b480e1"
+      }
+    ]
+  }
+}

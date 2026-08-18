@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "manifestKind",
+    "visibility",
+    "stage",
+    "candidate",
+    "freeze",
+    "artifacts",
+    "receipts",
+    "signing"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "manifestKind": { "const": "candidateStageEvidence" },
+    "visibility": { "const": "private" },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "decision", "promotionStatus", "verifyFilesRequired"],
+      "properties": {
+        "name": { "const": "candidate" },
+        "decision": { "const": "noGo" },
+        "promotionStatus": { "const": "pending" },
+        "verifyFilesRequired": { "const": true }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "build", "tag", "commit"],
+      "properties": {
+        "version": { "type": "string", "minLength": 5, "maxLength": 80 },
+        "build": { "type": "integer", "minimum": 1 },
+        "tag": { "type": "string", "minLength": 2, "maxLength": 82 },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "freeze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["architecture"],
+      "properties": {
+        "architecture": { "$ref": "#/$defs/file" }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dmg",
+        "appArchive",
+        "archiveContainer",
+        "appcast",
+        "sbom",
+        "signedReleaseNotes",
+        "updatesRoot",
+        "updatesChecksums",
+        "updatesSubjects"
+      ],
+      "properties": {
+        "dmg": { "$ref": "#/$defs/file" },
+        "appArchive": { "$ref": "#/$defs/file" },
+        "archiveContainer": { "$ref": "#/$defs/file" },
+        "appcast": { "$ref": "#/$defs/file" },
+        "sbom": { "$ref": "#/$defs/file" },
+        "signedReleaseNotes": { "$ref": "#/$defs/file" },
+        "updatesRoot": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "updatesChecksums": { "$ref": "#/$defs/file" },
+        "updatesSubjects": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/file" }
+        }
+      }
+    },
+    "receipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["app", "archive", "archiveDirectory", "notarization"],
+      "properties": {
+        "app": { "$ref": "#/$defs/file" },
+        "archive": { "$ref": "#/$defs/file" },
+        "archiveDirectory": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "notarization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["app", "dmg"],
+          "properties": {
+            "app": { "$ref": "#/$defs/notaryReceipt" },
+            "dmg": { "$ref": "#/$defs/notaryReceipt" }
+          }
+        }
+      }
+    },
+    "signing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["certificateSHA256", "sparkleVerification"],
+      "properties": {
+        "certificateSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "sparkleVerification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "toolVersion", "appcastSHA256"],
+          "properties": {
+            "status": { "const": "verified" },
+            "toolVersion": { "const": "verify_signed_appcast_artifacts.py/1" },
+            "appcastSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "filename", "size", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "size": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "notaryReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "submissionID", "status"],
+      "properties": {
+        "file": { "$ref": "#/$defs/file" },
+        "submissionID": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "status": { "const": "Accepted" }
+      }
+    }
+  }
+}

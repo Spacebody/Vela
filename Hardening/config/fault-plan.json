@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "planID": "48f952c8-725c-4bfa-9752-d316c532e93a",
+  "seed": 8072026,
+  "scenarios": [
+    { "id": "profile-atomic-replace-low-disk", "point": "profile.commit.atomicReplace", "occurrence": 1, "effect": { "kind": "throw", "code": "testInsufficientDisk" }, "expectedSafeState": "previousRevisionActive", "forbiddenOutcomes": ["emptyProfileStore", "activeConfigCorrupt"], "destructive": false },
+    { "id": "keychain-read-unavailable", "point": "keychain.read", "occurrence": 1, "effect": { "kind": "throw", "code": "testKeychainUnavailable" }, "expectedSafeState": "noMutation", "forbiddenOutcomes": ["secretExposure", "unauthorizedMutation"], "destructive": false },
+    { "id": "subscription-http-429", "point": "subscription.response", "occurrence": 1, "effect": { "kind": "httpStatus", "status": 429 }, "expectedSafeState": "retryBounded", "forbiddenOutcomes": ["infiniteRetry", "emptyProfileStore"], "destructive": false },
+    { "id": "controller-start-timeout", "point": "controller.startup", "occurrence": 1, "effect": { "kind": "timeout", "milliseconds": 5000 }, "expectedSafeState": "ownedProcessStopped", "forbiddenOutcomes": ["orphanProcess", "infiniteRetry"], "destructive": false },
+    { "id": "connections-websocket-disconnect", "point": "connections.webSocket.disconnect", "occurrence": 2, "effect": { "kind": "closeWebSocket", "reason": "serverRestart" }, "expectedSafeState": "retryBounded", "forbiddenOutcomes": ["infiniteRetry", "orphanProcess"], "destructive": false },
+    { "id": "configuration-validation-rejected", "point": "configuration.validation", "occurrence": 1, "effect": { "kind": "throw", "code": "testValidationRejected" }, "expectedSafeState": "lastKnownGoodConfigurationReadOnly", "forbiddenOutcomes": ["activeConfigCorrupt", "unauthorizedMutation"], "destructive": false },
+    { "id": "support-export-permission-denied", "point": "supportBundle.write", "occurrence": 1, "effect": { "kind": "permissionDenied" }, "expectedSafeState": "supportExportAbsent", "forbiddenOutcomes": ["partialWrite", "secretExposure"], "destructive": false },
+    { "id": "update-journal-interruption", "point": "appUpdate.journal", "occurrence": 1, "effect": { "kind": "cancellation" }, "expectedSafeState": "rollbackComplete", "forbiddenOutcomes": ["staleJournal", "rollbackLoop"], "destructive": false },
+    { "id": "core-probation-owned-exit", "point": "core.probation.processExit", "occurrence": 1, "effect": { "kind": "ownedProcessExit", "exitCode": 42 }, "expectedSafeState": "previousKnownGoodCoreActive", "forbiddenOutcomes": ["factoryCoreDeleted", "rollbackLoop"], "destructive": true },
+    { "id": "helper-rpc-timeout", "point": "helper.rpc.timeout", "occurrence": 1, "effect": { "kind": "timeout", "milliseconds": 5000 }, "expectedSafeState": "noMutation", "forbiddenOutcomes": ["unauthorizedMutation", "infiniteRetry"], "destructive": false },
+    { "id": "system-proxy-verification-mismatch", "point": "systemProxy.verification", "occurrence": 1, "effect": { "kind": "throw", "code": "testValidationRejected" }, "expectedSafeState": "rollbackComplete", "forbiddenOutcomes": ["systemProxyUnknown", "unsafeBackendActive", "rollbackLoop"], "destructive": true },
+    { "id": "tun-controller-timeout", "point": "tun.waitForController", "occurrence": 1, "effect": { "kind": "timeout", "milliseconds": 5000 }, "expectedSafeState": "previousBackendHealthy", "forbiddenOutcomes": ["tunRouteResidue", "systemProxyUnknown", "infiniteRetry"], "destructive": true }
+  ]
+}

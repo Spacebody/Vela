@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "configurationGenerationID": "64631296-215D-401D-AD83-9F65904C182B",
+  "paths": {
+    "/dns/enable": {
+      "source": "upstream"
+    },
+    "/dns/ipv6": {
+      "source": "global",
+      "operationID": "AB7F3F1A-B746-49F0-9E19-315A0AA611D2"
+    },
+    "/dns/custom-unknown-field": {
+      "source": "upstream"
+    },
+    "/sniffer/enable": {
+      "source": "profile",
+      "operationID": "7A17437C-47D6-4644-AB52-B4015B4D9748"
+    },
+    "/dns/respect-rules": {
+      "source": "scene",
+      "operationID": "4A718391-3C2F-4A0C-8382-53B7C6212691"
+    }
+  }
+}

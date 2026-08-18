@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "manifestKind",
+    "visibility",
+    "stage",
+    "candidate",
+    "artifact",
+    "inputs",
+    "bindings",
+    "closedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "manifestKind": { "const": "promotionClosure" },
+    "visibility": { "const": "private" },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "promotionStatus", "verifyFilesRequired"],
+      "properties": {
+        "decision": { "const": "go" },
+        "promotionStatus": { "const": "closed" },
+        "verifyFilesRequired": { "const": true }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "build", "tag", "commit"],
+      "properties": {
+        "version": { "type": "string", "minLength": 5, "maxLength": 80 },
+        "build": { "type": "integer", "minimum": 1 },
+        "tag": { "type": "string", "minLength": 2, "maxLength": 82 },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "filename", "sha256", "size"],
+      "properties": {
+        "kind": { "const": "dmg" },
+        "filename": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goNoGo",
+        "installationMatrix",
+        "candidateStageEvidence",
+        "rcManifest",
+        "attestationVerification",
+        "attestationBundle",
+        "attestationTrustedRoot",
+        "subjectChecksums"
+      ],
+      "properties": {
+        "goNoGo": { "$ref": "#/$defs/input" },
+        "installationMatrix": { "$ref": "#/$defs/input" },
+        "candidateStageEvidence": { "$ref": "#/$defs/input" },
+        "rcManifest": { "$ref": "#/$defs/input" },
+        "attestationVerification": { "$ref": "#/$defs/input" },
+        "attestationBundle": { "$ref": "#/$defs/input" },
+        "attestationTrustedRoot": { "$ref": "#/$defs/input" },
+        "subjectChecksums": { "$ref": "#/$defs/input" }
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gateIDs",
+        "approvalRoles",
+        "installationGateEvidence",
+        "artifactGateEvidence",
+        "architectureSHA256",
+        "signingCertificateSHA256",
+        "attestation"
+      ],
+      "properties": {
+        "gateIDs": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "stopShip",
+              "contracts",
+              "migration",
+              "securityAudit",
+              "soak",
+              "performance",
+              "accessibilityPrivacy",
+              "installation",
+              "artifact",
+              "supportIncident"
+            ]
+          }
+        },
+        "approvalRoles": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "Release",
+              "Security",
+              "Reliability",
+              "Product",
+              "Support",
+              "AccessibilityLocalization"
+            ]
+          }
+        },
+        "installationGateEvidence": { "$ref": "#/$defs/reference" },
+        "artifactGateEvidence": { "$ref": "#/$defs/reference" },
+        "architectureSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "signingCertificateSHA256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "attestation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repository",
+            "signerWorkflow",
+            "source",
+            "result",
+            "bundle",
+            "trustedRoot",
+            "requiredSubjects"
+          ],
+          "properties": {
+            "repository": { "const": "Spacebody/Vela" },
+            "signerWorkflow": {
+              "const": "github.com/Spacebody/Vela/.github/workflows/release.yml"
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["commit", "ref"],
+              "properties": {
+                "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+                "ref": { "type": "string", "pattern": "^refs/tags/v" }
+              }
+            },
+            "result": { "const": "verifiedByGitHubCLIWithOfflineBundle" },
+            "bundle": { "$ref": "#/$defs/file" },
+            "trustedRoot": { "$ref": "#/$defs/file" },
+            "requiredSubjects": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": { "$ref": "#/$defs/file" }
+            }
+          }
+        }
+      }
+    },
+    "closedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "sha256", "size"],
+      "properties": {
+        "filename": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "path", "filename", "sha256", "size"],
+      "properties": {
+        "root": { "enum": ["evidence", "candidateStage", "publicArtifacts"] },
+        "path": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "filename": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

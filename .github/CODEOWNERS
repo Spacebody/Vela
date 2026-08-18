@@ -1,0 +1,17 @@
+# Vela V1 release and security-sensitive ownership.
+/.github/workflows/ @Spacebody
+/.github/CODEOWNERS @Spacebody
+/.github/pull_request_template.md @Spacebody
+/Contracts/ @Spacebody
+/Hardening/ @Spacebody
+/Release/ @Spacebody
+/ReleaseCandidate/ @Spacebody
+/VelaIPC/ @Spacebody
+/Vela/Core/CoreLifecycle/ @Spacebody
+/Vela/Core/Privileged/ @Spacebody
+/Vela/Core/Updates/ @Spacebody
+/VelaHelper/ @Spacebody
+/Scripts/Privileged/ @Spacebody
+/Configuration/Privileged/ @Spacebody
+/Vela/Info.plist @Spacebody
+/Vela.xcodeproj/ @Spacebody

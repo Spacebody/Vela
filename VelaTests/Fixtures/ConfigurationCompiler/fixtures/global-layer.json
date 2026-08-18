@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "30E845D5-C153-4E97-8B3B-1C994932F551",
+  "revision": 1,
+  "name": "Global defaults",
+  "kind": "global",
+  "enabled": true,
+  "operations": [
+    {
+      "id": "AB7F3F1A-B746-49F0-9E19-315A0AA611D2",
+      "enabled": true,
+      "order": 10,
+      "kind": "set",
+      "path": "/dns/ipv6",
+      "value": false
+    },
+    {
+      "id": "82734E17-5748-4698-A367-B159C9326DB1",
+      "enabled": true,
+      "order": 20,
+      "kind": "appendUnique",
+      "path": "/dns/nameserver",
+      "value": [
+        "9.9.9.9"
+      ]
+    }
+  ]
+}

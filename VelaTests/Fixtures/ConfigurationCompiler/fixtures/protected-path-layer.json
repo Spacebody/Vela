@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "DC606BBB-13AF-41DA-A92D-85C7D3B7F957",
+  "revision": 1,
+  "name": "Must fail",
+  "kind": "profile",
+  "enabled": true,
+  "operations": [
+    {
+      "id": "7F8BF26F-518D-4A8A-84A4-A1F591560D7A",
+      "enabled": true,
+      "order": 10,
+      "kind": "set",
+      "path": "/external-controller",
+      "value": "0.0.0.0:9090"
+    },
+    {
+      "id": "812F1A58-3B0C-4E0B-8A08-D57EB29670C7",
+      "enabled": true,
+      "order": 20,
+      "kind": "set",
+      "path": "/tun/auto-route",
+      "value": false
+    }
+  ]
+}

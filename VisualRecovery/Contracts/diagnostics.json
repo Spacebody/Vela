@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "page": "diagnostics",
+  "allowedPaths": [
+    "Vela/Features/Diagnostics/**",
+    "Vela/Presentation/Diagnostics/**",
+    "VelaTests/Diagnostics/**",
+    "VelaUITests/**",
+    "VisualRecovery/**"
+  ],
+  "forbiddenDomains": [
+    "EngineStore semantics",
+    "VelaHelper or VelaIPC protocol",
+    "SystemProxyManager semantics",
+    "TUN sanitizer or privileged lifecycle semantics",
+    "Profile transaction or subscription security semantics",
+    "Scene or Automation production contract",
+    "CLI or App Intents public contract",
+    "Update or Core signing and trust contract",
+    "Persistence schema"
+  ],
+  "fixtures": [
+    "diagnostics.loading",
+    "diagnostics.loaded",
+    "diagnostics.refreshing",
+    "diagnostics.partialFailure",
+    "diagnostics.failure",
+    "diagnostics.pendingMutation",
+    "diagnostics.stale",
+    "diagnostics.permissionRequired",
+    "diagnostics.rollbackFailed"
+  ],
+  "requiredStates": [
+    "loading",
+    "loaded",
+    "refreshing",
+    "partialFailure",
+    "failure",
+    "pendingMutation",
+    "stale",
+    "permissionRequired",
+    "rollbackFailed"
+  ],
+  "requiredChecks": [
+    "functional",
+    "stateAccuracy",
+    "lightDark",
+    "enZhHans",
+    "minimumDefaultLargeWindow",
+    "keyboard",
+    "voiceOver",
+    "differentiateWithoutColor",
+    "reduceMotion",
+    "performance",
+    "leak",
+    "visualDiffWhenTargetApproved",
+    "humanVisualReviewWhenTargetApproved"
+  ]
+}

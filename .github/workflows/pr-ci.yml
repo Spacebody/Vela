@@ -1,0 +1,50 @@
+name: PR CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - release/1.0
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: macos-15
+    timeout-minutes: 90
+    env:
+      VELA_CI_RUN_UI_TESTS: "1"
+    steps:
+      # actions/checkout v4.2.2, pinned to the complete commit SHA.
+      - name: Check out trusted revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Assert Apple Silicon
+        run: test "$(uname -m)" = "arm64"
+
+      - name: Validate PR feature-freeze change control
+        if: github.event_name == 'pull_request'
+        run: python3 ReleaseCandidate/scripts/validate_pr_change_control.py
+
+      - name: Validate release tooling without secrets
+        run: ./Release/scripts/release.sh --dry-run
+
+      - name: Resolve locked dependencies
+        run: xcodebuild -resolvePackageDependencies -project Vela.xcodeproj -scheme Vela
+
+      - name: Refuse dependency-lock drift
+        run: git diff --exit-code -- Vela.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved VelaIPC/Package.resolved
+
+      - name: Test
+        run: ./script/ci_test.sh
+
+      - name: Build Debug and Release
+        run: ./script/ci_build.sh

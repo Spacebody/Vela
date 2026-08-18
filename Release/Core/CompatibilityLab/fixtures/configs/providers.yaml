@@ -1,0 +1,32 @@
+mode: rule
+log-level: warning
+proxy-providers:
+  file-provider:
+    type: file
+    path: ./providers/proxies.yaml
+    health-check: {enable: false}
+  http-provider:
+    type: http
+    url: https://fixtures.example.invalid/proxies.yaml
+    path: ./downloaded-proxies.yaml
+    interval: 86400
+    health-check: {enable: false}
+rule-providers:
+  file-rules:
+    type: file
+    behavior: classical
+    path: ./providers/rules.yaml
+  http-rules:
+    type: http
+    behavior: classical
+    url: https://fixtures.example.invalid/rules.yaml
+    path: ./downloaded-rules.yaml
+    interval: 86400
+proxy-groups:
+  - name: VELA-COMPAT
+    type: select
+    use: [file-provider]
+    proxies: [DIRECT]
+rules:
+  - RULE-SET,file-rules,VELA-COMPAT
+  - MATCH,DIRECT

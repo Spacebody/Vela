@@ -1,0 +1,840 @@
+{
+  "schemaVersion": 1,
+  "fixedDate": "2026-07-14T09:41:00Z",
+  "fixedUUIDSeed": 20260714,
+  "fixtures": [
+    {
+      "id": "overview.loading",
+      "page": "overview",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.loadedHealthy",
+      "page": "overview",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.empty",
+      "page": "overview",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.refreshing",
+      "page": "overview",
+      "state": "refreshing",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.pendingMutation",
+      "page": "overview",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.partialFailure",
+      "page": "overview",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.failure",
+      "page": "overview",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.offlineNoConfiguration",
+      "page": "overview",
+      "state": "offline",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.stale",
+      "page": "overview",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.permissionRequired",
+      "page": "overview",
+      "state": "permissionRequired",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "overview.transitioning",
+      "page": "overview",
+      "state": "transitioning",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.loading",
+      "page": "proxies",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.loaded",
+      "page": "proxies",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.empty",
+      "page": "proxies",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.refreshing",
+      "page": "proxies",
+      "state": "refreshing",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.pendingMutation",
+      "page": "proxies",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.partialFailure",
+      "page": "proxies",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.failure",
+      "page": "proxies",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.offline",
+      "page": "proxies",
+      "state": "offline",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "proxies.stale",
+      "page": "proxies",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.loading",
+      "page": "connections",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.loaded",
+      "page": "connections",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.empty",
+      "page": "connections",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.refreshing",
+      "page": "connections",
+      "state": "refreshing",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.pendingMutation",
+      "page": "connections",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.partialFailure",
+      "page": "connections",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.failure",
+      "page": "connections",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.offline",
+      "page": "connections",
+      "state": "offline",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "connections.stale",
+      "page": "connections",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.loading",
+      "page": "rules",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.loaded",
+      "page": "rules",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.empty",
+      "page": "rules",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.refreshing",
+      "page": "rules",
+      "state": "refreshing",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.pendingMutation",
+      "page": "rules",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.partialFailure",
+      "page": "rules",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.failure",
+      "page": "rules",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.stale",
+      "page": "rules",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "rules.transitioning",
+      "page": "rules",
+      "state": "transitioning",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "providers.loading",
+      "page": "providers",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "providers.loaded",
+      "page": "providers",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "providers.empty",
+      "page": "providers",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "providers.refreshing",
+      "page": "providers",
+      "state": "refreshing",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "providers.pendingMutation",
+      "page": "providers",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "providers.partialFailure",
+      "page": "providers",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "providers.failure",
+      "page": "providers",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.loading",
+      "page": "workbench",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.loaded",
+      "page": "workbench",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.empty",
+      "page": "workbench",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.pendingMutation",
+      "page": "workbench",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.partialFailure",
+      "page": "workbench",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.failure",
+      "page": "workbench",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.stale",
+      "page": "workbench",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.transitioning",
+      "page": "workbench",
+      "state": "transitioning",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "workbench.rollbackFailed",
+      "page": "workbench",
+      "state": "rollbackFailed",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.loading",
+      "page": "diagnostics",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.loaded",
+      "page": "diagnostics",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.refreshing",
+      "page": "diagnostics",
+      "state": "refreshing",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.partialFailure",
+      "page": "diagnostics",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.failure",
+      "page": "diagnostics",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.pendingMutation",
+      "page": "diagnostics",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.stale",
+      "page": "diagnostics",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.permissionRequired",
+      "page": "diagnostics",
+      "state": "permissionRequired",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "diagnostics.rollbackFailed",
+      "page": "diagnostics",
+      "state": "rollbackFailed",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.loading",
+      "page": "logs",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.loaded",
+      "page": "logs",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.empty",
+      "page": "logs",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.refreshing",
+      "page": "logs",
+      "state": "refreshing",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.pendingMutation",
+      "page": "logs",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.partialFailure",
+      "page": "logs",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.failure",
+      "page": "logs",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.offline",
+      "page": "logs",
+      "state": "offline",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.stale",
+      "page": "logs",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.permissionRequired",
+      "page": "logs",
+      "state": "permissionRequired",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.transitioning",
+      "page": "logs",
+      "state": "transitioning",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "logs.rollbackFailed",
+      "page": "logs",
+      "state": "rollbackFailed",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "settings.loaded",
+      "page": "settings",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "settings.pendingMutation",
+      "page": "settings",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "settings.partialFailure",
+      "page": "settings",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "settings.failure",
+      "page": "settings",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "settings.permissionRequired",
+      "page": "settings",
+      "state": "permissionRequired",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "tunFlow.loading",
+      "page": "tunFlow",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "tunFlow.pendingMutation",
+      "page": "tunFlow",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "tunFlow.failure",
+      "page": "tunFlow",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "tunFlow.permissionRequired",
+      "page": "tunFlow",
+      "state": "permissionRequired",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "tunFlow.transitioning",
+      "page": "tunFlow",
+      "state": "transitioning",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "tunFlow.rollbackFailed",
+      "page": "tunFlow",
+      "state": "rollbackFailed",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "menuBar.loaded",
+      "page": "menuBar",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "menuBar.pendingMutation",
+      "page": "menuBar",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "menuBar.partialFailure",
+      "page": "menuBar",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "menuBar.failure",
+      "page": "menuBar",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "menuBar.stale",
+      "page": "menuBar",
+      "state": "stale",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "updateCoreRecovery.loaded",
+      "page": "updateCoreRecovery",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "updateCoreRecovery.pendingMutation",
+      "page": "updateCoreRecovery",
+      "state": "pendingMutation",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "updateCoreRecovery.partialFailure",
+      "page": "updateCoreRecovery",
+      "state": "partialFailure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "updateCoreRecovery.failure",
+      "page": "updateCoreRecovery",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "updateCoreRecovery.permissionRequired",
+      "page": "updateCoreRecovery",
+      "state": "permissionRequired",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "updateCoreRecovery.transitioning",
+      "page": "updateCoreRecovery",
+      "state": "transitioning",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "updateCoreRecovery.rollbackFailed",
+      "page": "updateCoreRecovery",
+      "state": "rollbackFailed",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "helpSupport.loading",
+      "page": "helpSupport",
+      "state": "loading",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "helpSupport.loaded",
+      "page": "helpSupport",
+      "state": "loaded",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "helpSupport.empty",
+      "page": "helpSupport",
+      "state": "empty",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "helpSupport.failure",
+      "page": "helpSupport",
+      "state": "failure",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    },
+    {
+      "id": "helpSupport.offline",
+      "page": "helpSupport",
+      "state": "offline",
+      "sensitiveData": false,
+      "dataSource": "deterministicInMemory",
+      "liveServicesAllowed": false
+    }
+  ],
+  "isolation": {
+    "applicationSupport": "temporaryPerProcess",
+    "network": "disabled",
+    "keychain": "disabled",
+    "privilegedHelper": "disabled",
+    "systemProxy": "disabled",
+    "tun": "disabled",
+    "subscriptions": "disabled"
+  }
+}

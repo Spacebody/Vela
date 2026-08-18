@@ -1,0 +1,15 @@
+-VelaVisualTestMode
+-VelaFixture
+-VelaAppearance
+-VelaLocale
+-VelaWindow
+-VelaInspector
+-VelaFixedDate
+visual.ready.
+VisualFixtureEnvironment
+VisualTestLaunchConfiguration
+targets/approved
+current.png
+--vela-ui-testing
+--vela-visual-appearance=
+--vela-visual-window-size=

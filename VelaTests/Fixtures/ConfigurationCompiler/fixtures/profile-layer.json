@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "30C6858D-FAD7-46EC-A1DC-CF708689C426",
+  "revision": 1,
+  "name": "Profile overrides",
+  "kind": "profile",
+  "enabled": true,
+  "operations": [
+    {
+      "id": "7A17437C-47D6-4644-AB52-B4015B4D9748",
+      "enabled": true,
+      "order": 10,
+      "kind": "set",
+      "path": "/sniffer/enable",
+      "value": true
+    }
+  ]
+}

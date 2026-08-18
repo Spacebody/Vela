@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "suiteVersion": 1,
+  "coreID": "v1.19.28-r1",
+  "result": "passed",
+  "generatedAt": "2026-07-13T00:00:00Z",
+  "environment": {
+    "macOS": "15+",
+    "architecture": "arm64",
+    "vela": "0.6.0"
+  },
+  "tests": [
+    {
+      "id": "version",
+      "result": "passed"
+    },
+    {
+      "id": "config-corpus",
+      "result": "passed"
+    },
+    {
+      "id": "controller-api",
+      "result": "passed"
+    },
+    {
+      "id": "user-backend",
+      "result": "passed"
+    },
+    {
+      "id": "tun-backend",
+      "result": "passed"
+    },
+    {
+      "id": "rollback",
+      "result": "passed"
+    }
+  ],
+  "knownDeviations": []
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "platform", "appVersions", "cores", "unsupported", "responseSLA"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimumMacOS", "architectures"],
+      "properties": {
+        "minimumMacOS": { "const": "15.0" },
+        "architectures": { "type": "array", "items": { "const": "arm64" }, "minItems": 1, "maxItems": 1 }
+      }
+    },
+    "appVersions": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          { "range": "currentStable", "support": "full" },
+          { "range": "previousStable", "support": "upgradeAndRecoveryGuidance" },
+          { "range": "betaOrRC", "support": "bestEffort" }
+        ]
+      }
+    },
+    "cores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["factory", "signedCatalogCompatible", "blocked", "arbitraryExternal"],
+      "properties": {
+        "factory": { "const": "supported" },
+        "signedCatalogCompatible": { "const": "supported" },
+        "blocked": { "const": "unsupportedForActivation" },
+        "arbitraryExternal": { "const": "unsupported" }
+      }
+    },
+    "unsupported": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "enum": [
+          "Intel",
+          "UniversalBinary",
+          "modifiedHelper",
+          "repackagedUnsignedApp",
+          "arbitraryCore",
+          "manualRootStoreModification",
+          "forcedDowngradeOverNewerSchema"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "responseSLA": { "const": null }
+  }
+}

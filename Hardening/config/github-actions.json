@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 2,
+  "verifiedAt": "2026-07-14",
+  "actions": [
+    { "repository": "actions/checkout", "version": "v4.2.2", "sha": "11bd71901bbe5b1630ceea73d27597364c9af683", "usedBy": "existing protected Vela workflows" },
+    { "repository": "actions/checkout", "version": "v4", "sha": "34e114876b0b11c390a56381ad16ebd13914f8d5", "usedBy": "V0.8 hardening workflows" },
+    { "repository": "actions/upload-artifact", "version": "v4.6.2", "sha": "ea165f8d65b6e75b540449e92b4886f43607fa02", "usedBy": "Core and nightly evidence workflows" },
+    { "repository": "actions/attest", "version": "v4.1.1", "sha": "a1948c3f048ba23858d222213b7c278aabede763", "usedBy": "protected App release provenance and SBOM attestations" },
+    { "repository": "github/codeql-action", "version": "v3.37.0", "sha": "02c5e83432fe5497fd85b873b6c9f16a8578e1d9", "usedBy": "CodeQL init and analyze" },
+    { "repository": "actions/dependency-review-action", "version": "v4.9.0", "sha": "2031cfc080254a8a887f58cffee85186f0e49e48", "usedBy": "Dependency Review" },
+    { "repository": "gitleaks/gitleaks-action", "version": "v2", "sha": "ff98106e4c7b2bc287b24eaf42907196329070c7", "usedBy": "secret pattern scan" }
+  ],
+  "workflowPermissionPolicies": [
+    {
+      "workflow": ".github/workflows/release.yml",
+      "topLevelPermissions": {
+        "contents": "read"
+      },
+      "jobOverrides": {
+        "attest": {
+          "contents": "read",
+          "id-token": "write",
+          "attestations": "write",
+          "artifact-metadata": "write"
+        }
+      }
+    }
+  ],
+  "notes": [
+    "SHAs were resolved from upstream Git refs and are pinned in workflow source.",
+    "Dependabot, GitHub Secret Scanning, and Push Protection are repository settings and require separate human verification.",
+    "Only the protected release workflow attest job has the exact reviewed OIDC and attestation write-permission override after the release job owns the final immutable checksums, DMG, and SBOM; verification remains a release evidence gate."
+  ]
+}

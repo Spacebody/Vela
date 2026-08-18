@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vela.invalid/schemas/support-bundle-manifest.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "createdAt",
+    "app",
+    "redactionVersion",
+    "files"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "app": {
+      "type": "object"
+    },
+    "redactionVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "files": {
+      "type": "array",
+      "maxItems": 100
+    }
+  }
+}

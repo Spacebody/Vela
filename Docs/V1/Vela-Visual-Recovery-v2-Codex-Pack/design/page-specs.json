@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "pages": [
+    {
+      "id": "overview",
+      "layout": "single dashboard",
+      "reference": "01-overview",
+      "requiredSections": [
+        "health header",
+        "4 metrics",
+        "traffic",
+        "proxy group",
+        "top connections",
+        "quick actions"
+      ]
+    },
+    {
+      "id": "proxies",
+      "layout": "table + inspector",
+      "reference": "02-proxies",
+      "requiredSections": [
+        "filters",
+        "table or outline",
+        "selection state",
+        "latency",
+        "inspector"
+      ]
+    },
+    {
+      "id": "connections",
+      "layout": "table + inspector",
+      "reference": "03-connections",
+      "requiredSections": [
+        "filters",
+        "stream table",
+        "connection detail",
+        "routing explanation",
+        "disconnect actions"
+      ]
+    },
+    {
+      "id": "rules",
+      "layout": "table + inspector",
+      "reference": "04-rules",
+      "requiredSections": [
+        "runtime rules",
+        "source",
+        "temporary state",
+        "hits",
+        "workbench action"
+      ]
+    },
+    {
+      "id": "profiles",
+      "layout": "master + detail",
+      "reference": "05-profiles",
+      "requiredSections": [
+        "list",
+        "source/update state",
+        "usage",
+        "revisions",
+        "actions"
+      ]
+    },
+    {
+      "id": "providers",
+      "layout": "segmented table + optional inspector",
+      "reference": "06-providers",
+      "requiredSections": [
+        "proxy/rule tabs",
+        "batch actions",
+        "partial failure"
+      ]
+    },
+    {
+      "id": "scenes",
+      "layout": "master + detail",
+      "reference": "07-scenes",
+      "requiredSections": [
+        "scene list",
+        "target",
+        "triggers",
+        "match explanation",
+        "transaction phases"
+      ]
+    },
+    {
+      "id": "workbench",
+      "layout": "three-column workbench",
+      "reference": "08-workbench",
+      "requiredSections": [
+        "layer navigator",
+        "editor/rules/diff/effective",
+        "source inspector"
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "layout": "single detail",
+      "reference": "09-diagnostics",
+      "requiredSections": [
+        "summary",
+        "grouped checks",
+        "repair",
+        "export"
+      ]
+    },
+    {
+      "id": "logs",
+      "layout": "single table",
+      "reference": "10-logs",
+      "requiredSections": [
+        "level/source/search/follow",
+        "bounded table",
+        "redaction"
+      ]
+    },
+    {
+      "id": "settings",
+      "layout": "separate Settings scene",
+      "reference": "11-settings",
+      "requiredSections": [
+        "general",
+        "network",
+        "TUN",
+        "automation",
+        "advanced",
+        "about"
+      ]
+    },
+    {
+      "id": "tunFlow",
+      "layout": "sheet/window state flow",
+      "reference": "12-tun-flow",
+      "requiredSections": [
+        "install",
+        "approval",
+        "starting",
+        "running",
+        "error/recovery"
+      ]
+    },
+    {
+      "id": "menuBar",
+      "layout": "native menu bar extra",
+      "reference": "13-menu-bar",
+      "requiredSections": [
+        "status",
+        "mode",
+        "scene",
+        "traffic",
+        "quick actions",
+        "safe quit"
+      ]
+    }
+  ],
+  "globalRequirements": [
+    "Light and Dark",
+    "English and Simplified Chinese",
+    "1040x680, 1280x820, 1600x1000",
+    "loading, empty, error, pending, stale",
+    "keyboard and VoiceOver",
+    "no business-logic duplication"
+  ]
+}

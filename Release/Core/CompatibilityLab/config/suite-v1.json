@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "suiteVersion": 1,
+  "candidate": {
+    "architecture": "arm64",
+    "coreID": "v1.19.28-r1",
+    "platform": "darwin",
+    "version": "v1.19.28"
+  },
+  "controllerAPIProfile": "mihomo-v1.19.28",
+  "requiredRESTEndpoints": [
+    "/version",
+    "/configs",
+    "/proxies",
+    "/providers/proxies",
+    "/providers/rules",
+    "/rules",
+    "/connections"
+  ],
+  "requiredWebSockets": [
+    "/logs",
+    "/traffic",
+    "/connections"
+  ],
+  "requiredTests": [
+    "version",
+    "config-corpus",
+    "controller-api",
+    "websockets",
+    "user-backend",
+    "system-proxy",
+    "tun-backend",
+    "sleep-network",
+    "rollback",
+    "performance",
+    "artifact-integrity"
+  ],
+  "transitionCount": 20,
+  "performance": {
+    "configParseIterations": 5,
+    "idleSampleSeconds": 1.0,
+    "startupIterations": 5,
+    "syntheticConnections": 1000,
+    "thresholds": {
+      "configParseRatio": 1.5,
+      "idleRSSRatio": 1.25,
+      "startupRatio": 1.5
+    }
+  }
+}
