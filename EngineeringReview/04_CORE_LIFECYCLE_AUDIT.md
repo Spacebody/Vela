@@ -42,11 +42,11 @@ Remains the runtime facade and source of the runtime snapshot/operations consume
 - **Severity:** P2
 - **File:** `Vela/Core/CoreLifecycle/CoreLifecycleController.swift`
 - **Line/Type:** `download`, approximately lines 534-650
-- **Evidence:** The controller delegates network transfer and durable install to async services/CoreStore, but performs synchronous directory creation and deferred removal on MainActor.
+- **Evidence:** The controller delegated network transfer and durable install to async services/CoreStore, but performed synchronous directory creation and deferred removal on MainActor. The target enables `NonisolatedNonsendingByDefault`, so an ordinary nonisolated `async` method was not by itself proof of an executor hop.
 - **Impact:** Filesystem latency can block UI operation-state updates.
-- **Fix:** Move staging-directory lifecycle into the existing download/install service or a nonisolated helper without weakening path/symlink checks.
-- **Test:** Slow-filesystem fault injection with responsive operation state and deterministic cleanup.
-- **Status:** Open after P1.
+- **Fix:** Move workspace creation/removal and streamed download into the existing `CoreFileDownloader` boundary and mark those operations `@concurrent`. Preserve trusted-root validation before creation, validate the created directory again, retain mode `0700`, and explicitly clean up on both success and failure while the controller remains the workflow facade.
+- **Test:** `CoreDownloaderTests` proves private workspace permissions, explicit cleanup and fail-closed rejection of an unsafe staging root. The compiler-enforced `@concurrent` boundary is the executor guarantee; slow-filesystem latency instrumentation remains useful P3 performance evidence rather than an open correctness defect.
+- **Status:** Fixed and verified. GitNexus upstream impact was LOW (two controller callers, seven affected symbols and one affected process). Both focused downloader tests pass on macOS; the download/install/trust contracts are unchanged.
 
 ### CORE-STORE-001
 
@@ -98,3 +98,10 @@ Remains the runtime facade and source of the runtime snapshot/operations consume
 4. `xcodebuild build -project Vela.xcodeproj -scheme Vela -destination 'platform=macOS'`: passed.
 5. GitNexus `detect_changes(scope: all)`: LOW risk; only `CoreLifecycleController.activate` and its containing type were touched, with no affected execution process reported.
 6. Existing warning observed, not introduced by this batch: optional interpolation in `VelaUITests/VelaUITests.swift:49`. It remains tracked by the build-warning audit.
+
+## Verification for the download-executor batch
+
+1. `CoreDownloaderTests`: 2/2 passed.
+2. Workspace trust validation and private permissions remain in the existing downloader boundary.
+3. Workspace cleanup is awaited before the runtime-mutation lease is released on success and failure.
+4. `@concurrent` explicitly moves workspace IO and streamed download work away from the caller actor under the project's Swift 6.2 executor settings.

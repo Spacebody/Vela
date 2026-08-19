@@ -16,7 +16,7 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 | Scenes | maximum 128 scenes | actor-backed persistence | bounded |
 | Update/reliability export | retained export history capped at 50 | actor/service work | bounded |
 
-The first bounded EngineStore performance batch moved runtime-configuration fallback reads/hashing and profile-import staging cleanup off MainActor. It preserved the existing runtime digest and import contracts and is covered by the complete 84-test EngineStore suite.
+The first bounded EngineStore performance batch moved runtime-configuration fallback reads/hashing and profile-import staging cleanup off MainActor. A second bounded Core lifecycle batch moved download workspace IO and streamed transfer behind explicit `@concurrent` methods on the existing downloader. These changes preserve the runtime digest, import, trust and install contracts and are covered by focused EngineStore/Core downloader tests.
 
 ## Findings
 
@@ -99,4 +99,4 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 
 ## Performance conclusion
 
-Connections already exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Rules and Configuration use the same sound off-MainActor direction. EngineStore runtime fingerprint IO and import staging cleanup are now off MainActor. The remaining evidence-backed priorities are therefore not broad rewrites: cache or pipeline Logs and Proxies projections, move remaining Configuration panel IO off MainActor, add a Rules scale threshold and instrument Observation invalidation before extracting EngineStore state. All reviewed retained data is bounded; the only stream buffering follow-up is low-frequency privileged lease events.
+Connections already exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Rules and Configuration use the same sound off-MainActor direction. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are now off MainActor. The remaining evidence-backed priorities are therefore not broad rewrites: cache or pipeline Logs and Proxies projections, move remaining Configuration panel IO off MainActor, add a Rules scale threshold and instrument Observation invalidation before extracting EngineStore state. All reviewed retained data is bounded, including privileged lease event buffering.

@@ -233,6 +233,14 @@ nonisolated struct CoreDownloadedFile: Equatable, Sendable {
     let sha256: String
 }
 
+nonisolated struct CoreDownloadWorkspace: Equatable, Sendable {
+    let directory: URL
+
+    fileprivate init(directory: URL) {
+        self.directory = directory
+    }
+}
+
 nonisolated struct CoreFileDownloader: Sendable {
     private let transport: any CoreHTTPStreaming
 
@@ -240,6 +248,33 @@ nonisolated struct CoreFileDownloader: Sendable {
         self.transport = transport
     }
 
+    @concurrent
+    func createWorkspace(in trustedStagingDirectory: URL) async throws -> CoreDownloadWorkspace {
+        try validateTrustedDirectory(trustedStagingDirectory)
+        let directory = trustedStagingDirectory.appending(
+            path: "download-\(UUID().uuidString)",
+            directoryHint: .isDirectory
+        )
+        do {
+            try FileManager.default.createDirectory(
+                at: directory,
+                withIntermediateDirectories: false,
+                attributes: [.posixPermissions: NSNumber(value: 0o700)]
+            )
+            try validateTrustedDirectory(directory)
+            return CoreDownloadWorkspace(directory: directory)
+        } catch {
+            try? FileManager.default.removeItem(at: directory)
+            throw error
+        }
+    }
+
+    @concurrent
+    func removeWorkspace(_ workspace: CoreDownloadWorkspace) async {
+        try? FileManager.default.removeItem(at: workspace.directory)
+    }
+
+    @concurrent
     func download(
         _ descriptor: CoreFileDescriptor,
         into trustedTemporaryDirectory: URL

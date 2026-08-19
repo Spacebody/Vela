@@ -578,23 +578,16 @@ final class CoreLifecycleController {
         isDownloading = true
         defer { isDownloading = false }
         var mutationLease: RuntimeMutationLease?
-        let downloadDirectory = directories.staging.appending(
-            path: "download-\(UUID().uuidString)",
-            directoryHint: .isDirectory
-        )
+        var downloadWorkspace: CoreDownloadWorkspace?
         do {
-            try FileManager.default.createDirectory(
-                at: downloadDirectory,
-                withIntermediateDirectories: false,
-                attributes: [.posixPermissions: NSNumber(value: 0o700)]
-            )
-            defer { try? FileManager.default.removeItem(at: downloadDirectory) }
+            let workspace = try await fileDownloader.createWorkspace(in: directories.staging)
+            downloadWorkspace = workspace
             var verifiedFiles: [CoreFileRole: URL] = [:]
             for file in entry.files {
                 try Task.checkCancellation()
                 let downloaded = try await fileDownloader.download(
                     file,
-                    into: downloadDirectory
+                    into: workspace.directory
                 )
                 verifiedFiles[downloaded.role] = downloaded.temporaryURL
             }
@@ -645,10 +638,15 @@ final class CoreLifecycleController {
                 factoryDescriptor: factoryDescriptor,
                 state: state
             )
+            await fileDownloader.removeWorkspace(workspace)
+            downloadWorkspace = nil
             await runtimeMutationGate.release(lease)
             mutationLease = nil
             lastError = nil
         } catch {
+            if let downloadWorkspace {
+                await fileDownloader.removeWorkspace(downloadWorkspace)
+            }
             if let mutationLease {
                 await runtimeMutationGate.release(mutationLease)
             }
