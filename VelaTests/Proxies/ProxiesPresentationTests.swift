@@ -403,6 +403,84 @@ struct ProxiesPresentationTests {
         #expect(mainActorDelay < .milliseconds(50))
     }
 
+    @Test("Delay snapshot keeps only current catalog and profile entries")
+    func delaySnapshotRejectsStaleEntries() throws {
+        let profileID = UUID()
+        let catalog = try fixtureCatalog()
+        let group = try #require(catalog.group(named: "Automatic"))
+        let node = try #require(group.nodes.first)
+        let currentKey = ProxyDelayCacheKey(
+            profileID: profileID,
+            groupName: group.name,
+            proxyID: node.id,
+            testURL: ProxyTestDefaults.url,
+            expectedStatus: nil
+        )
+        let staleProfileKey = ProxyDelayCacheKey(
+            profileID: UUID(),
+            groupName: group.name,
+            proxyID: node.id,
+            testURL: ProxyTestDefaults.url,
+            expectedStatus: nil
+        )
+        let staleConfigurationKey = ProxyDelayCacheKey(
+            profileID: profileID,
+            groupName: group.name,
+            proxyID: node.id,
+            testURL: "https://invalid.example/delay",
+            expectedStatus: nil
+        )
+
+        let snapshot = ProxiesDelaySnapshotFactory.make(
+            catalog: catalog,
+            selectedProfileID: profileID,
+            cacheStates: [
+                currentKey: .measured(milliseconds: 42),
+                staleProfileKey: .measured(milliseconds: 99),
+                staleConfigurationKey: .failed("stale"),
+            ]
+        )
+
+        #expect(snapshot == [
+            ProxiesDelayKey(
+                groupID: ProxiesGroupID(rawValue: group.name),
+                nodeID: node.id
+            ): .measured(milliseconds: 42),
+        ])
+    }
+
+    @Test("Ten-thousand cached delays are projected in one bounded pass")
+    func largeDelaySnapshot() throws {
+        let profileID = UUID()
+        let catalog = try largeCatalog(groupCount: 100, candidatesPerGroup: 100)
+        let cacheStates = Dictionary(uniqueKeysWithValues: catalog.groups.flatMap { group in
+            group.nodes.enumerated().map { index, node in
+                (
+                    ProxyDelayCacheKey(
+                        profileID: profileID,
+                        groupName: group.name,
+                        proxyID: node.id,
+                        testURL: ProxyTestDefaults.url,
+                        expectedStatus: nil
+                    ),
+                    ProxyDelayState.measured(milliseconds: UInt16(20 + index))
+                )
+            }
+        })
+
+        let clock = ContinuousClock()
+        let startedAt = clock.now
+        let snapshot = ProxiesDelaySnapshotFactory.make(
+            catalog: catalog,
+            selectedProfileID: profileID,
+            cacheStates: cacheStates
+        )
+        let elapsed = startedAt.duration(to: clock.now)
+
+        #expect(snapshot.count == 10_000)
+        #expect(elapsed < .milliseconds(250))
+    }
+
     private func makeSnapshot(
         catalog: ProxyCatalog,
         selection: ProxiesGroupID? = nil

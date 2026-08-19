@@ -44,11 +44,11 @@ The repository already has unusually strong unit coverage for the transition coo
 - **Severity:** P2 integration gap
 - **File:** `VelaTests/Configuration/RuntimeConfigTransactionCoordinatorTests.swift`; `VelaTests/App/`
 - **Line/Type:** production wiring composition
-- **Evidence:** The coordinator suite covers health-failure rollback, reload/restart failure, crash recovery and journal retention. It does not execute the complete native process/controller adapters assembled by AppEnvironment.
+- **Evidence:** The coordinator suite covers health-failure rollback, reload/restart failure, crash recovery and journal retention. `AppEnvironmentCompositionTests` now constructs the real live-services graph in a private startup-smoke directory and proves the resulting EngineStore reaches its termination barrier. It intentionally does not mutate a native network service or run a complete configuration failure transaction.
 - **Impact:** Production adapter ordering can regress independently from the authoritative transaction actor.
-- **Fix:** Add an AppEnvironment integration harness that injects the existing faults while retaining the real composition order.
+- **Fix:** The production dependency assembly now has an injectable root/launch seam without changing the zero-argument production contract. Extend that harness with existing process/controller faults while retaining the real composition order.
 - **Test:** Apply -> restart -> health proof -> prior-state restore; controller timeout; process failure; relaunch recovery.
-- **Status:** Open P2 integration proof gap.
+- **Status:** Partially closed: live-services construction and termination are proven. Apply/restart/health/rollback through the complete adapter graph remains an open P2 integration proof gap.
 
 ### TEST-PERF-001
 
@@ -70,10 +70,10 @@ The repository already has unusually strong unit coverage for the transition coo
 - **Impact:** A label or focus regression can ship unnoticed while visual tests remain unchanged.
 - **Fix:** Implemented stable identifiers, action semantics, keyboard activation and Reduce Motion source contracts without relying on screenshot-only assertions.
 - **Test:** Chinese/English label existence, enabled state, focusability and Reduce Motion behavior.
-- **Status:** Closed for the audited source contracts. The clean Xcode test host compiled the suite but stalled before test-worker materialization on this machine; runtime completion must be rechecked when the local Xcode test service is healthy.
+- **Status:** Closed for the audited source contracts. The clean Xcode host compiled the suite, but isolated executions either stalled before worker materialization or wedged after starting the first test; the result bundle contains no assertion failure and direct source IO completes in under one millisecond. Runtime completion must be rechecked when the local Xcode test service is healthy.
 
 ## Priority order
 
 1. Add opt-in native integration proof without weakening or bypassing Hardening gates.
 2. Extend the Core matrix with late-probation runtime degradation and production-adapter snapshots during the integration-test phase.
-3. Capture production Instruments/ETTrace evidence during release validation before attempting any broader projection extraction.
+3. Extend the isolated live-services composition harness with configuration and late-probation faults before attempting broader facade extraction.

@@ -16,9 +16,13 @@ struct AppEnvironment {
     let publicBetaEvidenceController: PublicBetaEvidenceController
     let signpostRecorder: any VelaSignpostRecording
 
-    static func live() throws -> AppEnvironment {
+    static func live(
+        launchConfiguration injectedLaunchConfiguration: AppLaunchConfiguration? = nil,
+        directories injectedDirectories: ApplicationDirectories? = nil
+    ) throws -> AppEnvironment {
         let fileSystem = LiveFileSystem()
-        let launchConfiguration = try AppLaunchConfiguration.resolve()
+        let launchConfiguration = try injectedLaunchConfiguration
+            ?? AppLaunchConfiguration.resolve()
         let usesLiveServices = launchConfiguration.usesLiveServices
 #if DEBUG
         let visualFixtureConfiguration = try VisualUITestConfiguration.resolve()
@@ -28,15 +32,20 @@ struct AppEnvironment {
                 fixedDate: visualFixtureConfiguration?.fixedDate ?? .distantPast
             )
 #endif
-        let directories = switch launchConfiguration {
-        case .production:
-            try ApplicationDirectories.live(fileSystem: fileSystem)
+        let directories: ApplicationDirectories
+        if let injectedDirectories {
+            directories = injectedDirectories
+        } else {
+            directories = switch launchConfiguration {
+            case .production:
+                try ApplicationDirectories.live(fileSystem: fileSystem)
 #if DEBUG
-        case .uiTesting:
-            try makeFreshUITestDirectories(fileSystem: fileSystem)
+            case .uiTesting:
+                try makeFreshUITestDirectories(fileSystem: fileSystem)
 #endif
-        case let .startupSmoke(root):
-            ApplicationDirectories(root: root)
+            case let .startupSmoke(root):
+                ApplicationDirectories(root: root)
+            }
         }
         let profileStore = ProfileStore(
             directories: directories,

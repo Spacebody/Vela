@@ -359,6 +359,32 @@ struct ConfigurationWorkbenchEditorProvenanceTests {
         #expect(cache.cachedAnalysis(for: yaml) == analyses.first)
     }
 
+    @Test("Large YAML analysis stays off MainActor and within the interaction budget")
+    @MainActor
+    func largeYAMLAnalysisKeepsMainActorResponsive() async {
+        let ruleCount = 20_000
+        let yaml = "mode: rule\nrules:\n" + String(
+            repeating: "  - DOMAIN-SUFFIX,example.com,DIRECT\n",
+            count: ruleCount
+        )
+        let cache = ConfigurationWorkbenchYAMLAnalysisCache(capacity: 2)
+        let clock = ContinuousClock()
+        let started = clock.now
+        let analysisTask = Task {
+            await cache.analysis(for: yaml)
+        }
+
+        await Task.yield()
+        let markerLatency = started.duration(to: clock.now)
+        let analysis = await analysisTask.value
+        let totalDuration = started.duration(to: clock.now)
+
+        #expect(markerLatency < .milliseconds(250))
+        #expect(totalDuration < .seconds(3))
+        #expect(analysis.rules == ruleCount)
+        #expect(analysis.structureTree.count == 2_000)
+    }
+
     @Test("Remote subscription summary preserves quota and schedule metadata")
     func remoteSubscriptionMetadataIsProjected() throws {
         let update = Date(timeIntervalSince1970: 1_800_000_000)

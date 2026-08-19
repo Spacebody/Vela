@@ -45,9 +45,16 @@ final class VelaUITests: XCTestCase {
         guard logsScreen.waitForExistence(timeout: 5) else {
             let bootstrapFailure = app.descendants(matching: .any)["app.bootstrap.failure"]
                 .firstMatch
-            let details = bootstrapFailure.exists
-                ? "\(bootstrapFailure.label): \(bootstrapFailure.value)"
-                : "No bootstrap failure details were exposed."
+            let details: String
+            if bootstrapFailure.exists {
+                let value = bootstrapFailure.value.map(String.init(describing:))
+                details = [bootstrapFailure.label, value]
+                    .compactMap { $0 }
+                    .filter { !$0.isEmpty }
+                    .joined(separator: ": ")
+            } else {
+                details = "No bootstrap failure details were exposed."
+            }
             XCTFail("Logs did not load. \(details)")
             return
         }

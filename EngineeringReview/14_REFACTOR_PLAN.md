@@ -60,28 +60,29 @@ Constraints:
 
 Exit criterion: fault-injected composition tests prove ordering and durable rollback across the real dependency assembly.
 
-## Next batch C — measurement before EngineStore extraction
+Progress: the real live-services `AppEnvironment` graph now constructs against an isolated startup-smoke directory and reaches the EngineStore termination barrier. The zero-argument production call remains unchanged. Transactional fault scenarios above remain pending.
 
-Measure:
+## Completed batch C — deterministic measurement before EngineStore extraction
 
-- Observation/body/projection counts during traffic bursts and log batches.
-- unrelated-page recomputation during proxy delay and health updates.
-- residual O(n) proxy-delay snapshot capture on 10k candidates.
+Measured/proven:
+
+- member-scoped Observation: traffic telemetry does not invalidate proxy-catalog observers, while a proxy-catalog update does;
+- proxy-delay snapshot capture uses one catalog index pass plus one cache pass and projects 10,000 current entries under 250 ms;
+- Logs, Rules, Connections and Proxies feature projections have deterministic MainActor/serialization budgets.
 
 Decision rule:
 
-- If a measured high-rate field causes material unrelated work, extract only that feature projection behind its existing service/pipeline and keep EngineStore as a facade.
-- If measurements are within budget, do not split for file-size aesthetics.
+- If future rendered-page Instruments evidence shows material unrelated work, extract only that feature projection behind its existing service/pipeline and keep EngineStore as a facade.
+- Current deterministic evidence does not justify another store split for file-size aesthetics.
 
 Preferred extraction candidates, in dependency order:
 
-1. proxy delay presentation projection;
-2. health presentation projection;
-3. update-recovery presentation;
-4. scene runtime transaction facade;
-5. profile mutation transaction facade.
+1. health presentation projection;
+2. update-recovery presentation;
+3. scene runtime transaction facade;
+4. profile mutation transaction facade.
 
-Logs already have a bounded buffer and feature projection pipeline, so another log owner is not currently justified.
+Proxy delay and Logs already have bounded feature projections, so another owner is not currently justified.
 
 ## Next batch D — bounded maintainability cleanup
 

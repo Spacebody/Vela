@@ -590,6 +590,58 @@ nonisolated enum ProxiesPresentationFactory {
     }
 }
 
+nonisolated enum ProxiesDelaySnapshotFactory {
+    private struct GroupContext {
+        let testURL: String
+        let expectedStatus: String?
+        let nodeIDs: Set<ProxyCatalogID>
+    }
+
+    static func make(
+        catalog: ProxyCatalog,
+        selectedProfileID: UUID?,
+        cacheStates: [ProxyDelayCacheKey: ProxyDelayState]
+    ) -> [ProxiesDelayKey: ProxyDelayState] {
+        guard let selectedProfileID, !cacheStates.isEmpty else { return [:] }
+
+        let groups = Dictionary(uniqueKeysWithValues: catalog.groups.map { group in
+            (
+                group.name,
+                GroupContext(
+                    testURL: nonempty(group.testURL) ?? ProxyTestDefaults.url,
+                    expectedStatus: nonempty(group.expectedStatus),
+                    nodeIDs: Set(group.nodes.map(\.id))
+                )
+            )
+        })
+
+        var result: [ProxiesDelayKey: ProxyDelayState] = [:]
+        result.reserveCapacity(min(cacheStates.count, catalog.nodes.count))
+        for (cacheKey, state) in cacheStates {
+            guard cacheKey.profileID == selectedProfileID,
+                let group = groups[cacheKey.groupName],
+                group.testURL == cacheKey.testURL,
+                group.expectedStatus == cacheKey.expectedStatus,
+                group.nodeIDs.contains(cacheKey.proxyID)
+            else {
+                continue
+            }
+            result[
+                ProxiesDelayKey(
+                    groupID: ProxiesGroupID(rawValue: cacheKey.groupName),
+                    nodeID: cacheKey.proxyID
+                )
+            ] = state
+        }
+        return result
+    }
+
+    private static func nonempty(_ value: String?) -> String? {
+        guard let value, !value.isEmpty else { return nil }
+        return value
+    }
+}
+
 nonisolated private extension ProxyCatalogID {
     var sortKey: String {
         switch origin {

@@ -8,9 +8,9 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 |---|---|---|---|
 | Logs | `LogBuffer.maximumCapacity == 2_000`; telemetry uses `.bufferingNewest(2_000)` | serial latest-wins `@concurrent` presentation worker; export actor | bounded and verified off MainActor |
 | Connections | current snapshot only; 10,000-row tests and 500 search changes | single detached worker in actor pipeline | verified scalable architecture |
-| Traffic | Overview history keeps 120 samples; routed telemetry retains newest 1 | sample state is published through wide EngineStore/Overview state | bounded; Observation measurement needed |
+| Traffic | Overview history keeps 120 samples; routed telemetry retains newest 1 | member-scoped EngineStore publication; executable isolation contract | bounded; traffic does not invalidate proxy-catalog observers |
 | Rules | current snapshot only; search is debounced | detached, serial latest-wins pipeline | 50,000-rule decode, refresh, search and MainActor budgets verified |
-| Proxies | current catalog plus delay dictionary; delay cache clears on profile/catalog/reset | serial latest-wins `@concurrent` projection worker; delay requests bounded | bounded cache and off-MainActor projection; O(n) delay capture remains |
+| Proxies | current catalog plus delay dictionary; delay cache clears on profile/catalog/reset | linear delay snapshot plus serial latest-wins `@concurrent` projection worker; delay requests bounded | bounded cache; 10,000 delays projected within deterministic budget |
 | Configuration structure | YAML analysis cache capacity 2; structure output capped at 2,000 items | detached analyzer, 150 ms preview debounce | verified bounded projection; large-YAML IO measurement needed |
 | Health reports | latest report/state, not an append-only history | monitor actor; UI projection in EngineStore | bounded |
 | Scenes | maximum 128 scenes | actor-backed persistence | bounded |
@@ -48,11 +48,11 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 - **Severity:** P2
 - **File:** `Vela/Features/Proxies/ProxiesView.swift`; `Vela/Features/Proxies/ProxiesPresentation.swift`
 - **Line/Type:** catalog-to-dashboard projection and delay-state scan
-- **Evidence:** The original view walked all catalog nodes to rebuild delay state and then rebuilt all presentation groups/rows synchronously. The 100-group/10,000-candidate test measured 100 projections in 7.105 seconds (about 71 ms each). Delay testing is not an unbounded fan-out: controller group testing limits concurrency and multi-group UI tests execute groups sequentially. Engine delay cache entries are profile-scoped and are cleared when configured catalog, runtime catalog or controller state resets (`EngineStore.swift:3418`, `6205-6212`, `6879`).
+- **Evidence:** The original view walked every catalog node and called `EngineStore.proxyDelayState` for each entry; that lookup searched the group and its nodes again, making snapshot capture approach quadratic on large catalogs before the presentation worker even started. Delay testing itself is bounded: controller group testing limits concurrency and multi-group UI tests execute groups sequentially. Engine delay cache entries remain profile-scoped and are cleared when configured catalog, runtime catalog or controller state resets (`EngineStore.swift:3418`, `6205-6212`, `6879`).
 - **Impact:** Large node catalogs can make selection/delay updates more expensive than the underlying bounded network operation.
-- **Fix:** Implemented a revision-triggered Proxies presentation pipeline that cancels and joins superseded workers and performs the existing pure factory projection off MainActor. It deliberately keeps the immutable snapshot shape and EngineStore/request contracts stable. Incremental group replacement is deferred because it would widen the snapshot change surface without current allocation evidence.
-- **Test:** The 10,000-candidate baseline remains covered. Added rapid catalog replacement/latest-wins, maximum-worker-count-one and MainActor responsiveness tests; all focused Proxies presentation tests pass.
-- **Status:** MainActor full-projection risk fixed and verified. Residual P2: delay-state capture is O(n), so a one-node delay update still scans the catalog before off-actor projection.
+- **Fix:** The revision-triggered presentation pipeline still cancels and joins superseded workers. `ProxiesDelaySnapshotFactory` now indexes group context once and scans the bounded cache once, retaining the immutable snapshot and EngineStore/request contracts with O(catalog + cache) work.
+- **Test:** The 10,000-candidate baseline, rapid replacement/latest-wins, maximum-worker-count-one and MainActor responsiveness remain covered. New tests reject stale profile/test-URL entries and project 10,000 cached delays in one pass under 250 ms.
+- **Status:** Closed; the reproduced full-projection and delay-capture costs have bounded executable regression tests.
 
 ### PERF-RULES-001
 
@@ -81,15 +81,15 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 - **Severity:** P2 measurement/refactor candidate
 - **File:** `Vela/Core/Engine/EngineStore.swift`; Overview/Proxies/Logs views
 - **Line/Type:** wide `@Observable` facade and high-frequency UI-facing fields
-- **Evidence:** Traffic samples, log batches, proxy catalog/delay states, health, runtime and operation states share the EngineStore facade. Swift Observation tracks accessed properties, so type width alone does not prove whole-app redraw. However, features that read several of these values also perform full synchronous projections, making invalidation cost sensitive to high-frequency updates.
+- **Evidence:** Traffic samples, log batches, proxy catalog/delay states, health, runtime and operation states share the EngineStore facade. Swift Observation tracks accessed members. The new executable contract observes `proxyCatalog`, confirms a traffic event does not invalidate it, and then confirms a proxy-catalog event does; this rejects the suspected whole-store invalidation mechanism.
 - **Impact:** Traffic/log/delay updates may amplify MainActor work in the consuming pages; blindly splitting the store would risk duplicate authority without proving benefit.
-- **Fix:** Instrument body/projection counts first. Extract only a proven high-frequency feature projection while EngineStore remains the authoritative facade during strangler migration.
-- **Test:** signposts/body counters and MainActor latency for traffic bursts, log batches and delay updates with unrelated pages visible.
-- **Status:** Open P2; measurement required before store extraction.
+- **Fix:** Preserve member-scoped observation and use feature projection pipelines for demonstrated expensive work. Extract only if complete rendered-page signposts reveal a consumer that intentionally observes unrelated high-rate members.
+- **Test:** `EngineStoreTests.trafficUpdatesKeepProxyCatalogObservationNarrow`, plus feature scale/MainActor tests; optional signposts/body counters during release validation.
+- **Status:** Closed as an architecture finding. Full rendered-page profiling remains useful release evidence, not an open defect.
 
 ### PERF-LONGRUN-001
 
-- **Severity:** Verified mechanism with one P3 follow-up
+- **Severity:** Verified mechanism
 - **File:** telemetry/log buffers and `RuntimeControllerRouter`, Overview traffic history, SceneStore, proxy delay cache, privileged lease events
 - **Line/Type:** retained state and AsyncStream buffering
 - **Evidence:** Major long-lived collections are bounded or replace current snapshots. Proxy delay state is reset on catalog/profile/runtime changes. Long-lived streams use bounded newest buffering; `PrivilegedLeaseCoordinator.events()` retains the newest eight events, routed logs retain the configured log capacity and routed traffic retains only the newest sample while preserving termination cleanup.
@@ -100,4 +100,4 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 
 ## Performance conclusion
 
-Connections exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Logs and Proxies now use serial latest-wins presentation workers; Rules has a verified 50,000-rule budget; Configuration uses bounded debounce/cache workers and serial user-document actors. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are off MainActor. The remaining evidence-backed priority is therefore measurement before further extraction: instrument Observation invalidation and the residual O(n) Proxies delay-state capture rather than introducing a broad architecture rewrite. All reviewed retained data and long-lived routing queues are bounded; signed Core downloads additionally enforce finite role size, exact length and digest integrity without using a lossy stream policy.
+Connections exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Logs and Proxies use serial latest-wins presentation workers; Rules has a verified 50,000-rule budget; Configuration uses bounded debounce/cache workers and serial user-document actors. Proxy delay capture is linear with a 10,000-entry budget, and a focused Observation contract rejects whole-store invalidation from traffic updates. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are off MainActor. All reviewed retained data and long-lived routing queues are bounded; signed Core downloads additionally enforce finite role size, exact length and digest integrity without using a lossy stream policy. Further extraction should follow production profiling evidence rather than file-size aesthetics.

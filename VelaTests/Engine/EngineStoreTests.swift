@@ -1,5 +1,6 @@
 import Darwin
 import Foundation
+import Observation
 import ServiceManagement
 import Testing
 import VelaIPC
@@ -2554,6 +2555,43 @@ struct EngineStoreTests {
         await processManager.finishEvents()
     }
 
+    @Test("Traffic telemetry does not invalidate proxy catalog observers")
+    func trafficUpdatesKeepProxyCatalogObservationNarrow() async {
+        let controllerManager = EngineStoreControllerManagerFake()
+        let fixture = await makeConnectedProxyStore(
+            controllerManager: controllerManager
+        )
+        let store = fixture.store
+
+        let invalidation = EngineStoreObservationProbe()
+        withObservationTracking {
+            _ = store.proxyCatalog
+        } onChange: {
+            Task { await invalidation.recordInvalidation() }
+        }
+
+        await controllerManager.emit(.trafficUpdated(EngineStoreTestValues.trafficSample))
+        let clock = ContinuousClock()
+        let trafficDeadline = clock.now.advanced(by: .seconds(2))
+        while store.trafficSample != EngineStoreTestValues.trafficSample,
+            clock.now < trafficDeadline
+        {
+            try? await clock.sleep(for: .milliseconds(1))
+        }
+        try? await clock.sleep(for: .milliseconds(20))
+        #expect(!(await invalidation.hasInvalidated()))
+
+        await controllerManager.emit(.proxiesUpdated(MihomoProxiesResponse(proxies: [:])))
+        let invalidationDeadline = clock.now.advanced(by: .seconds(2))
+        while !(await invalidation.hasInvalidated()), clock.now < invalidationDeadline {
+            try? await clock.sleep(for: .milliseconds(1))
+        }
+        #expect(await invalidation.hasInvalidated())
+
+        await controllerManager.finishEvents()
+        await fixture.processManager.finishEvents()
+    }
+
     @Test("Proxy updates map the Controller response into a trusted catalog")
     func proxyUpdatesMapCatalog() async {
         let controllerManager = EngineStoreControllerManagerFake()
@@ -4116,6 +4154,18 @@ nonisolated private enum EngineStoreTestValues {
             startedAt: Date(timeIntervalSince1970: 1_700_000_001),
             endedAt: Date(timeIntervalSince1970: 1_700_000_002)
         )
+    }
+}
+
+private actor EngineStoreObservationProbe {
+    private var invalidated = false
+
+    func recordInvalidation() {
+        invalidated = true
+    }
+
+    func hasInvalidated() -> Bool {
+        invalidated
     }
 }
 

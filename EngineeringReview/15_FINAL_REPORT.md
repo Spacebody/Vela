@@ -25,8 +25,10 @@ Evidence came from current repository source, CodeGraph call paths, GitNexus con
 4. Made update journal persistence failure visible through the existing privacy-safe logging boundary.
 5. Bounded privileged lease and routed log/traffic buffering without making signed Core downloads lossy.
 6. Added/retained serial latest-wins projection workers and large-data tests for Logs, Connections, Rules, Proxies and Configuration.
-7. Completed critical-control accessibility/Reduce Motion source contracts.
-8. Reconciled deterministic Release Candidate resources through the existing generator after the reviewed architecture-freeze changes.
+7. Replaced near-quadratic proxy-delay snapshot capture with a linear feature projection and added a 10,000-entry budget.
+8. Added executable member-scoped Observation and live-services AppEnvironment composition/termination proofs.
+9. Completed critical-control accessibility/Reduce Motion source contracts.
+10. Reconciled deterministic Release Candidate resources through the existing generator after the reviewed architecture-freeze changes.
 
 ## Architecture result
 
@@ -60,7 +62,8 @@ No known P0/P1 security or system-network corruption path was found.
 - Logs are bounded at 2,000 entries and use a serial latest-wins presentation worker.
 - Connections have 10,000-row churn/search budgets and one active presentation worker.
 - Rules pass a 50,000-rule decode/refresh/filter/MainActor budget.
-- Proxies pass 10,000-candidate projection tests off MainActor; residual delay capture is O(n) and remains measurement-driven work.
+- Proxies pass 10,000-candidate projection tests off MainActor; delay capture now indexes catalog context once and scans the cache once.
+- Traffic telemetry does not invalidate an observer that reads only `proxyCatalog`; the same observer is invalidated by a catalog update.
 - Overview traffic history is bounded at 120 samples; routed traffic retains only the newest pending sample.
 - lease, transition, Controller, process and routed telemetry streams declare bounded retention and termination cleanup.
 - signed Core downloads are finite by role, lossless, exact-length and digest verified.
@@ -92,7 +95,7 @@ Expected release-preparation blockers (feed/public key, production Core distribu
 | TUN/helper lifecycle | Met by static/unit contract; installed-helper crash/lease matrix remains authorization-gated. |
 | Config apply no data-loss path | Met for reviewed transaction and recovery implementation. |
 | EngineStore/Core lifecycle responsibility convergence | Met through bounded owner moves; no wholesale facade rewrite. |
-| MainActor free of identified heavy IO | Met for reproduced hotspots; Observation runtime measurement remains. |
+| MainActor free of identified heavy IO | Met for reproduced hotspots; member-scoped Observation isolation and feature scale budgets pass. |
 | No feature reads another feature's UI state as authority | Met in reviewed dependency graph. |
 | Streams/tasks/process handles bounded and owned | Met for reviewed long-lived paths. |
 | Long-run retained data bounded | Met for Logs, Connections snapshots, Traffic, Scenes, update history, proxy cache and streams. |
@@ -105,9 +108,9 @@ Expected release-preparation blockers (feed/public key, production Core distribu
 ## Known residual risks
 
 1. Native System Proxy/TUN/helper integration proof on a signed host.
-2. Production AppEnvironment configuration/Core probation fault composition.
-3. Measured Observation invalidation and residual proxy delay capture cost.
-4. Accessibility runtime rerun after the local Xcode test-worker service recovers.
+2. Complete configuration rollback and late Core-probation fault composition through the now-testable live-services AppEnvironment graph.
+3. Full rendered-page Instruments evidence under sustained production telemetry, retained as release validation rather than a reproduced defect.
+4. Accessibility runtime rerun after the local Xcode test-host/session service recovers; current result bundles show cancellation from the wedged host, not an assertion failure.
 5. Production release values and evidence required by the intentionally fail-closed release tooling.
 
 These are tracked in `12_TEST_GAPS.md` and `14_REFACTOR_PLAN.md`. None is represented as completed proof.

@@ -16,7 +16,7 @@ The review did **not** replace `EngineStore`, `CoreLifecycleController`, the pri
 
 ## Current architecture assessment
 
-1. `EngineStore` remains a broad `@MainActor @Observable` runtime facade. It owns legitimate aggregate state but also exposes high-rate feature projections. File IO already proven to run on MainActor was moved behind existing concurrent owners; further splitting requires measured Observation evidence.
+1. `EngineStore` remains a broad `@MainActor @Observable` runtime facade. It owns legitimate aggregate state but also exposes high-rate feature projections. File IO already proven to run on MainActor was moved behind existing concurrent owners. A focused Observation contract now proves that traffic updates do not invalidate proxy-catalog observers; broader view/body extraction still requires production profiling evidence.
 2. `CoreLifecycleController` remains the Core workflow facade. Low-level durable state stays in `CoreStore`, download/staging work stays in `CoreFileDownloader`, and the shared runtime mutation gate remains the cross-workflow exclusion boundary.
 3. Configuration apply retains validate → stage → persist → apply/restart → health proof → rollback/recovery semantics with atomic durable writes and revision checks.
 4. System Proxy and TUN remain independent, composable controls. Their ownership, verification, rollback and helper lease contracts were preserved.
@@ -41,9 +41,9 @@ No signing, notarization, installation, TUN mutation or native System Proxy muta
 The remaining items are evidence or measurement gaps, not known P0/P1 product defects:
 
 1. Native System Proxy and installed-helper/TUN end-to-end matrices require an explicitly authorized, signed privileged host.
-2. Full production-adapter configuration/Core probation integration remains a P2 integration target.
-3. EngineStore Observation invalidation and the residual O(n) proxy-delay capture require Instruments/signpost measurements before another extraction is justified.
-4. The local Xcode test service stalled before materializing the accessibility test worker; the deterministic source contract is present, but that runtime lane must be rerun on a healthy test host.
+2. The real live-services `AppEnvironment` dependency graph now has an isolated construction/termination proof. Full configuration rollback and late Core-probation faults through those adapters remain P2 integration targets.
+3. Proxy-delay capture now uses a linear catalog/cache projection with a 10,000-entry budget. Instruments/signpost evidence across complete rendered pages remains the prerequisite for another EngineStore extraction.
+4. The local Xcode test service started the isolated accessibility test but wedged in the host session and cleanup path (`Waiting for -runningDidFinish` / `waiting for workers to materialize`). The same source read completes in under one millisecond outside XCTest and the result bundle contains no assertion failure; the lane must be rerun on a healthy test service.
 5. Release feed, signing identity, production Core trust/evidence and compatibility values remain deliberately fail-closed placeholders. Static validation confirms that they cannot be mistaken for a production release.
 
 ## Decision

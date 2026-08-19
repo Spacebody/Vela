@@ -21,11 +21,11 @@ See `ENGINESTORE_RESPONSIBILITY_MAP.md` for the complete current responsibility 
 - **Severity:** P2
 - **File:** `Vela/Core/Engine/EngineStore.swift`
 - **Line/Type:** `handleControllerEvent`, around line 6175
-- **Evidence:** Controller events mutate log collections, traffic samples, proxy catalog and delay state on the application-wide `@MainActor @Observable` facade. These are high-frequency and/or collection-sized values.
-- **Impact:** MainActor pressure and broad feature recomputation are plausible under rapid traffic/log/connection churn. Observation is property-access scoped, so file size alone is not proof of full-app invalidation.
-- **Fix:** Instrument update and render cost first. If confirmed, publish narrow bounded traffic/log/proxy projections and leave only cross-feature aggregate state in the facade.
-- **Test:** ETTrace/signpost scenarios for sustained traffic, 10k logs, 1k/5k connections and rapid proxy-delay results; compare main-thread time and recomputations.
-- **Status:** Open; measurement required before refactor.
+- **Evidence:** Controller events mutate log collections, traffic samples, proxy catalog and delay state on the application-wide `@MainActor @Observable` facade. Swift Observation is member-scoped: the executable `trafficUpdatesKeepProxyCatalogObservationNarrow` contract observes only `proxyCatalog`, publishes a traffic event without invalidation, then publishes a proxy-catalog event and proves the same observer does invalidate.
+- **Impact:** Type width alone does not cause global invalidation. Consuming views can still perform avoidable work when they intentionally observe several high-rate members, so rendered-page cost remains a measurement question rather than a demonstrated state-ownership defect.
+- **Fix:** Retain the facade and property-scoped access. The reproduced proxy delay projection hotspot was moved to a linear feature factory; extract another state owner only if body/signpost measurements demonstrate unrelated work.
+- **Test:** `EngineStoreTests.trafficUpdatesKeepProxyCatalogObservationNarrow`; existing 10k Connections, 50k Logs/Rules and 10k Proxies projection budgets. ETTrace remains a release-validation complement for full rendered pages.
+- **Status:** Closed for the suspected cross-property invalidation defect; no broad store extraction is justified. Production view/body profiling remains a non-blocking release measurement.
 
 ### ES-MAIN-001
 

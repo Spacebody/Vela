@@ -79,18 +79,18 @@ These axes are independent. During a backend transition Vela may temporarily res
 
 ### NET-OPS-001
 
-- **Severity:** P2
+- **Severity:** Reviewed architecture boundary (finding withdrawn)
 - **File:** `Vela/Core/Engine/EngineStore.swift`
 - **Line/Type:** system-network operation presentation and backend transitions
-- **Evidence:** Correctness is centralized, but System Proxy/TUN operation state, transition state, expected state and authoritative status are projected through the broad EngineStore observation root.
-- **Impact:** High-frequency unrelated updates can invalidate views observing network operation presentation, and the large facade makes illegal presentation combinations harder to test even though backend authority is sound.
-- **Fix:** After correctness work, expose a narrow immutable system-network snapshot owned by existing managers/EngineStore facade. Do not create a second mutation owner.
-- **Test:** Projection consistency across all four stable combinations and every applying/rollback/failure phase.
-- **Status:** Planned strangler projection; mutation authority remains unchanged.
+- **Evidence:** Correctness is centralized, operation state is explicit, and Swift Observation tracks the EngineStore members actually read by a view. The executable observation contract proves an unrelated traffic mutation does not invalidate a tracked proxy-catalog member; no system-network view was found reading the high-frequency traffic/log members that motivated the original concern.
+- **Impact:** The suspected whole-facade invalidation mechanism is not present. Adding a second network snapshot would duplicate presentation state without correcting a reproduced invalid combination.
+- **Fix:** Preserve the existing EngineStore facade and authoritative managers. Introduce a narrower projection only if rendered-page profiling or a state-consistency test demonstrates a concrete consumer problem.
+- **Test:** Existing System Proxy/TUN operation-state suites plus `EngineStoreTests.trafficUpdatesKeepProxyCatalogObservationNarrow`.
+- **Status:** Closed after dependency and Observation analysis; no refactor warranted.
 
 ## System network conclusion
 
-No known P0/P1 was found in the reviewed System Proxy/TUN paths. The implementation already uses durable ownership, compare-and-swap, rollback verification and privileged lease authority. Remaining work is test/projection hardening, not a replacement network architecture.
+No known P0/P1 was found in the reviewed System Proxy/TUN paths. The implementation already uses durable ownership, compare-and-swap, rollback verification and privileged lease authority. The remaining item is opt-in native-host integration evidence, not a replacement network architecture or a second presentation owner.
 
 ## Verification
 

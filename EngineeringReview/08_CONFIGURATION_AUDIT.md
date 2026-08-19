@@ -95,29 +95,29 @@ Any failure after destructive mutation enters rollback. Recovery on next launch 
 
 ### CONFIG-PERF-001
 
-- **Severity:** P2 performance risk
+- **Severity:** Verified performance boundary
 - **File:** `Vela/Core/Configuration/RuntimeConfigTransactionCoordinator.swift`; Configuration Workbench validation path
 - **Line/Type:** runtime build/serialization/validation projection
-- **Evidence:** Durable IO and build work run on dedicated actors rather than MainActor, which is correct. The transaction actor still serializes CPU-heavy build/serialization with queued configuration operations, and editor debounce/per-keystroke projection requires separate feature measurement.
-- **Impact:** Large profiles can increase queue latency or editor responsiveness without violating correctness.
-- **Fix:** Measure first. Move only proven pure/Sendable build work to a bounded worker and cache/debounce editor projections; never parallelize durable mutation phases.
-- **Test:** Large real-world profile benchmark, rapid typing/cancellation and stale-validation rejection.
-- **Status:** Open for performance phase; not a MainActor correctness defect.
+- **Evidence:** Durable IO and build work run on dedicated actors rather than MainActor. Workbench analysis is delayed by a cancellable 150 ms generation, de-duplicates identical in-flight YAML and runs parsing in a detached worker. The structure projection is capped at 2,000 rows. A 20,000-rule YAML characterization keeps the MainActor scheduling marker below 250 ms and completes below the three-second interaction budget.
+- **Impact:** Large documents remain bounded away from MainActor, while durable configuration mutations stay serialized for correctness.
+- **Fix:** Preserve the bounded cache/debounce and serial transaction ownership. Further worker extraction requires an Instruments trace showing queue contention; do not parallelize durable mutation phases speculatively.
+- **Test:** `ConfigurationWorkbenchEditorProvenanceTests.largeYAMLAnalysisKeepsMainActorResponsive`, in-flight coalescing, stale-validation rejection and large-file export tests.
+- **Status:** Closed; measured and verified without changing transaction authority.
 
 ### CONFIG-TEST-001
 
 - **Severity:** P2 integration proof gap
 - **File:** `VelaTests/`
 - **Line/Type:** cross-feature transaction failure matrix
-- **Evidence:** `RuntimeConfigTransactionCoordinatorTests` already proves health-failure rollback, candidate-reload failure, controlled restart fallback, rollback-failure journal retention, crash recovery of profile/raw/runtime state and phase-aware idempotent recovery. The remaining gap is a fully composed `AppEnvironment`/native-process test using the production wiring and existing `FaultInjection` system.
+- **Evidence:** `RuntimeConfigTransactionCoordinatorTests` already proves health-failure rollback, candidate-reload failure, controlled restart fallback, rollback-failure journal retention, crash recovery of profile/raw/runtime state and phase-aware idempotent recovery. `AppEnvironmentCompositionTests` now constructs the production live-services graph in an isolated startup-smoke directory and proves the termination barrier. The remaining gap is native Mihomo/Controller fault execution through that graph.
 - **Impact:** The transaction owner is characterized, but a composition regression in AppEnvironment, native Controller startup or production adapter wiring could still escape the actor-level suite.
 - **Fix:** Add an integration-style app test using existing fault injection; do not create a second fake failure framework.
 - **Test:** Preserve the existing coordinator matrix; add production-wiring coverage for Controller timeout, process health failure and launch recovery in an environment where the native adapters are available.
-- **Status:** Open P2 composition-proof gap. No current data-loss path reproduced and the core workflow is already covered at its authoritative coordinator boundary.
+- **Status:** Partially closed. Production composition and teardown are executable; native process/controller fault injection remains environment-sensitive. No current data-loss path was reproduced and the core workflow is covered at its authoritative coordinator boundary.
 
 ## Configuration conclusion
 
-No known P0/P1 implementation defect was found in the reviewed configuration paths. The durable transaction/journal/atomic-write design is substantially stronger than a simple edit-and-restart flow. Remaining composition proof, architecture and performance work is P2 and must follow characterization tests.
+No known P0/P1 implementation defect was found in the reviewed configuration paths. The durable transaction/journal/atomic-write design is substantially stronger than a simple edit-and-restart flow. The measured editor path is bounded away from MainActor; remaining work is native-process composition evidence and cautious phase extraction only after additional characterization.
 
 ## Verification
 

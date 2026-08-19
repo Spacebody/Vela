@@ -382,10 +382,11 @@ struct CoreLifecycleControllerTests {
       ofItemAtPath: executableURL.path
     )
     try await store.saveVerifiedCatalog(catalog)
+    let factoryCoreID = try #require(CoreID(rawValue: "factory:v1.19.28"))
     try await store.saveState(
       CoreStoreState(
-        activeCoreID: try #require(CoreID(rawValue: "factory:v1.19.28")),
-        previousKnownGoodCoreID: try #require(CoreID(rawValue: "factory:v1.19.28")),
+        activeCoreID: factoryCoreID,
+        previousKnownGoodCoreID: factoryCoreID,
         installed: [record],
         highestCatalogSequence: catalog.catalog.sequence,
         lastCatalogSHA256: catalogSHA256

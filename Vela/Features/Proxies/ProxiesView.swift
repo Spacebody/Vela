@@ -63,7 +63,11 @@ struct ProxiesView: View {
             controllerState: engineStore.controllerState,
             isLoading: engineStore.isLoadingProxies,
             operation: engineStore.proxyOperation,
-            delayStates: delayStates,
+            delayStates: ProxiesDelaySnapshotFactory.make(
+                catalog: engineStore.proxyCatalog,
+                selectedProfileID: engineStore.selectedProfileID,
+                cacheStates: engineStore.proxyDelayStates
+            ),
             errorSummary: engineStore.proxyCatalogError.map(
                 DiagnosticTextSanitizer.redact
             ),
@@ -73,21 +77,6 @@ struct ProxiesView: View {
               !Task.isCancelled
         else { return }
         snapshot = updated
-    }
-
-    private var delayStates: [ProxiesDelayKey: ProxyDelayState] {
-        var result: [ProxiesDelayKey: ProxyDelayState] = [:]
-        for group in engineStore.proxyCatalog.groups {
-            let groupID = ProxiesGroupID(rawValue: group.name)
-            for node in group.nodes {
-                guard let state = engineStore.proxyDelayState(
-                    group: group.name,
-                    nodeID: node.id
-                ) else { continue }
-                result[ProxiesDelayKey(groupID: groupID, nodeID: node.id)] = state
-            }
-        }
-        return result
     }
 
     @MainActor
