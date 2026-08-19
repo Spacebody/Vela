@@ -685,11 +685,6 @@ final class CoreLifecycleController {
             return
         }
         var leaseTransferredToProbation = false
-        defer {
-            if !leaseTransferredToProbation {
-                Task { await runtimeMutationGate.release(lease) }
-            }
-        }
 
         var transaction: CoreActivationTransaction?
         var runtimeWasRunning = false
@@ -697,7 +692,10 @@ final class CoreLifecycleController {
             guard var state = snapshot?.state else {
                 throw CoreLifecycleError.notBootstrapped
             }
-            guard coreID != state.activeCoreID else { return }
+            guard coreID != state.activeCoreID else {
+                await runtimeMutationGate.release(lease)
+                return
+            }
             guard let profileID = engineStore.selectedProfileID else {
                 throw CoreLifecycleError.profileRequired
             }
@@ -856,6 +854,9 @@ final class CoreLifecycleController {
                     expectedRunning: runtimeWasRunning
                 )
             }
+        }
+        if !leaseTransferredToProbation {
+            await runtimeMutationGate.release(lease)
         }
     }
 
