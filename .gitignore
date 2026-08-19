@@ -63,6 +63,9 @@ __pycache__/
 !/EngineeringReview/03_ENGINESTORE_AUDIT.md
 !/EngineeringReview/04_CORE_LIFECYCLE_AUDIT.md
 !/EngineeringReview/05_CONCURRENCY_AUDIT.md
+!/EngineeringReview/06_PRIVILEGED_AUDIT.md
+!/EngineeringReview/07_SYSTEM_NETWORK_AUDIT.md
+!/EngineeringReview/08_CONFIGURATION_AUDIT.md
 !/EngineeringReview/ENGINESTORE_RESPONSIBILITY_MAP.md
 !/EngineeringReview/complexity.md
 /Docs/
