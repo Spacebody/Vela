@@ -171,6 +171,136 @@ nonisolated struct LogsGenerationGate: Equatable, Sendable {
     }
 }
 
+nonisolated struct LogsProcessingRequest: Sendable {
+    let liveEntries: [LogEntry]
+    let pauseSnapshot: LogsPauseSnapshot?
+    let filter: LogsFilterSelection
+    let controllerState: ControllerConnectionState
+    let isRuntimeRunning: Bool
+}
+
+nonisolated struct LogsProcessingDiagnostics: Equatable, Sendable {
+    let submittedRequestCount: Int
+    let startedWorkerCount: Int
+    let completedWorkerCount: Int
+    let cancelledWorkerCount: Int
+    let activeWorkerCount: Int
+    let maximumConcurrentWorkerCount: Int
+}
+
+/// Keeps log projection work off MainActor and serializes rapid replacements.
+/// The EngineStore log buffer remains authoritative; this actor owns only a
+/// cancellable presentation worker and no durable state.
+actor LogsPresentationPipeline {
+    private struct ActiveWorker {
+        let ticket: UInt64
+        let task: Task<LogsPresentationSnapshot?, Never>
+    }
+
+    private var nextTicket: UInt64 = 0
+    private var latestRequestTicket: UInt64 = 0
+    private var activeWorker: ActiveWorker?
+    private var finalizedWorkerTicket: UInt64 = 0
+    private var submittedRequestCount = 0
+    private var startedWorkerCount = 0
+    private var completedWorkerCount = 0
+    private var cancelledWorkerCount = 0
+    private var activeWorkerCount = 0
+    private var maximumConcurrentWorkerCount = 0
+
+    func project(_ request: LogsProcessingRequest) async -> LogsPresentationSnapshot? {
+        nextTicket &+= 1
+        let ticket = nextTicket
+        latestRequestTicket = ticket
+        submittedRequestCount += 1
+
+        if let previous = activeWorker {
+            previous.task.cancel()
+            let previousResult = await previous.task.value
+            recordCompletion(of: previous, result: previousResult)
+            if activeWorker?.ticket == previous.ticket {
+                activeWorker = nil
+            }
+        }
+
+        guard ticket == latestRequestTicket, !Task.isCancelled else { return nil }
+
+        let worker = ActiveWorker(
+            ticket: ticket,
+            task: Task(priority: .userInitiated) {
+                await Self.makeSnapshot(for: request)
+            }
+        )
+        activeWorker = worker
+        startedWorkerCount += 1
+        activeWorkerCount += 1
+        maximumConcurrentWorkerCount = max(
+            maximumConcurrentWorkerCount,
+            activeWorkerCount
+        )
+
+        let result = await withTaskCancellationHandler {
+            await worker.task.value
+        } onCancel: {
+            worker.task.cancel()
+        }
+
+        recordCompletion(of: worker, result: result)
+        if activeWorker?.ticket == ticket {
+            activeWorker = nil
+        }
+
+        guard ticket == latestRequestTicket, !Task.isCancelled else { return nil }
+        return result
+    }
+
+    @concurrent
+    private static func makeSnapshot(
+        for request: LogsProcessingRequest
+    ) async -> LogsPresentationSnapshot? {
+        guard !Task.isCancelled else { return nil }
+        let entries = request.pauseSnapshot?.entries ?? request.liveEntries
+        let newCount = request.pauseSnapshot?.newEntryCount(
+            in: request.liveEntries
+        ) ?? 0
+        guard !Task.isCancelled else { return nil }
+        let snapshot = LogsPresentationSnapshot(
+            entries: entries,
+            filter: request.filter,
+            controllerState: request.controllerState,
+            isRuntimeRunning: request.isRuntimeRunning,
+            isPaused: request.pauseSnapshot != nil,
+            newCount: newCount
+        )
+        return Task.isCancelled ? nil : snapshot
+    }
+
+    func diagnostics() -> LogsProcessingDiagnostics {
+        LogsProcessingDiagnostics(
+            submittedRequestCount: submittedRequestCount,
+            startedWorkerCount: startedWorkerCount,
+            completedWorkerCount: completedWorkerCount,
+            cancelledWorkerCount: cancelledWorkerCount,
+            activeWorkerCount: activeWorkerCount,
+            maximumConcurrentWorkerCount: maximumConcurrentWorkerCount
+        )
+    }
+
+    private func recordCompletion(
+        of worker: ActiveWorker,
+        result: LogsPresentationSnapshot?
+    ) {
+        guard worker.ticket > finalizedWorkerTicket else { return }
+        finalizedWorkerTicket = worker.ticket
+        activeWorkerCount = max(0, activeWorkerCount - 1)
+        if result == nil {
+            cancelledWorkerCount += 1
+        } else {
+            completedWorkerCount += 1
+        }
+    }
+}
+
 nonisolated struct LogsLayoutMetrics: Equatable, Sendable {
     let usesOverlayInspector: Bool
     let inspectorWidth: CGFloat

@@ -6,7 +6,7 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 
 | Area | Bound / scale evidence | Expensive work placement | Assessment |
 |---|---|---|---|
-| Logs | `LogBuffer.maximumCapacity == 2_000`; telemetry uses `.bufferingNewest(2_000)` | snapshot map/filter currently in the view; export actor | bounded memory, P2 UI CPU risk |
+| Logs | `LogBuffer.maximumCapacity == 2_000`; telemetry uses `.bufferingNewest(2_000)` | serial latest-wins `@concurrent` presentation worker; export actor | bounded and verified off MainActor |
 | Connections | current snapshot only; 10,000-row tests and 500 search changes | single detached worker in actor pipeline | verified scalable architecture |
 | Traffic | Overview history keeps 120 samples | sample state is published through wide EngineStore/Overview state | bounded; Observation measurement needed |
 | Rules | current snapshot only; search is debounced | detached, serial latest-wins pipeline | verified architecture; explicit large-rule benchmark gap |
@@ -36,11 +36,11 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 - **Severity:** P2
 - **File:** `Vela/Features/Logs/LogsView.swift`; `Vela/Features/Logs/LogsPresentation.swift`
 - **Line/Type:** computed `snapshot` and `LogsPresentationSnapshot.init`
-- **Evidence:** Each construction maps and filters the complete buffer and groups row identities. The same computed value is requested from body/change/selection/export paths. Tests prove a single 10,000-entry build under one second and 100 growing 2,000-entry builds under two seconds, but they do not prove SwiftUI recomputation count or responsiveness during sustained telemetry.
+- **Evidence:** The original computed snapshot mapped and filtered the complete buffer and grouped row identities from body/change/selection/export paths. The replacement uses an O(1) revision key over immutable buffer endpoints and UI inputs; a feature-owned actor cancels and joins a prior `@concurrent` worker before accepting the latest result.
 - **Impact:** CPU and allocation churn can appear during high-rate logging despite a safe 2,000-entry memory bound.
 - **Fix:** Revision-keyed Logs feature projection cache/pipeline; recompute only on entry/filter revision. Retain immutable pause/export snapshots and existing redaction policy.
 - **Test:** Count projection builds during hover/selection/inspector changes, sustained batch MainActor probe and Instruments allocation comparison.
-- **Status:** Open P2.
+- **Status:** Fixed and verified. Existing 1k/10k and 2,000-entry batch budgets pass. New tests prove latest-wins serialization, maximum one active worker and MainActor responsiveness during a 50,000-entry projection. EngineStore, pause/export snapshot and redaction contracts are unchanged.
 
 ### PERF-PROXY-001
 
@@ -99,4 +99,4 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 
 ## Performance conclusion
 
-Connections already exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Rules and Configuration use the same sound off-MainActor direction. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are now off MainActor. The remaining evidence-backed priorities are therefore not broad rewrites: cache or pipeline Logs and Proxies projections, move remaining Configuration panel IO off MainActor, add a Rules scale threshold and instrument Observation invalidation before extracting EngineStore state. All reviewed retained data is bounded, including privileged lease event buffering.
+Connections already exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Logs now follows the same serial latest-wins direction with a 50k MainActor responsiveness assertion; Rules and Configuration already use bounded worker/debounce mechanisms. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are now off MainActor. The remaining evidence-backed priorities are therefore not broad rewrites: cache or pipeline Proxies projection, move remaining Configuration panel IO off MainActor, add a Rules scale threshold and instrument Observation invalidation before extracting EngineStore state. All reviewed retained data is bounded, including privileged lease event buffering.

@@ -59,6 +59,66 @@ struct LogsPresentationTests {
         #expect(elapsed < .seconds(2))
     }
 
+    @Test("Presentation workers stay serialized and publish the latest request")
+    func presentationPipelineIsLatestWins() async {
+        let entries = makeEntries(count: 10_000)
+        let pipeline = LogsPresentationPipeline()
+        let firstRequest = LogsProcessingRequest(
+            liveEntries: entries,
+            pauseSnapshot: nil,
+            filter: LogsFilterSelection(query: "timeout"),
+            controllerState: .connected,
+            isRuntimeRunning: true
+        )
+        let latestRequest = LogsProcessingRequest(
+            liveEntries: entries,
+            pauseSnapshot: nil,
+            filter: LogsFilterSelection(query: "healthy"),
+            controllerState: .connected,
+            isRuntimeRunning: true
+        )
+
+        async let first = pipeline.project(firstRequest)
+        await Task.yield()
+        let latest = await pipeline.project(latestRequest)
+        _ = await first
+
+        #expect(latest?.visibleRows.count == 5_000)
+        #expect(latest?.visibleRows.allSatisfy {
+            $0.message.localizedCaseInsensitiveContains("healthy")
+        } == true)
+        let diagnostics = await pipeline.diagnostics()
+        #expect(diagnostics.submittedRequestCount == 2)
+        #expect(diagnostics.activeWorkerCount == 0)
+        #expect(diagnostics.maximumConcurrentWorkerCount == 1)
+        #expect(
+            diagnostics.completedWorkerCount + diagnostics.cancelledWorkerCount
+                == diagnostics.startedWorkerCount
+        )
+    }
+
+    @Test("Presentation projection does not block MainActor")
+    @MainActor
+    func presentationPipelineKeepsMainActorResponsive() async throws {
+        let entries = makeEntries(count: 50_000)
+        let pipeline = LogsPresentationPipeline()
+        let request = LogsProcessingRequest(
+            liveEntries: entries,
+            pauseSnapshot: nil,
+            filter: LogsFilterSelection(query: "timeout"),
+            controllerState: .connected,
+            isRuntimeRunning: true
+        )
+
+        let processing = Task { await pipeline.project(request) }
+        let start = ContinuousClock.now
+        try await Task.sleep(for: .milliseconds(20))
+        let mainActorDelay = ContinuousClock.now - start
+
+        #expect(mainActorDelay < .milliseconds(250))
+        #expect(await processing.value?.visibleRows.count == 25_000)
+    }
+
     @Test("The log buffer redacts secrets, preserves source identity, and clears the session")
     func logBufferStorageContract() async throws {
         let secret = "controller-token-123"

@@ -7,6 +7,14 @@ struct LogsView: View {
 
     @State private var filter = LogsFilterSelection()
     @State private var pauseSnapshot: LogsPauseSnapshot?
+    @State private var snapshot = LogsPresentationSnapshot(
+        entries: [],
+        filter: LogsFilterSelection(),
+        controllerState: .disconnected,
+        isRuntimeRunning: false
+    )
+    @State private var presentationPipeline = LogsPresentationPipeline()
+    @State private var selectLastRowAfterResuming = false
     @State private var selectedRowID: String?
     @State private var isInspectorPresented = false
     @State private var showsClearConfirmation = false
@@ -15,22 +23,13 @@ struct LogsView: View {
     @State private var showsExportError = false
     @FocusState private var isSearchFocused: Bool
 
-    private var presentedEntries: [LogEntry] {
-        pauseSnapshot?.entries ?? engineStore.logEntries
-    }
-
-    private var newCount: Int {
-        pauseSnapshot?.newEntryCount(in: engineStore.logEntries) ?? 0
-    }
-
-    private var snapshot: LogsPresentationSnapshot {
-        LogsPresentationSnapshot(
-            entries: presentedEntries,
+    private var presentationRevision: LogsPresentationRevision {
+        LogsPresentationRevision(
+            liveEntries: engineStore.logEntries,
+            pauseSnapshot: pauseSnapshot,
             filter: filter,
             controllerState: engineStore.controllerState,
-            isRuntimeRunning: engineStore.isRunning,
-            isPaused: pauseSnapshot != nil,
-            newCount: newCount
+            isRuntimeRunning: engineStore.isRunning
         )
     }
 
@@ -75,11 +74,8 @@ struct LogsView: View {
         } message: {
             Text(exportErrorMessage)
         }
-        .onChange(of: filter) { _, _ in
-            clearInvalidSelection()
-        }
-        .onChange(of: snapshot.rows.first?.id) { _, _ in
-            clearInvalidSelection()
+        .task(id: presentationRevision) {
+            await refreshPresentation()
         }
         .onReceive(NotificationCenter.default.publisher(for: .velaFocusSearch)) { _ in
             isSearchFocused = true
@@ -95,19 +91,31 @@ struct LogsView: View {
             pauseSnapshot = LogsPauseSnapshot(entries: engineStore.logEntries)
         } else {
             pauseSnapshot = nil
-            let liveSnapshot = LogsPresentationSnapshot(
-                entries: engineStore.logEntries,
-                filter: filter,
-                controllerState: engineStore.controllerState,
-                isRuntimeRunning: engineStore.isRunning,
-                isPaused: false,
-                newCount: 0
-            )
-            selectedRowID = liveSnapshot.visibleRows.last?.id
+            selectLastRowAfterResuming = true
         }
     }
 
-    private func clearInvalidSelection() {
+    private func refreshPresentation() async {
+        let request = LogsProcessingRequest(
+            liveEntries: engineStore.logEntries,
+            pauseSnapshot: pauseSnapshot,
+            filter: filter,
+            controllerState: engineStore.controllerState,
+            isRuntimeRunning: engineStore.isRunning
+        )
+        guard let updated = await presentationPipeline.project(request),
+              !Task.isCancelled
+        else { return }
+        snapshot = updated
+        if selectLastRowAfterResuming {
+            selectedRowID = updated.visibleRows.last?.id
+            selectLastRowAfterResuming = false
+        } else {
+            clearInvalidSelection(in: updated)
+        }
+    }
+
+    private func clearInvalidSelection(in snapshot: LogsPresentationSnapshot) {
         guard let selectedRowID,
               !snapshot.visibleRows.contains(where: { $0.id == selectedRowID })
         else { return }
@@ -143,6 +151,42 @@ struct LogsView: View {
                 showsExportError = true
             }
         }
+    }
+}
+
+nonisolated private struct LogsPresentationRevision: Equatable {
+    let liveCount: Int
+    let liveFirstID: String?
+    let liveLastID: String?
+    let pausedCount: Int?
+    let pausedFirstID: String?
+    let pausedLastID: String?
+    let filter: LogsFilterSelection
+    let controllerState: ControllerConnectionState
+    let isRuntimeRunning: Bool
+
+    init(
+        liveEntries: [LogEntry],
+        pauseSnapshot: LogsPauseSnapshot?,
+        filter: LogsFilterSelection,
+        controllerState: ControllerConnectionState,
+        isRuntimeRunning: Bool
+    ) {
+        liveCount = liveEntries.count
+        liveFirstID = Self.stableID(for: liveEntries.first)
+        liveLastID = Self.stableID(for: liveEntries.last)
+        pausedCount = pauseSnapshot?.entries.count
+        pausedFirstID = Self.stableID(for: pauseSnapshot?.entries.first)
+        pausedLastID = Self.stableID(for: pauseSnapshot?.entries.last)
+        self.filter = filter
+        self.controllerState = controllerState
+        self.isRuntimeRunning = isRuntimeRunning
+    }
+
+    private static func stableID(for entry: LogEntry?) -> String? {
+        guard let entry else { return nil }
+        return entry.eventIdentity?.stableValue
+            ?? "legacy:\(entry.id.uuidString.lowercased())"
     }
 }
 

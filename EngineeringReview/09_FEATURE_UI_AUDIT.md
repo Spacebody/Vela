@@ -11,7 +11,7 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 | Connections | dedicated `ConnectionsViewModel` | `ConnectionsPresentationPipeline` actor with one detached worker | explicit `.connectionsPage` / `.overviewPage` consumers own the stream |
 | Rules | dedicated `RulesViewModel` | `RulesPresentationPipeline` actor with one detached worker | model cancels superseded search/projection work |
 | Configuration Workbench | `ConfigurationView` and `ConfigurationEditorViewModel` | configuration actors plus `ConfigurationWorkbenchYAMLAnalysisCache` | 150 ms cancellable preview task with stale-YAML rejection |
-| Logs | `LogsView` local filter/pause/selection state plus `EngineStore.logEntries` | snapshot construction still occurs synchronously in the view; export uses an actor | export task is cancelled on page disappearance |
+| Logs | `LogsView` local filter/pause/selection state plus `EngineStore.logEntries` | revision-keyed, serial latest-wins presentation actor; export actor | SwiftUI owns/cancels presentation and export tasks on page disappearance |
 | Settings | `SettingsPreferencesStore` plus engine/update/data stores | engine services; transient cleanup uses detached utility work | operation state/failure is retained by the page; transfer panels are user-owned modal actions |
 
 ## Findings
@@ -21,11 +21,11 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 - **Severity:** P2 performance and maintainability risk
 - **File:** `Vela/Features/Logs/LogsView.swift`
 - **Line/Type:** `LogsView.snapshot`, lines 18-35; `clearInvalidSelection`, lines 110-115; `export`, lines 124-145
-- **Evidence:** `snapshot` is a computed property evaluated from the live log array and is read by the body, an `onChange` expression, selection validation and export. `LogsPresentationSnapshot.init` maps every entry, filters every row and groups/scans identities (`Vela/Features/Logs/LogsPresentation.swift:80-105`). The buffer is bounded to 2,000 entries, and the 10,000-entry characterization test completes within its budget, so this is not an unbounded-memory defect. It is repeatable O(n) work on the SwiftUI/MainActor path.
+- **Evidence:** The original computed `snapshot` was evaluated from the live log array by body, selection validation and export. `LogsPresentationSnapshot.init` maps every entry, filters every row and groups/scans identities. The buffer is bounded to 2,000 entries, but the repeated O(n) work ran on the SwiftUI/MainActor path.
 - **Impact:** High-frequency log batches or unrelated view-state changes can repeat formatting/filtering work and increase UI CPU even though storage remains bounded.
 - **Fix:** Introduce a narrow logs presentation projection/cache owned by the Logs feature. Recompute only when the log revision or filter changes, preserve `LogBuffer` as the authoritative redacted store, and keep export on the existing actor. Do not add a second log store or sanitizer.
 - **Test:** Retain the 1k/10k snapshot and 2,000-entry high-frequency tests; add a projection-revision test proving unchanged rows are not rebuilt for inspector/hover state changes and verify MainActor latency during sustained batches.
-- **Status:** Open P2. Characterization exists; implement after correctness test gaps.
+- **Status:** Fixed and verified. `LogsView` now derives an O(1) revision from immutable buffer endpoints and filter/runtime state, while a feature-owned actor cancels and joins superseded `@concurrent` projection workers. EngineStore remains authoritative, pause/export snapshots remain immutable, and the redaction path is unchanged. Tests prove 10k behavior, rapid latest-wins serialization with at most one worker, and MainActor responsiveness during a 50k projection.
 
 ### UI-PROXY-001
 
@@ -95,4 +95,4 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 
 ## Feature audit conclusion
 
-No new P0/P1 implementation defect was reproduced in the feature layer. The strongest existing boundaries are the Connections/Rules single-worker pipelines, the Configuration Workbench debounce/cache/stale-result guards, bounded/redacted Logs storage and operation-aware Settings mutations. The highest-value feature refactors are narrow cached projections for Logs and Proxies and moving shared connection stream ownership below the Connections page model. These are strangler changes after correctness coverage, not reasons to rewrite the views wholesale.
+No new P0/P1 implementation defect was reproduced in the feature layer. The strongest existing boundaries are the Connections/Rules/Logs single-worker pipelines, the Configuration Workbench debounce/cache/stale-result guards, bounded/redacted Logs storage and operation-aware Settings mutations. The remaining highest-value feature refactors are a narrow Proxies projection and moving shared connection stream ownership below the Connections page model. These are strangler changes after correctness coverage, not reasons to rewrite the views wholesale.
