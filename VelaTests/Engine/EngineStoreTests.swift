@@ -38,6 +38,81 @@ struct EngineStoreTests {
         await processManager.finishEvents()
     }
 
+    @Test("User backend records the runtime configuration fingerprint")
+    func userBackendRecordsRuntimeConfigurationFingerprint() async throws {
+        let root = FileManager.default.temporaryDirectory
+            .appendingPathComponent("vela-runtime-fingerprint-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+
+        let configurationURL = root.appendingPathComponent("runtime.yaml")
+        try Data("rules: [MATCH,DIRECT]\n".utf8).write(to: configurationURL)
+        let expectedFingerprint = try await RuntimeConfigurationInspector().fingerprint(
+            at: configurationURL
+        )
+        let profile = makeProfile()
+        let processManager = EngineStoreProcessManagerFake(isRunning: false)
+        let store = makeStore(
+            profileManager: EngineStoreProfileManagerFake(
+                profiles: [profile],
+                selectedProfileID: profile.id,
+                runtimeConfigurationURL: configurationURL
+            ),
+            resolver: EngineStoreExecutableResolverFake(),
+            validator: EngineStoreConfigurationValidatorFake(
+                result: EngineStoreTestValues.validValidation,
+                suspendValidation: false
+            ),
+            processManager: processManager
+        )
+
+        await store.bootstrap()
+        await store.start()
+
+        #expect(store.activeRuntime?.configurationSHA256 == expectedFingerprint.sha256)
+        await store.stop()
+        await processManager.finishEvents()
+    }
+
+    @Test("Profile import removes its private staging directory")
+    func profileImportRemovesPrivateStagingDirectory() async throws {
+        let root = FileManager.default.temporaryDirectory
+            .appendingPathComponent("vela-profile-import-source-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+
+        let sourceURL = root.appendingPathComponent("source.yaml")
+        try Data("""
+        proxies: []
+        proxy-groups: []
+        rules: [MATCH,DIRECT]
+        """.utf8).write(to: sourceURL)
+        let profileManager = EngineStoreProfileManagerFake()
+        let processManager = EngineStoreProcessManagerFake(isRunning: false)
+        let store = EngineStore(
+            profileStore: profileManager,
+            runtimeParameters: RuntimeConfigParameters(
+                externalController: "127.0.0.1:19090",
+                secret: "engine-store-test-secret",
+                mixedPort: 17890
+            ),
+            executableResolver: EngineStoreExecutableResolverFake(),
+            configurationValidator: EngineStoreConfigurationValidatorFake(
+                result: EngineStoreTestValues.validValidation,
+                suspendValidation: false
+            ),
+            subscriptionConverter: EngineStoreSubscriptionConverterFake(),
+            processManager: processManager,
+            mihomoDataDirectoryURL: EngineStoreTestValues.dataDirectory
+        )
+
+        await store.importProfile(url: sourceURL)
+
+        let stagedURL = try #require(await profileManager.lastImportedSourceURL())
+        #expect(!FileManager.default.fileExists(atPath: stagedURL.deletingLastPathComponent().path))
+        await processManager.finishEvents()
+    }
+
     @Test("Bootstrap does not wait for the optional privileged Helper")
     func bootstrapDoesNotWaitForPrivilegedHelper() async {
         let helper = EngineStorePrivilegedHelperFake()
@@ -4029,6 +4104,7 @@ private actor EngineStoreProfileManagerFake: ProfileManaging {
     private var selectedIDCalls = 0
     private var selectCalls = 0
     private var buildCalls = 0
+    private var importedSourceURL: URL?
     private let runtimeConfigurationURL: URL
 
     init(
@@ -4046,6 +4122,7 @@ private actor EngineStoreProfileManagerFake: ProfileManaging {
     }
 
     func importProfile(from source: URL, name: String?) throws -> Profile {
+        importedSourceURL = source
         let profile = Profile(
             id: UUID(),
             name: name ?? source.deletingPathExtension().lastPathComponent,
@@ -4090,6 +4167,24 @@ private actor EngineStoreProfileManagerFake: ProfileManaging {
     func selectedProfileIDCallCount() -> Int { selectedIDCalls }
     func selectCallCount() -> Int { selectCalls }
     func buildCallCount() -> Int { buildCalls }
+    func lastImportedSourceURL() -> URL? { importedSourceURL }
+}
+
+private actor EngineStoreSubscriptionConverterFake: SubscriptionConverting {
+    func convertToMihomoYAML(
+        content: String,
+        sourceURL: URL?,
+        options: SubscriptionConversionOptions
+    ) async throws -> ConvertedSubscription {
+        ConvertedSubscription(
+            yaml: content,
+            detectedFormat: .mihomoYAML,
+            nodeCount: 1,
+            warnings: [],
+            rejectedItems: [],
+            convertedLocally: false
+        )
+    }
 }
 
 private actor EngineStoreExecutableResolverFake: MihomoExecutableResolving {

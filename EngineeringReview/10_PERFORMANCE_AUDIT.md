@@ -16,6 +16,8 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 | Scenes | maximum 128 scenes | actor-backed persistence | bounded |
 | Update/reliability export | retained export history capped at 50 | actor/service work | bounded |
 
+The first bounded EngineStore performance batch moved runtime-configuration fallback reads/hashing and profile-import staging cleanup off MainActor. It preserved the existing runtime digest and import contracts and is covered by the complete 84-test EngineStore suite.
+
 ## Findings
 
 ### PERF-CONN-001
@@ -97,4 +99,4 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 
 ## Performance conclusion
 
-Connections already exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Rules and Configuration use the same sound off-MainActor direction. The evidence-backed priorities are therefore not broad rewrites: cache or pipeline Logs and Proxies projections, move remaining large file IO off MainActor, add a Rules scale threshold and instrument Observation invalidation before extracting EngineStore state. All reviewed retained data is bounded; the only stream buffering follow-up is low-frequency privileged lease events.
+Connections already exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Rules and Configuration use the same sound off-MainActor direction. EngineStore runtime fingerprint IO and import staging cleanup are now off MainActor. The remaining evidence-backed priorities are therefore not broad rewrites: cache or pipeline Logs and Proxies projections, move remaining Configuration panel IO off MainActor, add a Rules scale threshold and instrument Observation invalidation before extracting EngineStore state. All reviewed retained data is bounded; the only stream buffering follow-up is low-frequency privileged lease events.

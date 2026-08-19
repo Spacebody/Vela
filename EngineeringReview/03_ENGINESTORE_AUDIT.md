@@ -32,11 +32,11 @@ See `ENGINESTORE_RESPONSIBILITY_MAP.md` for the complete current responsibility 
 - **Severity:** P2
 - **File:** `Vela/Core/Engine/EngineStore.swift`
 - **Line/Type:** `configurationSHA256(for:)`, around line 5055; profile-import cleanup
-- **Evidence:** The fingerprint fallback performs synchronous `Data(contentsOf:)` on MainActor. Profile import delegates primary reads/writes, but a deferred `FileManager.removeItem` still executes synchronously on MainActor.
+- **Evidence:** The audited implementation performed fallback `Data(contentsOf:)` and deferred temporary-directory removal synchronously on MainActor. The runtime fingerprint now uses the existing `RuntimeConfigurationInspector` when injected and otherwise reads/hashes in a detached user-initiated task. Import staging cleanup now runs in a detached utility task on both success and failure paths.
 - **Impact:** Large or slow files can produce avoidable UI stalls. The fingerprint read is normally bypassed by cached data, so current user impact is not yet established.
-- **Fix:** Move fallback read/hash and cleanup to an existing IO service or detached nonisolated helper; retain only result mutation on MainActor.
-- **Test:** Inject a slow/large file and assert UI-facing state remains responsive while the operation completes.
-- **Status:** Open.
+- **Fix:** Implemented without changing the EngineStore façade or runtime fingerprint contract.
+- **Test:** `userBackendRecordsRuntimeConfigurationFingerprint` proves the recorded runtime digest still matches the real file; `profileImportRemovesPrivateStagingDirectory` proves copied import staging is removed before the operation completes. The complete 84-test `EngineStoreTests` suite passes.
+- **Status:** Closed.
 
 ### ES-LIFE-001
 
@@ -75,4 +75,4 @@ See `ENGINESTORE_RESPONSIBILITY_MAP.md` for the complete current responsibility 
 
 ## Refactor decision
 
-No immediate EngineStore split is justified solely by its 7,760-line size. The first production change should address a proven P1 mutation/lifecycle issue outside or at the facade boundary. Subsequent extractions must use the existing service/coordinator owners and preserve the EngineStore public facade.
+No immediate EngineStore split is justified solely by its 7,760-line size. The first bounded strangler batch moved proven file IO and cleanup work off MainActor while preserving the EngineStore public façade and existing runtime/configuration owners. Subsequent extractions must follow the same evidence-backed boundary rule.

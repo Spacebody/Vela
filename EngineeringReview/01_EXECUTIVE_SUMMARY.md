@@ -50,4 +50,4 @@ No production symbol will be edited without current impact analysis. HIGH or CRI
 
 ## Next audit stage
 
-The confirmed Core probation and lifecycle P1 paths are now covered by seven focused controller tests. The next stage continues bounded performance and architecture work, beginning with a dependency-proven EngineStore strangler boundary, without weakening the already-verified privileged, network and configuration contracts.
+The confirmed Core probation and lifecycle P1 paths are now covered by seven focused controller tests. The first dependency-proven EngineStore strangler batch moved runtime fingerprint IO and profile-import cleanup off MainActor while keeping the façade and contracts intact; the complete 84-test EngineStore suite passes. The next stage continues bounded performance and architecture work without weakening the already-verified privileged, network and configuration contracts.

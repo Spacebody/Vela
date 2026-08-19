@@ -844,6 +844,7 @@ final class EngineStore {
         }
 
         lastError = nil
+        var temporaryDirectoryForCleanup: URL?
         do {
             let sourceData = try await Task.detached(priority: .userInitiated) {
                 try Data(contentsOf: url, options: [.mappedIfSafe])
@@ -860,6 +861,7 @@ final class EngineStore {
             let temporaryDirectory = FileManager.default.temporaryDirectory
                 .appendingPathComponent("VelaProfileImport", isDirectory: true)
                 .appendingPathComponent(UUID().uuidString, isDirectory: true)
+            temporaryDirectoryForCleanup = temporaryDirectory
             let sourceFileName = url.lastPathComponent.isEmpty
                 ? "configuration.yaml"
                 : url.lastPathComponent
@@ -875,8 +877,6 @@ final class EngineStore {
                     ofItemAtPath: candidateURL.path
                 )
             }.value
-            defer { try? FileManager.default.removeItem(at: temporaryDirectory) }
-
             let executable = try await executableResolver.resolve()
             let validation = await configurationValidator.validate(
                 configurationURL: candidateURL,
@@ -889,6 +889,8 @@ final class EngineStore {
             }
 
             let profile = try await profileStore.importProfile(from: candidateURL, name: nil)
+            await Self.removeTemporaryProfileImportDirectory(temporaryDirectory)
+            temporaryDirectoryForCleanup = nil
             try await profileStore.selectProfile(id: profile.id)
             profiles = try await profileStore.profiles()
             selectedProfileID = profile.id
@@ -899,6 +901,9 @@ final class EngineStore {
             await refreshConfiguredProxyCatalog()
             await loadRecentProxies()
         } catch {
+            if let temporaryDirectoryForCleanup {
+                await Self.removeTemporaryProfileImportDirectory(temporaryDirectoryForCleanup)
+            }
             present(
                 title: "Import failed",
                 message: "The selected subscription could not be converted and imported.",
@@ -907,6 +912,12 @@ final class EngineStore {
                 isRetryable: true
             )
         }
+    }
+
+    private nonisolated static func removeTemporaryProfileImportDirectory(_ url: URL) async {
+        await Task.detached(priority: .utility) {
+            try? FileManager.default.removeItem(at: url)
+        }.value
     }
 
     func refreshProfiles() async {
@@ -1195,7 +1206,7 @@ final class EngineStore {
             )
             try ensureCurrentEngineOperation(generation, wantsRunning: true)
             let controllerEndpoint = try userControllerEndpoint()
-            let runtimeConfigurationSHA256 = configurationSHA256(
+            let runtimeConfigurationSHA256 = await configurationSHA256(
                 for: launch.configurationURL
             )
             state = .starting
@@ -4372,7 +4383,7 @@ final class EngineStore {
             throw EngineStoreTunError.preparedTargetUnavailable
         }
         let controllerEndpoint = try userControllerEndpoint()
-        let configurationSHA = configurationSHA256(for: launch.configurationURL)
+        let configurationSHA = await configurationSHA256(for: launch.configurationURL)
         activeBackendKind = .userProcess
         state = .starting
         let snapshot = try await processManager.start(
@@ -5052,17 +5063,27 @@ final class EngineStore {
         return endpoint
     }
 
-    private func configurationSHA256(for url: URL) -> String {
+    private func configurationSHA256(for url: URL) async -> String {
         if let validatedConfigurationFingerprint,
             validatedConfigurationFingerprint.url == url.standardizedFileURL
         {
             return validatedConfigurationFingerprint.sha256
         }
-        if let data = try? Data(contentsOf: url, options: [.mappedIfSafe]) {
-            return Self.sha256(data)
+
+        if let runtimeConfigurationInspector,
+            let fingerprint = try? await runtimeConfigurationInspector.fingerprint(at: url)
+        {
+            return fingerprint.sha256
+        }
+
+        let fileDigest = await Task.detached(priority: .userInitiated) {
+            try? Self.sha256(Data(contentsOf: url, options: [.mappedIfSafe]))
+        }.value
+        if let fileDigest {
+            return fileDigest
         }
         // Test doubles may model a validated launch without materializing a file.
-        // Production launches always have a runtime file and are fingerprinted above.
+        // Production launches always have a runtime file and are fingerprinted off MainActor.
         return Self.sha256(Data(url.standardizedFileURL.path.utf8))
     }
 
