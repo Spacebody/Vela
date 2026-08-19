@@ -43,11 +43,11 @@ See `ENGINESTORE_RESPONSIBILITY_MAP.md` for the complete current responsibility 
 - **Severity:** P2
 - **File:** `Vela/Core/Engine/EngineStore.swift`
 - **Line/Type:** observer startup/teardown around lines 5880-6046 and `deinit`
-- **Evidence:** The explicit shutdown path cancels and joins more observer tasks than `deinit`; the destructor does not finish all continuation-backed streams.
-- **Impact:** The app-owned lifetime currently limits exposure, but tests, secondary scenes or future ownership changes could retain tasks beyond the store.
-- **Fix:** Centralize idempotent async shutdown and verify every task/stream owner. Do not perform async work from `deinit`.
-- **Test:** Lifecycle tests with injected streams proving `onTermination` and task completion after shutdown/deallocation.
-- **Status:** Open.
+- **Evidence:** The explicit shutdown path already owns asynchronous teardown. The synchronous `deinit` fallback now cancels every stored task handle and finishes every stored lifecycle continuation, without attempting asynchronous cleanup during destruction.
+- **Impact:** Store release can no longer leave continuation-backed lifecycle consumers suspended or owned consumer tasks running solely because the explicit shutdown path was skipped.
+- **Fix:** Kept the existing explicit async shutdown owner and made `deinit` a complete synchronous best-effort fallback for all stored tasks and lifecycle streams.
+- **Test:** `deinitializationFinishesLifecycleStreams` releases the store without explicit shutdown and proves the lifecycle stream terminates. The complete 85-test `EngineStoreTests` suite passes.
+- **Status:** Closed.
 
 ### ES-STATE-001
 

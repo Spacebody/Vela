@@ -40,11 +40,11 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the 
 - **Severity:** P2
 - **File:** `Vela/Core/Engine/EngineStore.swift`
 - **Line/Type:** task declarations around lines 320-358, `deinit` around line 484, observer startup around lines 5881-5950 and `stopEnvironmentObservers()` around line 6046
-- **Evidence:** The explicit async shutdown path cancels and awaits network, sleep/wake, health, transition, lease and recovery tasks. `deinit` cancels only a subset and does not cancel the process, Controller, health, network, sleep/wake, validation, proxy-selection or system-proxy request tasks, nor finish the stored lifecycle continuations.
-- **Impact:** `EngineStore` is currently app-owned, limiting production exposure, but test fixtures, future secondary ownership or failed bootstrap replacement can leave detached tasks waiting on streams after the store is destroyed. A `Task` handle disappearing does not itself cancel the underlying task.
-- **Fix:** Define one explicit idempotent async shutdown owner for every stored task/stream. Keep `deinit` as a synchronous best-effort cancellation/continuation finish fallback; do not attempt asynchronous cleanup from `deinit`.
-- **Test:** Inject non-finishing streams, invoke shutdown and release the store; assert every producer receives termination and no consumer task remains. Cover repeated shutdown.
-- **Status:** Open after P1 safety work; no runtime-state bug has been reproduced.
+- **Evidence:** The explicit async shutdown path remains the authoritative owner for joined teardown. The synchronous `deinit` fallback now cancels every stored task handle and finishes all lifecycle continuations, covering process, Controller, health, environment, transition, lease/recovery, validation, proxy-selection and system-proxy consumers.
+- **Impact:** Releasing a store without first running explicit shutdown no longer leaves lifecycle consumers suspended or stored consumer tasks running beyond ownership.
+- **Fix:** Preserved the existing idempotent async shutdown route and completed the synchronous `deinit` cancellation/continuation-finish fallback; no asynchronous work is initiated from `deinit`.
+- **Test:** `deinitializationFinishesLifecycleStreams` injects a non-finishing process stream, releases the store and proves the lifecycle stream reaches termination. The complete 85-test `EngineStoreTests` suite passes.
+- **Status:** Fixed and verified.
 
 ### CONC-CORE-001
 

@@ -482,6 +482,11 @@ final class EngineStore {
     }
 
     deinit {
+        processEventTask?.cancel()
+        controllerEventTask?.cancel()
+        healthReportTask?.cancel()
+        networkPathTask?.cancel()
+        sleepWakeTask?.cancel()
         transitionEventTask?.cancel()
         leaseEventTask?.cancel()
         leaseRecoveryTask?.cancel()
@@ -489,7 +494,13 @@ final class EngineStore {
         localNetworkRecoveryTask?.cancel()
         networkChangeRecoveryTask?.cancel()
         wakeRecoveryTask?.cancel()
+        activeValidationTask?.cancel()
+        proxySelectionRequestTask?.cancel()
+        systemProxyRequestTask?.cancel()
         privilegedStartupLogTask?.cancel()
+        for continuation in lifecycleContinuations.values {
+            continuation.finish()
+        }
     }
 
     var selectedProfile: Profile? {

@@ -8,6 +8,29 @@ import VelaIPC
 @MainActor
 @Suite("Engine store")
 struct EngineStoreTests {
+    @Test("Deinitialization finishes lifecycle streams")
+    func deinitializationFinishesLifecycleStreams() async {
+        let processManager = EngineStoreProcessManagerFake(isRunning: false)
+        var store: EngineStore? = makeStore(
+            profileManager: EngineStoreProfileManagerFake(),
+            resolver: EngineStoreExecutableResolverFake(),
+            validator: EngineStoreConfigurationValidatorFake(
+                result: EngineStoreTestValues.validValidation,
+                suspendValidation: false
+            ),
+            processManager: processManager
+        )
+        weak let releasedStore = store
+        let stream = store?.lifecycleEvents()
+        var iterator = stream?.makeAsyncIterator()
+
+        store = nil
+
+        #expect(releasedStore == nil)
+        #expect(await iterator?.next() == nil)
+        await processManager.finishEvents()
+    }
+
     @Test("Bootstrap loads profiles and the selected profile")
     func bootstrapLoadsPersistedState() async {
         let profile = makeProfile()
