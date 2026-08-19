@@ -88,7 +88,6 @@ EXPECTED_BLOCKED = {
     "clean.cli-broken",
     "upgrade.cli-old",
     "upgrade.cli-current",
-    "upgrade.automatic-scenes",
     "repair.cli",
     "uninstall.cli-symlink-removal",
 }
@@ -142,7 +141,6 @@ def make_present_contract(directory: Path) -> Path:
     contract = load(CONTRACT_PATH)
     implemented = {
         "productionCLI",
-        "productionSceneStore",
         "productionAutomationSocket",
     }
     contract["absentSurfaces"] = [

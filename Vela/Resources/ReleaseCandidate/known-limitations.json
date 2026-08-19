@@ -101,8 +101,8 @@
     {
       "id": "ssid-location-permission",
       "severity": "informational",
-      "title": "SSID automatic Scenes are not enabled in this RC",
-      "description": "This RC does not enable production Scenes or perform SSID matching. The Location usage description is reserved for the gated SSID path and does not mean that path is active.",
+      "title": "SSID matching is not enabled for automatic Scenes in this RC",
+      "description": "Production Scenes and non-SSID automatic evaluation are enabled. Wi-Fi SSID evaluation remains unavailable, and the Location usage description is reserved for that gated path.",
       "impact": {
         "security": "none",
         "data": "none",

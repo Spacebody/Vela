@@ -7,8 +7,8 @@
   "firstAffectedVersion": "1.0.0-rc.2",
   "summary": "Provision the already-frozen Sparkle trust-root category with the reviewed production key identifier.",
   "contractBinding": {
-    "baselineCanonicalSHA256": "9547780ead2cd169510d67e8981bb93ced503555d65d8c8805a8d4090d6289e5",
-    "currentCanonicalSHA256": "8fc0a2e38625aadd43983c51fb12c0c2f0a1127ca49a845316b0718301301003"
+    "baselineCanonicalSHA256": "c88f541b23a9bcf1254ecabb2a789be1d253f796c2c9bf5d51edb68dfedc4be9",
+    "currentCanonicalSHA256": "4688fe957be9220fd56169ad79ebe1a1426ef37a4b2b6acf78a918894ed01cd7"
   },
   "changes": [
     {

@@ -92,7 +92,6 @@ ABSENT_SURFACE_REQUIREMENTS = {
     "upgrade.cli-current": {"productionCLI"},
     "repair.cli": {"productionCLI"},
     "uninstall.cli-symlink-removal": {"productionCLI"},
-    "upgrade.automatic-scenes": {"productionSceneStore", "productionAutomationSocket"},
 }
 
 

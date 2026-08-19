@@ -14,6 +14,7 @@
     "Sparkle App update integration",
     "signed Core lifecycle and catalog integration",
     "local persistence and migration",
+    "production Scene Store and automatic Scene evaluation",
     "offline Help and Support redaction/export",
     "V0.8 local evidence, self-test, Safe Mode, and DEBUG-only fault framework"
   ],
@@ -21,7 +22,6 @@
     "production CLI",
     "production Automation Socket",
     "production App Intents",
-    "production Scene Store",
     "Network Extension",
     "remote analytics",
     "automatic crash/evidence upload",

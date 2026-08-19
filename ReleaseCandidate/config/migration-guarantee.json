@@ -19,7 +19,7 @@
     { "id": "configurationOverrides", "status": "pending", "path": null, "sha256": null },
     { "id": "configurationLayers", "status": "pending", "path": null, "sha256": null },
     { "id": "ruleLayers", "status": "pending", "path": null, "sha256": null },
-    { "id": "scenes", "status": "blockedAbsentSurface", "path": null, "sha256": null },
+    { "id": "scenes", "status": "pending", "path": null, "sha256": null },
     { "id": "ssidSecretReferences", "status": "pending", "path": null, "sha256": null },
     { "id": "appSettings", "status": "pending", "path": null, "sha256": null },
     { "id": "helperSettings", "status": "pending", "path": null, "sha256": null },
@@ -51,6 +51,6 @@
   "decision": "noGo",
   "blockers": [
     "Authentic tag-generated V0.1 through V0.8 fixtures and reviewed migration evidence are not present.",
-    "Scene Store and CLI install metadata are absent product surfaces, so their required V1 migration coverage cannot pass until release scope is resolved through change control."
+    "Scene Store migration coverage is pending evidence. CLI install metadata remains an absent product surface and cannot pass until release scope is resolved through change control."
   ]
 }

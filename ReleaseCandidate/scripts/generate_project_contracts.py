@@ -310,7 +310,6 @@ def public_contract(repo: Path, architecture: dict[str, Any]) -> dict[str, Any]:
         "productionCLI",
         "productionAutomationSocket",
         "productionAppIntents",
-        "productionSceneStore",
     }
     if not isinstance(absent, list) or not required_absent.issubset(set(absent)):
         raise ContractGenerationError(

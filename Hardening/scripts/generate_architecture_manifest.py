@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate Vela's architecture freeze from the production source tree.
 
-The generator intentionally does not infer unimplemented V0.4 fixture features.  A
-missing CLI, Automation Socket, App Intent, or Scene Store remains represented as
+The generator intentionally does not infer unimplemented fixture features.  A
+missing CLI, Automation Socket, or App Intent remains represented as
 ``null``/``absent``.  The output contains categories and path templates only; it
 never reads runtime user data, Keychain values, or release credentials.
 """
@@ -109,7 +109,7 @@ def schema_versions(repo: Path, constants: str) -> dict[str, int | None]:
         "xpcPayload": swift_int("schemaVersion", constants),
         "profile": int(schemas["profile"]),
         "configurationLayer": int(schemas["configuration"]),
-        "scene": schemas.get("scene"),
+        "scene": int(schemas["scene"]),
         "updateJournal": int(schemas["updateJournal"]),
     }
     source_checks = [
@@ -130,6 +130,12 @@ def schema_versions(repo: Path, constants: str) -> dict[str, int | None]:
             "UpdateJournal.currentSchemaVersion",
             r"struct\s+UpdateJournal\b.*?currentSchemaVersion\s*=\s*(\d+)",
             checks["updateJournal"],
+        ),
+        (
+            repo / "Vela/Core/Scenes/SceneModels.swift",
+            "SceneStoreDocument.currentSchemaVersion",
+            r"struct\s+SceneStoreDocument\b.*?currentSchemaVersion\s*=\s*(\d+)",
+            checks["scene"],
         ),
     ]
     for path, label, pattern, expected in source_checks:
@@ -446,6 +452,9 @@ def build(repo: Path) -> tuple[dict[str, Any], dict[str, Any]]:
             fixed_layout_path,
             connectivity_path,
             proxy_probe_path,
+            repo / "Vela/Core/Scenes/SceneModels.swift",
+            repo / "Vela/Core/Scenes/SceneStore.swift",
+            repo / "Vela/Core/Scenes/SceneFeatureController.swift",
             repo / "Configuration/Privileged/dev.yilin.Vela.Helper.plist",
         )
     ]
@@ -590,12 +599,13 @@ def build(repo: Path) -> tuple[dict[str, Any], dict[str, Any]]:
             "signedCoreLifecycle",
             "offlineHelp",
             "localSupportExport",
+            "sceneStore",
+            "automaticSceneEvaluation",
         ],
         "absentSurfaces": [
             "productionCLI",
             "productionAutomationSocket",
             "productionAppIntents",
-            "productionSceneStore",
             "networkExtension",
             "remoteAnalytics",
             "automaticCrashUpload",

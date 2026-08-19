@@ -2,8 +2,7 @@
   "absentSurfaces": [
     "productionAppIntents",
     "productionAutomationSocket",
-    "productionCLI",
-    "productionSceneStore"
+    "productionCLI"
   ],
   "app": {
     "architectures": [
@@ -263,7 +262,7 @@
     "rootCoreStore": 2,
     "rootData": 3,
     "rootStartTransaction": 4,
-    "scene": null,
+    "scene": 1,
     "supportBundle": 1,
     "updateJournal": 1,
     "userCoreStore": 1,
@@ -282,6 +281,9 @@
     "Vela/Core/Persistence/ApplicationDirectories.swift",
     "Vela/Core/Privileged/TunPreferences.swift",
     "Vela/Core/Proxies/ProxyOperationState.swift",
+    "Vela/Core/Scenes/SceneFeatureController.swift",
+    "Vela/Core/Scenes/SceneModels.swift",
+    "Vela/Core/Scenes/SceneStore.swift",
     "Vela/Core/Subscriptions/SubscriptionSecrets.swift",
     "Vela/Core/Updates/UpdateController.swift",
     "Vela/Resources/Help/help-index.json",

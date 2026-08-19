@@ -1,5 +1,5 @@
 {
-  "architectureManifestSHA256": "78180377556e3b1dc243ba39c9849d11240d666da5117eda7a1f8b8f4f4d9a5d",
+  "architectureManifestSHA256": "64e34b4bddba6bf1d76561b96f8a3f0968b69390924f6ba4d3c5c6dca2a3a8c9",
   "dataStores": [
     {
       "id": "userApplicationSupport",
@@ -21,7 +21,6 @@
     "productionCLI",
     "productionAutomationSocket",
     "productionAppIntents",
-    "productionSceneStore",
     "networkExtension",
     "remoteAnalytics",
     "automaticCrashUpload",

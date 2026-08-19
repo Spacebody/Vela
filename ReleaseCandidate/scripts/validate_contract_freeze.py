@@ -60,7 +60,7 @@ EXPECTED_SCHEMAS = {
     "rootCoreStore": 2,
     "rootData": 3,
     "rootStartTransaction": 4,
-    "scene": None,
+    "scene": 1,
     "supportBundle": 1,
     "updateJournal": 1,
     "userCoreStore": 1,
@@ -110,7 +110,6 @@ EXPECTED_ABSENT = [
     "productionAppIntents",
     "productionAutomationSocket",
     "productionCLI",
-    "productionSceneStore",
 ]
 PLACEHOLDERS = ("REPLACE_WITH", "__PIN", "__SUPPORT", "TODO", "TBD")
 SECRET_MARKERS = (

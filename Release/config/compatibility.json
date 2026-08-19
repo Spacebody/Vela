@@ -10,7 +10,7 @@
     "rootData": 3,
     "profile": 2,
     "configuration": 1,
-    "scene": null,
+    "scene": 1,
     "updateJournal": 1
   },
   "components": {
@@ -20,7 +20,8 @@
     "cli": null
   },
   "notes": [
-    "Null values are intentional stop-ship markers until the production V0.4 CLI, Automation Socket, and SceneStore are present.",
+    "Null values are intentional stop-ship markers until the production CLI and Automation Socket are present.",
+    "SceneStore schema 1 is implemented by the production app; App Intents remain explicitly absent in the architecture and public-contract freezes.",
     "Do not replace these markers with fixture values that are not implemented by the application."
   ]
 }

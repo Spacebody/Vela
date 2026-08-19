@@ -179,7 +179,8 @@ class CheckedInTruthTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         value = load(CONFIG / "known-limitations.json")
         ssid = next(item for item in value["limitations"] if item["id"] == "ssid-location-permission")
-        self.assertIn("does not enable production Scenes", ssid["description"])
+        self.assertIn("Production Scenes and non-SSID automatic evaluation are enabled", ssid["description"])
+        self.assertIn("Wi-Fi SSID evaluation remains unavailable", ssid["description"])
         self.assertEqual(ssid["impact"], {"security": "none", "data": "none", "network": "none"})
 
     def test_go_packet_is_explicit_no_go(self) -> None:
@@ -1096,7 +1097,7 @@ class ValidatorNegativeTests(unittest.TestCase):
             self.assertEqual(report["audit"]["criticalHighOpenCount"], 0)
             self.assertEqual(report["schemaVersion"], 2)
             self.assertEqual(len(report["migration"]["stores"]), 21)
-            self.assertEqual(report["migration"]["stores"]["scenes"], "blockedAbsentSurface")
+            self.assertEqual(report["migration"]["stores"]["scenes"], "pending")
             self.assertEqual(
                 report["migration"]["stores"]["cliInstallMetadata"],
                 "blockedAbsentSurface",

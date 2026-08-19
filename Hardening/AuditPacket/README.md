@@ -8,8 +8,8 @@ every payload with `verify_audit_packet.py`; archive custody, not a writable dir
 provides operational immutability.
 
 The architecture and attack surface are generated from production source. In particular,
-the current baseline has Helper protocol v2 and 19 RPC methods, while production CLI,
-Automation Socket, App Intents, and Scene Store remain absent. Do not replace those nulls
+the current baseline has Helper protocol v2 and 19 RPC methods plus the production
+SceneStore schema v1, while production CLI, Automation Socket, and App Intents remain absent. Do not replace those nulls
 with pack fixtures.
 
 Audit material includes:

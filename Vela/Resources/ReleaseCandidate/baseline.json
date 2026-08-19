@@ -11,9 +11,9 @@
     "mihomo": "v1.19.29",
     "sparkle": "2.9.4"
   },
-  "publicContractSHA256": "9547780ead2cd169510d67e8981bb93ced503555d65d8c8805a8d4090d6289e5",
-  "publicContractFileSHA256": "f7af0386d3c9360e231e5d797b44d0eae71ad8e69384b7969b00ccd4613884c4",
-  "architectureFreezeSHA256": "78180377556e3b1dc243ba39c9849d11240d666da5117eda7a1f8b8f4f4d9a5d",
+  "publicContractSHA256": "c88f541b23a9bcf1254ecabb2a789be1d253f796c2c9bf5d51edb68dfedc4be9",
+  "publicContractFileSHA256": "335304ceda1bc98f40242cd582e74524c450d4091a6f48ea056eab1640c4025c",
+  "architectureFreezeSHA256": "64e34b4bddba6bf1d76561b96f8a3f0968b69390924f6ba4d3c5c6dca2a3a8c9",
   "dataSchemaVersion": 3,
   "helperProtocol": {
     "minimum": 2,

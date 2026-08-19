@@ -85,7 +85,8 @@ class ContractToolingTests(unittest.TestCase):
             self.assertEqual(contract["cli"]["commands"], [])
             self.assertEqual(contract["appIntents"]["intentTypeNames"], [])
             self.assertEqual(contract["schemas"]["rootData"], 3)
-            self.assertIsNone(contract["schemas"]["scene"])
+            self.assertEqual(contract["schemas"]["scene"], 1)
+            self.assertNotIn("productionSceneStore", contract["absentSurfaces"])
             self.assertEqual(
                 contract["configuration"]["operationKinds"],
                 [

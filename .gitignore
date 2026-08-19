@@ -56,7 +56,15 @@ __pycache__/
 
 # Internal design, review, and generated evidence
 /Artifacts/
-/EngineeringReview/
+/EngineeringReview/*
+!/EngineeringReview/00_ARCHITECTURE_MAP.md
+!/EngineeringReview/01_EXECUTIVE_SUMMARY.md
+!/EngineeringReview/02_COMPLEXITY_HOTSPOTS.md
+!/EngineeringReview/03_ENGINESTORE_AUDIT.md
+!/EngineeringReview/04_CORE_LIFECYCLE_AUDIT.md
+!/EngineeringReview/05_CONCURRENCY_AUDIT.md
+!/EngineeringReview/ENGINESTORE_RESPONSIBILITY_MAP.md
+!/EngineeringReview/complexity.md
 /Docs/
 /CODE_REVIEW_ARCHITECTURE_MAP.md
 /design-qa.md

@@ -43,7 +43,7 @@
     { "id": "upgrade.cli-current", "phase": "upgrade", "status": "blockedAbsentSurface", "evidence": [] },
     { "id": "upgrade.external-core-active", "phase": "upgrade", "status": "pending", "evidence": [] },
     { "id": "upgrade.blocked-core", "phase": "upgrade", "status": "pending", "evidence": [] },
-    { "id": "upgrade.automatic-scenes", "phase": "upgrade", "status": "blockedAbsentSurface", "evidence": [] },
+    { "id": "upgrade.automatic-scenes", "phase": "upgrade", "status": "pending", "evidence": [] },
     { "id": "upgrade.incomplete-journals", "phase": "upgrade", "status": "pending", "evidence": [] },
     { "id": "upgrade.low-disk", "phase": "upgrade", "status": "pending", "evidence": [] },
     { "id": "upgrade.sparkle-offline", "phase": "upgrade", "status": "pending", "evidence": [] },
@@ -73,6 +73,6 @@
   "decision": "noGo",
   "blockers": [
     "Candidate-bound evidence has not been produced by running the exact matrix on a final signed and notarized DMG.",
-    "Production CLI and automatic Scenes are absent public-contract surfaces, so their matrix cases remain blockedAbsentSurface."
+    "Production CLI remains an absent public-contract surface. Automatic Scene upgrade coverage is pending candidate-bound evidence."
   ]
 }

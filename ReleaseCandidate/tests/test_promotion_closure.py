@@ -115,7 +115,6 @@ class PromotionClosureFixture:
         contract = load(ROOT / "Contracts/v1/public-contract-freeze.json")
         implemented = {
             "productionCLI",
-            "productionSceneStore",
             "productionAutomationSocket",
         }
         contract["absentSurfaces"] = [

@@ -79,7 +79,7 @@ def validate_semantics(architecture: dict[str, Any], attack: dict[str, Any]) -> 
     require(len(methods) == len(set(methods)), "Helper RPC names are duplicated")
     require(protocols.get("automation") is None, "manifest invents Automation protocol")
     require(protocols.get("cli") is None, "manifest invents CLI protocol")
-    require(architecture["schemas"].get("scene") is None, "manifest invents Scene schema")
+    require(architecture["schemas"].get("scene") == 1, "SceneStore schema must remain v1")
 
     components = {item.get("name"): item for item in architecture["bundledComponents"]}
     require(components.get("VelaHelper", {}).get("version") == "0.6.0", "Helper version must remain 0.6.0")
@@ -88,9 +88,15 @@ def validate_semantics(architecture: dict[str, Any], attack: dict[str, Any]) -> 
 
     absent = set(architecture["absentSurfaces"])
     require(
-        {"productionCLI", "productionAutomationSocket", "productionAppIntents", "productionSceneStore",
+        {"productionCLI", "productionAutomationSocket", "productionAppIntents",
          "networkExtension", "remoteAnalytics", "automaticCrashUpload", "remoteFeatureFlags"} <= absent,
         "required absent surfaces are not explicit",
+    )
+    require("productionSceneStore" not in absent, "manifest hides the production SceneStore")
+    capabilities = set(architecture["capabilities"])
+    require(
+        {"sceneStore", "automaticSceneEvaluation"} <= capabilities,
+        "production Scene capabilities are missing",
     )
     filesystem = architecture["filesystem"]
     for key in ("arbitraryRootPathAccepted", "arbitraryPIDAccepted", "arbitraryCommandAccepted"):

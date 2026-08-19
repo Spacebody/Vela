@@ -16,7 +16,10 @@ FIXTURES = ROOT / "Hardening/tests/fixtures"
 sys.path.insert(0, str(SCRIPTS))
 
 from json_schema import SchemaError, validate  # noqa: E402
-from validate_hardening_config import release_blockers  # noqa: E402
+from validate_hardening_config import (  # noqa: E402
+    missing_release_required_surfaces,
+    release_blockers,
+)
 
 
 def run(*arguments: str, expected: int = 0) -> subprocess.CompletedProcess[str]:
@@ -60,6 +63,58 @@ class ArchitectureTests(unittest.TestCase):
 
 
 class ConfigurationTests(unittest.TestCase):
+    def test_release_surface_detection_reports_partial_absence(self) -> None:
+        release = {
+            "releaseRequirements": {
+                "requireCLI": True,
+                "requireAppIntents": True,
+                "requireAutomationProtocol": True,
+                "requireSceneSchema": True,
+            }
+        }
+        compatibility = {
+            "components": {"cli": None},
+            "cliProtocol": None,
+            "automationProtocol": None,
+            "schemas": {"scene": 1},
+        }
+        architecture = {
+            "identifiers": {"appIntentIdentifiers": []},
+            "absentSurfaces": [
+                "productionCLI",
+                "productionAutomationSocket",
+                "productionAppIntents",
+            ],
+        }
+        self.assertEqual(
+            missing_release_required_surfaces(release, compatibility, architecture),
+            {"CLI", "AppIntents", "Automation"},
+        )
+
+    def test_release_surface_detection_does_not_hide_one_missing_surface(self) -> None:
+        release = {
+            "releaseRequirements": {
+                "requireCLI": False,
+                "requireAppIntents": True,
+                "requireAutomationProtocol": False,
+                "requireSceneSchema": False,
+            }
+        }
+        compatibility = {
+            "components": {"cli": "vela"},
+            "cliProtocol": 1,
+            "automationProtocol": 1,
+            "schemas": {"scene": 1},
+        }
+        architecture = {
+            "identifiers": {"appIntentIdentifiers": []},
+            "absentSurfaces": ["productionAppIntents"],
+        }
+        self.assertEqual(
+            missing_release_required_surfaces(release, compatibility, architecture),
+            {"AppIntents"},
+        )
+
     def test_candidate_stage_defers_only_artifact_bound_stop_ship_conditions(self) -> None:
         policy = {
             "rules": [

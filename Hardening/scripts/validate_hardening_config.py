@@ -55,6 +55,40 @@ def release_blockers(
         return [item for item in found if item not in POSTBUILD_CONDITIONS]
     return found
 
+
+def missing_release_required_surfaces(
+    release: dict[str, Any],
+    compatibility: dict[str, Any],
+    architecture: dict[str, Any],
+) -> set[str]:
+    """Return every release-required surface not proved by production metadata."""
+    requirements = release.get("releaseRequirements", {})
+    components = compatibility.get("components", {})
+    schemas = compatibility.get("schemas", {})
+    absent = set(architecture.get("absentSurfaces", []))
+    missing: set[str] = set()
+    if requirements.get("requireCLI") is True and (
+        components.get("cli") is None
+        or compatibility.get("cliProtocol") is None
+        or "productionCLI" in absent
+    ):
+        missing.add("CLI")
+    if requirements.get("requireAppIntents") is True and (
+        "productionAppIntents" in absent
+        or not architecture.get("identifiers", {}).get("appIntentIdentifiers")
+    ):
+        missing.add("AppIntents")
+    if requirements.get("requireAutomationProtocol") is True and (
+        compatibility.get("automationProtocol") is None
+        or "productionAutomationSocket" in absent
+    ):
+        missing.add("Automation")
+    if requirements.get("requireSceneSchema") is True and (
+        schemas.get("scene") is None or "productionSceneStore" in absent
+    ):
+        missing.add("SceneStore")
+    return missing
+
 def load(path: Path) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -238,18 +272,18 @@ def verify_truthful_blockers(repo: Path, readiness: dict[str, Any]) -> None:
     if "all: [CoreCatalogTrustRoot] = []" in core_source and not active.get("productionCoreCatalogTrustUnprovisioned"):
         raise ConfigError("empty Core trust root is not an active Stop-Ship condition")
     compatibility = load(repo / "Release/config/compatibility.json")
-    requirements = release.get("releaseRequirements", {})
-    absent_required_surfaces = (
-        requirements.get("requireCLI") is True
-        and requirements.get("requireAutomationProtocol") is True
-        and requirements.get("requireSceneSchema") is True
-        and compatibility.get("components", {}).get("cli") is None
-        and compatibility.get("cliProtocol") is None
-        and compatibility.get("automationProtocol") is None
-        and compatibility.get("schemas", {}).get("scene") is None
+    architecture = load(repo / "Hardening/config/architecture-freeze.json")
+    missing_surfaces = missing_release_required_surfaces(
+        release,
+        compatibility,
+        architecture,
     )
-    if absent_required_surfaces and not active.get("releaseRequiredSurfacesAbsent"):
-        raise ConfigError("Release-required absent surfaces are not an active Stop-Ship condition")
+    blocker_active = active.get("releaseRequiredSurfacesAbsent") is True
+    if bool(missing_surfaces) != blocker_active:
+        raise ConfigError(
+            "Release-required surface blocker disagrees with production metadata: "
+            f"missing={sorted(missing_surfaces)}, active={blocker_active}"
+        )
     release_manifest_generator = (repo / "Release/scripts/generate_release_manifest.py").read_text(
         encoding="utf-8"
     )
