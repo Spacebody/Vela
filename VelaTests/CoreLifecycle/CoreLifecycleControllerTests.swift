@@ -115,10 +115,41 @@ struct CoreLifecycleControllerTests {
     try await proveUpdateBarrierIsAvailable(fixture.runtimeMutationGate)
   }
 
+  @Test("A failed automatic rollback retains the journal for manual repair")
+  func automaticRollbackFailureRetainsJournal() async throws {
+    let process = TransactionProcessFake(running: false, restartFails: true)
+    let (controller, fixture, engineStore) = try await makeController(
+      process: process,
+      seedActiveInstalledCore: true
+    )
+    defer {
+      ConfigurationTestSupport.removeTemporaryDirectory(fixture.temporaryDirectory)
+    }
+
+    let installedCoreID = try #require(CoreID(rawValue: "v1.19.28-r1"))
+    await engineStore.bootstrap()
+    await engineStore.start()
+    #expect(engineStore.isRunning)
+    await controller.bootstrap()
+
+    await controller.activate(installedCoreID)
+
+    #expect(controller.manualRepairRequired)
+    #expect(controller.activationJournal?.coreID == installedCoreID)
+    #expect(controller.activationJournal?.phase == .failed)
+    if case .failed = controller.activationState {
+      // Expected: a failed rollback must remain visible and repairable.
+    } else {
+      Issue.record("Expected failed activation state, got \(controller.activationState)")
+    }
+    #expect(controller.lastError?.contains("Manual repair is required") == true)
+  }
+
   private func makeController(
     configurationValidator: any ConfigurationValidating = TransactionValidatorFake(
       result: TransactionTestValues.validValidation
     ),
+    process: TransactionProcessFake = TransactionProcessFake(running: false),
     seedActiveInstalledCore: Bool = false
   ) async throws -> (
     controller: CoreLifecycleController,
@@ -131,7 +162,7 @@ struct CoreLifecycleControllerTests {
       activeData: Data(TransactionTestValues.baseRawYAML.utf8),
       fileSystem: fileSystem,
       api: TransactionAPIFake(),
-      process: TransactionProcessFake(running: false)
+      process: process
     )
     let factoryCoreID = try CoreID.factory(version: "v1.19.28")
     let factoryURL = fixture.temporaryDirectory.appendingPathComponent(

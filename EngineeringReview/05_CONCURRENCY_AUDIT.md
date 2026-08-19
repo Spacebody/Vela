@@ -54,7 +54,7 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the 
 - **Evidence:** A journal `startedAt` value with fractional seconds was canonicalized to whole seconds on disk, then compared against the original value. The resulting false `writeVerificationFailed` occurred while cancellation awaited rollback and converted an otherwise successful restore into a manual-repair state.
 - **Impact:** Cancellation correctness depended on an impossible round-trip equality invariant and could leave the durable journal retained even though the authoritative Core state had already been restored.
 - **Fix:** Verify the committed journal against the canonical decode of its exact encoded bytes. Preserve the compare-and-swap, atomic rename, file verification and `fsync` barriers. Propagate the final attempted restore error into the existing safe diagnostic path instead of replacing it with a generic rollback failure.
-- **Test:** Focused Core lifecycle suite passes four tests, including a subsecond transaction round trip and cancellation after journal creation.
+- **Test:** Focused Core lifecycle suite passes five tests, including a subsecond transaction round trip, cancellation after journal creation, and failed automatic rollback retaining the durable journal for manual repair.
 - **Status:** Fixed and verified.
 
 ### CONC-STREAM-001

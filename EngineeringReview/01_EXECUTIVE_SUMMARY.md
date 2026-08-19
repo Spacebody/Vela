@@ -4,17 +4,17 @@ Status: audit in progress. This report intentionally does not reuse the older `c
 
 ## Current baseline
 
-- Branch/commit: `main` / `1aece344b57c7ce660206eb49772b686d923208b`.
+- Branch/commit under active review: `main` / `e16a2b1` plus the independently verified test/documentation batch described below.
 - Swift source volume: 171,535 lines including tests and harnesses.
 - Largest production file: `Vela/Core/Engine/EngineStore.swift`, 7,760 lines.
 - Largest production workflow type: `CoreLifecycleController`, 2,408-line type body.
 - Largest composition function: `AppEnvironment.live()`, 559 lines.
-- Hardening workflow-pin validation passes.
-- Hardening architecture freeze is stale and currently makes 5 of 28 Hardening tests fail.
+- Hardening configuration and workflow-pin validation pass.
+- All 30 Hardening Python tests pass; the architecture freeze is current for this source snapshot.
 
 ## Initial risk assessment
 
-No new P0 is asserted at this stage. The first confirmed release-engineering finding is that `main` cannot pass its own architecture-freeze gate. Because the semantic manifest fields did not change, this looks like an unreviewed source-surface drift rather than proof of a new privilege or endpoint; it remains a release-blocking Hardening inconsistency until resolved through the existing ADR process.
+No new P0 is asserted at this stage. The previously recorded architecture-freeze mismatch has been reconciled through the repository's existing ADR/baseline process and all documented Hardening commands pass. Confirmed lifecycle P1 defects are being closed before architecture and style work continues.
 
 The primary maintainability and correctness risks under active audit are:
 
@@ -42,12 +42,12 @@ No production symbol will be edited without current impact analysis. HIGH or CRI
 - **Severity:** P1 (release correctness / security-gate integrity)
 - **File:** `Hardening/config/architecture-freeze.json:198-204`; `Hardening/config/attack-surface.json:2`
 - **Line/Type:** generated architecture baseline
-- **Evidence:** source generation produces `scannedFileCount = 306` instead of 295 and new discovery hashes. `validate_hardening_config.py` fails with `architecture baseline is stale`; 5 Hardening tests fail for the same prerequisite.
-- **Impact:** current `main` cannot satisfy the repository's mandatory Hardening source gate. Blindly updating hashes would bypass the intended Security/Release review.
+- **Evidence:** the initial review snapshot produced `scannedFileCount = 306` instead of 295 and failed the architecture baseline prerequisite. The reconciled current snapshot passes configuration validation, workflow validation and all 30 Hardening tests.
+- **Impact:** while open, the repository could not satisfy its mandatory Hardening source gate. Blind hash regeneration would have bypassed the intended Security/Release review.
 - **Fix:** identify the 11 newly scanned production files and their security signals, confirm no unintended attack-surface change, then generate manifests and add a matching ADR with exact canonical hashes and owners.
 - **Test:** all three documented Hardening commands plus deterministic generator test.
-- **Status:** Open; evidence collection in progress.
+- **Status:** Closed and verified through the existing baseline/ADR mechanism. `validate_hardening_config.py`, `validate_github_workflows.py .github/workflows`, and the 30-test Hardening unittest suite all pass on the current snapshot.
 
 ## Next audit stage
 
-The next stage completes the Engine/Core lifecycle, privileged boundary, System Proxy/TUN, configuration transaction, Task/AsyncStream/resource, performance, feature-coupling, and test-gap reviews before selecting the first production-code change.
+The next stage closes the remaining Core probation and lifecycle proof gaps, then continues bounded performance and architecture work without weakening the already-verified privileged, network and configuration contracts.
