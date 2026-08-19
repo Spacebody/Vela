@@ -267,7 +267,13 @@ final class UpdateRecoveryCoordinator {
             summary: message
         )
         pendingJournal = journal
-        try? await store.save(journal)
+        do {
+            try await store.save(journal)
+        } catch {
+            UpdateLog.recovery.error(
+                "Failed to persist recovery-required update journal; code=\(Self.failureCode(for: error), privacy: .public)"
+            )
+        }
         let safeMessage = DiagnosticTextSanitizer.redact(message)
         disposition = .safeMode(code: code, message: safeMessage)
         lifecycleSink(.recoveryRequired(phase: "recovery", reason: safeMessage))

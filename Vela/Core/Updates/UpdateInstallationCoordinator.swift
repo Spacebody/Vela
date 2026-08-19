@@ -192,7 +192,13 @@ final class UpdateInstallationCoordinator: UpdateInstallationCoordinating {
                 phase: failedPhase,
                 summary: DiagnosticTextSanitizer.redact(error.localizedDescription)
             )
-            try? await journalStore.save(failedJournal)
+            do {
+                try await journalStore.save(failedJournal)
+            } catch {
+                UpdateLog.preparation.error(
+                    "Failed to persist the update-preparation failure journal; code=\(Self.failureCode(for: error), privacy: .public)"
+                )
+            }
             UpdateLog.preparation.error("Update preparation failed; code=\(Self.failureCode(for: error), privacy: .public)")
             lifecycleSink(
                 .failed(
