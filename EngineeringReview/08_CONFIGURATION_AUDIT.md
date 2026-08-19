@@ -106,18 +106,18 @@ Any failure after destructive mutation enters rollback. Recovery on next launch 
 
 ### CONFIG-TEST-001
 
-- **Severity:** P1 test gap
+- **Severity:** P2 integration proof gap
 - **File:** `VelaTests/`
 - **Line/Type:** cross-feature transaction failure matrix
-- **Evidence:** Focused transaction/profile/layer tests exist, but the Definition-of-Done scenario `apply -> restart -> health proof -> restore previous state on failure` must be demonstrated end-to-end with the same AppEnvironment wiring and existing `FaultInjection` system.
-- **Impact:** A composition regression can pass lower-level actor tests while breaking recovery ordering across EngineStore, Controller and profile persistence.
+- **Evidence:** `RuntimeConfigTransactionCoordinatorTests` already proves health-failure rollback, candidate-reload failure, controlled restart fallback, rollback-failure journal retention, crash recovery of profile/raw/runtime state and phase-aware idempotent recovery. The remaining gap is a fully composed `AppEnvironment`/native-process test using the production wiring and existing `FaultInjection` system.
+- **Impact:** The transaction owner is characterized, but a composition regression in AppEnvironment, native Controller startup or production adapter wiring could still escape the actor-level suite.
 - **Fix:** Add an integration-style app test using existing fault injection; do not create a second fake failure framework.
-- **Test:** Invalid candidate, stale revision, Controller timeout, process health failure, cancellation and rollback failure with launch recovery.
-- **Status:** Open test gap. No current data-loss path reproduced; elevate to implementation defect only if the test exposes one.
+- **Test:** Preserve the existing coordinator matrix; add production-wiring coverage for Controller timeout, process health failure and launch recovery in an environment where the native adapters are available.
+- **Status:** Open P2 composition-proof gap. No current data-loss path reproduced and the core workflow is already covered at its authoritative coordinator boundary.
 
 ## Configuration conclusion
 
-No known P0/P1 implementation defect was found in the reviewed configuration paths. The durable transaction/journal/atomic-write design is substantially stronger than a simple edit-and-restart flow. The open P1 item is proof coverage at the fully composed integration boundary; architecture and performance changes remain P2 and must follow characterization tests.
+No known P0/P1 implementation defect was found in the reviewed configuration paths. The durable transaction/journal/atomic-write design is substantially stronger than a simple edit-and-restart flow. Remaining composition proof, architecture and performance work is P2 and must follow characterization tests.
 
 ## Verification
 
