@@ -9,7 +9,7 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 | Logs | `LogBuffer.maximumCapacity == 2_000`; telemetry uses `.bufferingNewest(2_000)` | serial latest-wins `@concurrent` presentation worker; export actor | bounded and verified off MainActor |
 | Connections | current snapshot only; 10,000-row tests and 500 search changes | single detached worker in actor pipeline | verified scalable architecture |
 | Traffic | Overview history keeps 120 samples | sample state is published through wide EngineStore/Overview state | bounded; Observation measurement needed |
-| Rules | current snapshot only; search is debounced | detached, serial latest-wins pipeline | verified architecture; explicit large-rule benchmark gap |
+| Rules | current snapshot only; search is debounced | detached, serial latest-wins pipeline | 50,000-rule decode, refresh, search and MainActor budgets verified |
 | Proxies | current catalog plus delay dictionary; delay cache clears on profile/catalog/reset | serial latest-wins `@concurrent` projection worker; delay requests bounded | bounded cache and off-MainActor projection; O(n) delay capture remains |
 | Configuration structure | YAML analysis cache capacity 2; structure output capped at 2,000 items | detached analyzer, 150 ms preview debounce | verified bounded projection; large-YAML IO measurement needed |
 | Health reports | latest report/state, not an append-only history | monitor actor; UI projection in EngineStore | bounded |
@@ -55,14 +55,14 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 
 ### PERF-RULES-001
 
-- **Severity:** P2 test gap
+- **Severity:** Verified mechanism
 - **File:** `Vela/Features/Rules/RulesPresentation.swift`; `Vela/Features/Rules/RulesViewModel.swift`
 - **Line/Type:** `RulesPresentationPipeline.process`, lines 286-329
-- **Evidence:** Rule filtering/grouping/sorting runs in a detached latest-ticket worker. Prior work is cancelled and joined and worker diagnostics track concurrency. This is the correct architecture, but the reviewed test suite does not establish an explicit 10k/50k real-rule budget comparable to Connections.
-- **Impact:** A future rule parser/presentation change could introduce large-list latency without a failing threshold.
-- **Fix:** Add scale characterization before changing the pipeline; optimize only measured builder stages.
-- **Test:** 10k and 50k mixed rule types, rapid search/filter changes, maximum worker count one, stale result rejected, MainActor probe.
-- **Status:** Open P2 proof gap.
+- **Evidence:** Rule filtering/grouping/sorting runs in a detached latest-ticket worker. Prior work is cancelled and joined and worker diagnostics track concurrency. The existing 50,000-rule reliability tests cover an 8.29 MB Controller response, preservation of original indices/order, decode, service refresh, combined type/policy/search filtering, reset to all rows and a MainActor marker. On the 2026-08-19 review host, decode took 198.30 ms, refresh 32.22 ms, filtering 357.34 ms, reset 146.95 ms and the MainActor marker 0.04 ms.
+- **Impact:** The required large-rule scenario has an executable regression budget; current projection work does not monopolize MainActor.
+- **Fix:** No production change required. Preserve the existing serial latest-wins pipeline and performance budgets; optimize individual builder stages only if a future measurement regresses.
+- **Test:** `RulesServiceTests` covers 50,000-rule decode/refresh/presentation and passes 10/10 focused tests. Existing pipeline tests separately prove cancellation, latest-wins publication and a maximum worker count of one.
+- **Status:** Closed; verified with current repository tests and a fresh run.
 
 ### PERF-CONFIG-001
 
