@@ -145,12 +145,115 @@ struct CoreLifecycleControllerTests {
     #expect(controller.lastError?.contains("Manual repair is required") == true)
   }
 
+  @Test("A probation health failure rolls back the candidate and releases the lease")
+  func probationHealthFailureRollsBackCandidate() async throws {
+    let (controller, fixture, engineStore) = try await makeController(
+      seedActiveInstalledCore: true,
+      probationDuration: .seconds(1)
+    )
+    defer {
+      ConfigurationTestSupport.removeTemporaryDirectory(fixture.temporaryDirectory)
+    }
+
+    let factoryCoreID = try #require(CoreID(rawValue: "factory:v1.19.28"))
+    let installedCoreID = try #require(CoreID(rawValue: "v1.19.28-r1"))
+    await engineStore.bootstrap()
+    await controller.bootstrap()
+
+    await controller.activate(installedCoreID)
+    #expect(controller.activationJournal?.coreID == installedCoreID)
+    if case .probation = controller.activationState {
+      // Expected: a stopped runtime keeps the candidate in probation.
+    } else {
+      Issue.record("Expected probation state, got \(controller.activationState)")
+    }
+
+    await engineStore.start()
+    let rollbackCompleted = await waitForCoreLifecycleCondition {
+      controller.snapshot?.state.activeCoreID == factoryCoreID
+        && controller.activationJournal == nil
+    }
+
+    #expect(rollbackCompleted)
+    #expect(!controller.manualRepairRequired)
+    if case .failed = controller.activationState {
+      // Expected: the candidate failed health proof and rollback completed.
+    } else {
+      Issue.record("Expected failed activation state, got \(controller.activationState)")
+    }
+    #expect(controller.lastError?.contains("rolled back safely") == true)
+    try await proveUpdateBarrierIsAvailable(fixture.runtimeMutationGate)
+  }
+
+  @Test("A healthy probation commits the candidate and releases the lease")
+  func healthyProbationCommitsCandidate() async throws {
+    let registeredProtocol = URLProtocol.registerClass(MihomoMockURLProtocol.self)
+    MihomoMockURLProtocol.setHandler { request in
+      let body: String
+      switch request.url?.path {
+      case "/version":
+        body = #"{"meta":true,"version":"v1.19.28-test"}"#
+      case "/configs":
+        body = #"{"port":0,"socks-port":0,"redir-port":0,"tproxy-port":0,"mixed-port":17890,"allow-lan":false,"bind-address":"127.0.0.1","mode":"rule","log-level":"info","ipv6":false,"unified-delay":false,"tcp-concurrent":false,"find-process-mode":"off","interface-name":"","sniffing":false}"#
+      case "/proxies":
+        body = #"{"proxies":{}}"#
+      case "/rules":
+        body = #"{"rules":[]}"#
+      default:
+        return MihomoMockHTTPResponse(statusCode: 404)
+      }
+      return MihomoMockHTTPResponse(statusCode: 200, data: Data(body.utf8))
+    }
+    defer {
+      MihomoMockURLProtocol.reset()
+      if registeredProtocol {
+        URLProtocol.unregisterClass(MihomoMockURLProtocol.self)
+      }
+    }
+
+    let controllerManager = CoreActivationControllerManagerFake()
+    let controllerRouter = RuntimeControllerRouter()
+    let (controller, fixture, engineStore) = try await makeController(
+      seedActiveInstalledCore: true,
+      probationDuration: .seconds(1),
+      controllerManager: controllerManager,
+      controllerRouter: controllerRouter
+    )
+    defer {
+      ConfigurationTestSupport.removeTemporaryDirectory(fixture.temporaryDirectory)
+    }
+
+    let installedCoreID = try #require(CoreID(rawValue: "v1.19.28-r1"))
+    await engineStore.bootstrap()
+    await engineStore.start()
+    let controllerReady = await waitForCoreLifecycleCondition {
+      engineStore.controllerState == .connected
+    }
+    #expect(controllerReady)
+    await controller.bootstrap()
+
+    await controller.activate(installedCoreID)
+    let probationCommitted = await waitForCoreLifecycleCondition {
+      controller.snapshot?.state.activeCoreID == installedCoreID
+        && controller.activationJournal == nil
+        && controller.activationState == .idle
+    }
+
+    #expect(probationCommitted)
+    #expect(controller.lastError == nil)
+    #expect(controller.snapshot?.state.previousKnownGoodCoreID?.isFactory == true)
+    try await proveUpdateBarrierIsAvailable(fixture.runtimeMutationGate)
+  }
+
   private func makeController(
     configurationValidator: any ConfigurationValidating = TransactionValidatorFake(
       result: TransactionTestValues.validValidation
     ),
     process: TransactionProcessFake = TransactionProcessFake(running: false),
-    seedActiveInstalledCore: Bool = false
+    seedActiveInstalledCore: Bool = false,
+    probationDuration: Duration = .seconds(10 * 60),
+    controllerManager: (any MihomoControllerManaging)? = nil,
+    controllerRouter: RuntimeControllerRouter? = nil
   ) async throws -> (
     controller: CoreLifecycleController,
     fixture: TransactionTestFixture,
@@ -202,8 +305,10 @@ struct CoreLifecycleControllerTests {
       executableResolver: executableResolver,
       configurationValidator: configurationValidator,
       processManager: fixture.process,
+      controllerManager: controllerManager,
       runtimeMutationGate: fixture.runtimeMutationGate,
-      mihomoDataDirectoryURL: fixture.directories.mihomo
+      mihomoDataDirectoryURL: fixture.directories.mihomo,
+      controllerRouter: controllerRouter
     )
     let configurationGenerationID = UUID()
     return (
@@ -225,6 +330,7 @@ struct CoreLifecycleControllerTests {
         catalogEndpoint: nil,
         catalogVerifier: catalogVerifier,
         installedResolverFactory: { _, _ in executableResolver },
+        probationDuration: probationDuration,
         configurationGeneration: { configurationGenerationID }
       ),
       fixture,
@@ -337,6 +443,79 @@ struct CoreLifecycleControllerTests {
     )
     try await gate.releaseUpdateBarrier(updateLease)
   }
+
+  private func waitForCoreLifecycleCondition(
+    timeout: Duration = .seconds(3),
+    condition: @escaping @MainActor () -> Bool
+  ) async -> Bool {
+    let clock = ContinuousClock()
+    let deadline = clock.now.advanced(by: timeout)
+    while clock.now < deadline {
+      if condition() { return true }
+      try? await Task.sleep(for: .milliseconds(20))
+    }
+    return condition()
+  }
+}
+
+private actor CoreActivationControllerManagerFake: MihomoControllerManaging {
+  private var started = false
+  private var eventContinuation: AsyncStream<MihomoControllerEvent>.Continuation?
+
+  func events() -> AsyncStream<MihomoControllerEvent> {
+    AsyncStream(bufferingPolicy: .bufferingNewest(8)) { continuation in
+      eventContinuation = continuation
+      if started {
+        continuation.yield(.ready(Self.snapshot))
+      }
+    }
+  }
+
+  func start() {
+    started = true
+    eventContinuation?.yield(.ready(Self.snapshot))
+  }
+
+  func refresh() {
+    guard started else { return }
+    eventContinuation?.yield(.ready(Self.snapshot))
+  }
+
+  func stop() {
+    started = false
+    eventContinuation?.yield(.disconnected)
+  }
+
+  func changeMode(_: MihomoMode) {}
+  func refreshProxies() {}
+  func selectProxy(group _: String, proxy _: String) {}
+
+  func testProxyDelay(
+    name: String,
+    url _: String,
+    timeoutMilliseconds _: Int,
+    expectedStatus _: String?
+  ) -> MihomoProxyDelayResult {
+    MihomoProxyDelayResult(proxyName: name, delayMilliseconds: 1)
+  }
+
+  func testProxyGroupDelay(
+    names: [String],
+    url _: String,
+    timeoutMilliseconds _: Int,
+    expectedStatus _: String?,
+    concurrencyLimit _: Int
+  ) -> [MihomoProxyDelayResult] {
+    names.map { MihomoProxyDelayResult(proxyName: $0, delayMilliseconds: 1) }
+  }
+
+  func appendProcessOutput(_: MihomoProcessOutput) {}
+  func clearLogs() {}
+
+  private static let snapshot = MihomoControllerSnapshot(
+    version: MihomoVersion(meta: true, version: "v1.19.28-test"),
+    configs: TransactionTestValues.configs
+  )
 }
 
 private struct CoreActivationExecutableResolverFake: MihomoExecutableResolving {

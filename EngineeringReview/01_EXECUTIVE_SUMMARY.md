@@ -4,7 +4,7 @@ Status: audit in progress. This report intentionally does not reuse the older `c
 
 ## Current baseline
 
-- Branch/commit under active review: `main` / `e16a2b1` plus the independently verified test/documentation batch described below.
+- Branch/commit under active review: `main` / `e999591` plus the independently verified probation test/documentation batch described below.
 - Swift source volume: 171,535 lines including tests and harnesses.
 - Largest production file: `Vela/Core/Engine/EngineStore.swift`, 7,760 lines.
 - Largest production workflow type: `CoreLifecycleController`, 2,408-line type body.
@@ -50,4 +50,4 @@ No production symbol will be edited without current impact analysis. HIGH or CRI
 
 ## Next audit stage
 
-The next stage closes the remaining Core probation and lifecycle proof gaps, then continues bounded performance and architecture work without weakening the already-verified privileged, network and configuration contracts.
+The confirmed Core probation and lifecycle P1 paths are now covered by seven focused controller tests. The next stage continues bounded performance and architecture work, beginning with a dependency-proven EngineStore strangler boundary, without weakening the already-verified privileged, network and configuration contracts.

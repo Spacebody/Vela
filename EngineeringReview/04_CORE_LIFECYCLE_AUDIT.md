@@ -68,7 +68,7 @@ Remains the runtime facade and source of the runtime snapshot/operations consume
 - **Impact:** The highest-risk multi-system workflow can regress despite lower-level store/helper tests passing.
 - **Fix:** Add controller-level tests using existing fault-injection and test doubles. Do not create a second failure framework.
 - **Test:** Candidate start timeout, Controller unavailable, health-proof failure, rollback failure, cancellation at each phase, probation commit/rollback and gate ownership.
-- **Status:** Partially addressed. The app-level controller suite now proves immediate lease release for same-Core and failed activation, cancellation after journal creation with awaited rollback/journal cleanup/lease release, and injected rollback failure with durable failed-journal retention plus a manual-repair latch. Probation success/failure and candidate health failure remain open.
+- **Status:** Closed for the confirmed P1 paths. The app-level controller suite proves immediate lease release for same-Core and failed activation, cancellation after journal creation with awaited rollback/journal cleanup/lease release, injected rollback failure with durable failed-journal retention plus a manual-repair latch, candidate health failure with restoration of the previous Core, and healthy probation commit with journal cleanup and lease release. Broader timeout/relaunch/backend-snapshot combinations remain P2 integration coverage rather than an unhandled known P1 defect.
 
 ### CORE-BOUND-001
 

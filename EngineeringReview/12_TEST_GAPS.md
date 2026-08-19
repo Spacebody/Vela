@@ -11,11 +11,11 @@ The repository already has unusually strong unit coverage for the transition coo
 - **Severity:** P1 proof gap
 - **File:** `Vela/Core/CoreLifecycle/CoreLifecycleController.swift:659-861`; `VelaTests/CoreLifecycle/CoreLifecycleControllerTests.swift`
 - **Line/Type:** activation cancellation/probation/rollback composition
-- **Evidence:** The transition coordinator suite proves generic cancellation and rollback. Core activation itself persists a transaction, switches resolver/state, starts and health-proves a candidate, transfers its mutation lease to probation, and launches cancellation rollback in a fresh MainActor task. Focused tests now prove lease release for same-Core and pre-transaction failure, cancellation after journal creation, and durable manual-repair state when automatic rollback also fails; probation commit/rollback remains uncovered.
+- **Evidence:** The transition coordinator suite proves generic cancellation and rollback. The focused Core lifecycle suite now also proves lease release for same-Core and pre-transaction failure, cancellation after journal creation, durable manual-repair state when automatic rollback fails, candidate health failure rollback, and healthy probation commit.
 - **Impact:** A future edit could leave the Core journal, active resolver or runtime mutation lease inconsistent even while generic transition tests pass.
 - **Fix:** Extend the existing Core lifecycle fixture with deterministic phase hooks/fault injection; do not create a second transition framework.
-- **Test:** Covered: cancel after transaction creation with journal/Core/lease assertions, canonical subsecond journal update, and rollback failure requiring manual repair with retained failed journal. Remaining: candidate health failure; probation success; probation failure; runtime/backend snapshot assertions.
-- **Status:** Partially closed. The reproduced cancellation defect is fixed and its regression test passes; the remaining probation and fault-injection matrix must be closed before final Definition of Done.
+- **Test:** Covered: cancel after transaction creation with journal/Core/lease assertions, canonical subsecond journal update, rollback failure requiring manual repair with retained failed journal, candidate health failure restoring the previous Core, and healthy probation success committing the candidate and releasing the mutation lease. Remaining P2 matrix: probation-time runtime degradation after an initially healthy candidate and full production-adapter snapshot assertions.
+- **Status:** Closed for known P1 correctness. The reproduced cancellation/journal defects are fixed and both probation terminal directions are now proven at controller level. The remaining production-adapter and late-probation fault combinations stay tracked as P2 integration work.
 
 ### TEST-NET-001
 
@@ -74,6 +74,6 @@ The repository already has unusually strong unit coverage for the transition coo
 
 ## Priority order
 
-1. Close `TEST-CORE-001` before declaring P1 complete.
-2. Add deterministic performance characterization before changing projection architecture.
-3. Add opt-in native integration proof without weakening or bypassing Hardening gates.
+1. Add deterministic performance characterization before changing projection architecture.
+2. Add opt-in native integration proof without weakening or bypassing Hardening gates.
+3. Extend the Core matrix with late-probation runtime degradation and production-adapter snapshots during the integration-test phase.

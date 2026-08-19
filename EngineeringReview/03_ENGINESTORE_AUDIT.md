@@ -58,7 +58,16 @@ See `ENGINESTORE_RESPONSIBILITY_MAP.md` for the complete current responsibility 
 - **Impact:** Any bypass could expose transient invalid authoritative state.
 - **Fix:** Enumerate all writers and route every backend mutation through the existing coordinator and gate; prefer one derived snapshot over new flags.
 - **Test:** Invariant tests during overlapping start/stop/restart/profile/core operations, including cancellation and rollback failure.
-- **Status:** In progress; no production change until a bypass is evidenced.
+- **Status:** Closed as an audit target; no bypass was found. `start()`, `stop()` and `restart()` acquire the shared `RuntimeMutationGate` and execute backend work through `EngineTransitionCoordinator`; profile/configuration mutation is serialized by `RuntimeConfigTransactionCoordinator`; Core activation uses the same gate and transfers ownership only to the explicit probation workflow. Controller-only refresh/selection operations do not mutate backend lifecycle authority. The distinct `state`, `transitionState`, `activeRuntime` and `activeBackendKind` values remain intentional projections rather than competing writers. Preserve this route matrix and reopen the finding if a new lifecycle mutation path is added outside it.
+
+### Lifecycle mutation route matrix
+
+| Mutation | Serialization owner | Transition owner | Terminal proof |
+|---|---|---|---|
+| start / stop / restart | `RuntimeMutationGate` | `EngineTransitionCoordinator` | transition phase completion or awaited rollback |
+| profile/config apply | `RuntimeConfigTransactionCoordinator` + shared mutation gate | engine restart/reload through the existing lifecycle facade | health proof or durable rollback journal |
+| Core activation | `CoreLifecycleController` + shared mutation gate | candidate start/health/probation workflow | probation commit or rollback, then lease release |
+| app termination | termination barrier + shared mutation gate | coordinator cancellation and cleanup barrier | environment observers joined after cleanup proof |
 
 ## Existing test strength
 
