@@ -62,11 +62,11 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the 
 - **Severity:** P3
 - **File:** `Vela/Core/Privileged/PrivilegedLeaseCoordinator.swift`
 - **Line/Type:** `events()`, lines 37-45
-- **Evidence:** The stream installs subscriber cleanup but uses the default unbounded `AsyncStream` buffer, unlike transition, Controller, process, network, health and lifecycle streams.
+- **Evidence:** The audited stream installed subscriber cleanup but used the default unbounded `AsyncStream` buffer, unlike transition, Controller, process, network, health and lifecycle streams. It now retains only the newest eight state-like lease events.
 - **Impact:** The current event rate is low (the default renewal interval is 30 seconds), so this is not an immediate memory risk. A stalled subscriber combined with injected rapid renewal/failure events can nevertheless grow the queue without a declared bound.
-- **Fix:** Use a small `bufferingNewest` limit appropriate for state-like lease events; retain `onTermination` cleanup.
-- **Test:** Publish more events than the limit to a suspended consumer and verify only the newest bounded suffix is observed.
-- **Status:** Open; low-risk hardening.
+- **Fix:** Implemented with `.bufferingNewest(8)` while preserving `onTermination` cleanup and event ordering.
+- **Test:** `PrivilegedLeaseCoordinatorTests.stalledConsumerReceivesNewestBoundedSuffix` publishes twelve events to a stalled subscriber and proves that the newest eight-event suffix is retained.
+- **Status:** Closed.
 
 ### CONC-TERM-001
 

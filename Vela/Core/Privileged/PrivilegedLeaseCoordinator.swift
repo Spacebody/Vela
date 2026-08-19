@@ -36,7 +36,7 @@ actor PrivilegedLeaseCoordinator {
 
     func events() -> AsyncStream<PrivilegedLeaseEvent> {
         let id = UUID()
-        return AsyncStream { continuation in
+        return AsyncStream(bufferingPolicy: .bufferingNewest(8)) { continuation in
             eventContinuations[id] = continuation
             continuation.onTermination = { @Sendable [weak self] _ in
                 Task { await self?.removeContinuation(id) }

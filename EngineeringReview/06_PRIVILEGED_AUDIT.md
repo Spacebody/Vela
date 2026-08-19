@@ -74,11 +74,11 @@ Review baseline: `main` at `50de407d`, after the first bounded Core lifecycle fi
 - **Severity:** P3
 - **File:** `Vela/Core/Privileged/PrivilegedLeaseCoordinator.swift`
 - **Line/Type:** `events()`
-- **Evidence:** Subscriber termination is removed, but the stream uses the default unbounded buffer while other state-like streams declare `bufferingNewest` limits.
+- **Evidence:** Subscriber termination cleanup was already correct. The stream now uses `.bufferingNewest(8)`, matching its low-frequency state-like semantics and the bounded policy used by other long-lived streams.
 - **Impact:** Normal renewal rate is low, so production exposure is limited. A stalled subscriber under rapid injected failures can accumulate events.
-- **Fix:** Use a small `bufferingNewest` limit while retaining termination cleanup.
-- **Test:** Suspend a subscriber, publish beyond the bound and assert only the newest suffix remains.
-- **Status:** Open; also recorded as `CONC-STREAM-001`.
+- **Fix:** Implemented without changing the frozen IPC schema, lease authority or renewal lifecycle.
+- **Test:** The focused lease-coordinator test proves a stalled subscriber receives only the newest bounded suffix.
+- **Status:** Closed; also recorded as `CONC-STREAM-001`.
 
 ## Privileged boundary conclusion
 

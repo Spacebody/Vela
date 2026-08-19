@@ -91,11 +91,11 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 - **Severity:** Verified mechanism with one P3 follow-up
 - **File:** telemetry/log buffers, Overview traffic history, SceneStore, proxy delay cache, privileged lease events
 - **Line/Type:** retained state and AsyncStream buffering
-- **Evidence:** Major long-lived collections are bounded or replace current snapshots. Proxy delay state is reset on catalog/profile/runtime changes. Most streams use `.bufferingNewest`; `PrivilegedLeaseCoordinator.events()` retains subscriber continuations with termination cleanup but currently relies on the default unbounded buffering policy for each subscriber.
-- **Impact:** No major application history leak was found. A stalled lease-event consumer could accumulate events until termination, though event frequency is low.
-- **Fix:** Change the lease event stream to a small `.bufferingNewest` policy after impact analysis and add a slow-consumer test; preserve continuation removal on termination.
-- **Test:** stalled subscriber receives latest state, termination removes continuation, repeated subscribe/cancel does not grow the registry.
-- **Status:** Open P3 hardening candidate.
+- **Evidence:** Major long-lived collections are bounded or replace current snapshots. Proxy delay state is reset on catalog/profile/runtime changes. Long-lived streams use bounded newest buffering; `PrivilegedLeaseCoordinator.events()` now retains only the newest eight events per subscriber while preserving termination cleanup.
+- **Impact:** No major application history leak was found. A stalled low-frequency lease subscriber is now bounded as well.
+- **Fix:** Completed without changing lease authority or IPC contracts.
+- **Test:** `PrivilegedLeaseCoordinatorTests` proves a stalled subscriber receives exactly the newest bounded suffix.
+- **Status:** Closed.
 
 ## Performance conclusion
 
