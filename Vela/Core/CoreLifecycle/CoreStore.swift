@@ -223,6 +223,19 @@ actor CoreStore {
         guard data.count <= Self.maximumTransactionBytes else {
             throw CoreStoreError.fileTooLarge
         }
+        // CoreJSONCoding intentionally canonicalizes dates to whole seconds.
+        // Compare the durable record with that canonical representation rather
+        // than the higher-precision in-memory value that produced it.
+        let expectedCommittedTransaction: CoreActivationTransaction
+        do {
+            expectedCommittedTransaction = try CoreJSONCoding.decoder().decode(
+                CoreActivationTransaction.self,
+                from: data
+            )
+            try expectedCommittedTransaction.validate()
+        } catch {
+            throw CoreStoreError.invalidTransaction
+        }
         try withLockedRootDescriptor { rootDescriptor in
             let existing = try openAndDecodeTransaction(rootDescriptor: rootDescriptor)
             defer { Darwin.close(existing.descriptor) }
@@ -277,7 +290,7 @@ actor CoreStore {
             renamed = true
             let committed = try openAndDecodeTransaction(rootDescriptor: rootDescriptor)
             defer { Darwin.close(committed.descriptor) }
-            guard committed.transaction == transaction else {
+            guard committed.transaction == expectedCommittedTransaction else {
                 throw CoreStoreError.writeVerificationFailed
             }
             guard Darwin.fsync(rootDescriptor) == 0 else {

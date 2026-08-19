@@ -2074,6 +2074,7 @@ final class CoreLifecycleController {
             }
 
             var restoredCoreID: CoreID?
+            var lastRestoreError: (any Error)?
             for target in targets {
                 do {
                     if target.isFactory {
@@ -2124,11 +2125,12 @@ final class CoreLifecycleController {
                     restoredCoreID = target
                     break
                 } catch {
+                    lastRestoreError = error
                     continue
                 }
             }
             guard restoredCoreID != nil else {
-                throw CoreLifecycleError.rollbackFailed
+                throw lastRestoreError ?? CoreLifecycleError.rollbackFailed
             }
 
             if var transaction = rollbackTransaction {
@@ -2168,13 +2170,14 @@ final class CoreLifecycleController {
                 activationJournal = transaction
                 manualRepairRequired = true
             }
+            let safeFailure = CoreLifecycleDiagnosticText.safe(error)
             if isRecoveryRepair {
                 manualRepairRequired = true
-                lastError = "The retained Core rollback still cannot be verified. Manual repair is required."
+                lastError = "The retained Core rollback still cannot be verified. Manual repair is required. \(safeFailure)"
             } else {
                 lastError = isManual
-                    ? "Manual Core rollback failed. Manual repair is required."
-                    : "Core activation and automatic rollback failed. Manual repair is required."
+                    ? "Manual Core rollback failed. Manual repair is required. \(safeFailure)"
+                    : "Core activation and automatic rollback failed. Manual repair is required. \(safeFailure)"
             }
             activationState = .failed(lastError ?? "Core rollback failed.")
         }

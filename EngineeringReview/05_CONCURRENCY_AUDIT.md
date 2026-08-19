@@ -46,6 +46,17 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the 
 - **Test:** Inject non-finishing streams, invoke shutdown and release the store; assert every producer receives termination and no consumer task remains. Cover repeated shutdown.
 - **Status:** Open after P1 safety work; no runtime-state bug has been reproduced.
 
+### CONC-CORE-001
+
+- **Severity:** P1
+- **File:** `Vela/Core/CoreLifecycle/CoreStore.swift`; `Vela/Core/CoreLifecycle/CoreLifecycleController.swift`
+- **Line/Type:** durable activation-journal update and cancellation rollback
+- **Evidence:** A journal `startedAt` value with fractional seconds was canonicalized to whole seconds on disk, then compared against the original value. The resulting false `writeVerificationFailed` occurred while cancellation awaited rollback and converted an otherwise successful restore into a manual-repair state.
+- **Impact:** Cancellation correctness depended on an impossible round-trip equality invariant and could leave the durable journal retained even though the authoritative Core state had already been restored.
+- **Fix:** Verify the committed journal against the canonical decode of its exact encoded bytes. Preserve the compare-and-swap, atomic rename, file verification and `fsync` barriers. Propagate the final attempted restore error into the existing safe diagnostic path instead of replacing it with a generic rollback failure.
+- **Test:** Focused Core lifecycle suite passes four tests, including a subsecond transaction round trip and cancellation after journal creation.
+- **Status:** Fixed and verified.
+
 ### CONC-STREAM-001
 
 - **Severity:** P3
@@ -80,6 +91,6 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the 
 
 1. Enumerate every `Task {` and `Task.detached` outside the reviewed engine/core paths and record its owner and terminal condition.
 2. Audit every NotificationCenter bridge and AsyncStream for termination cleanup and buffering policy.
-3. Add overlap/cancellation/rollback-failure tests for engine start, stop, restart, profile switch and Core activation.
+3. Add overlap/probation/rollback-failure tests for engine start, stop, restart, profile switch and Core activation. Cancellation after Core journal creation is now covered.
 4. Verify AppDelegate's bounded termination resolution against slow XPC and slow Controller shutdown fault injection.
 5. Treat any no-layer/degraded GitNexus PDG result as unknown risk rather than proof of safety.
