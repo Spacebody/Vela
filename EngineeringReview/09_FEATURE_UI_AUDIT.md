@@ -40,14 +40,14 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 
 ### UI-FEATURE-001
 
-- **Severity:** P2 architecture debt
+- **Severity:** Reviewed architecture boundary (finding withdrawn)
 - **File:** `Vela/App/ContentView.swift`; `Vela/Features/Overview/OverviewView.swift`; `Vela/App/DailyDriverFeatureHub.swift`
 - **Line/Type:** `ContentView.destination`, lines 158-168; `OverviewConnectionsSource`, lines 4-25
-- **Evidence:** Overview does not consume Connections rows or selection/filter UI state; it receives a narrow closure-based source exposing only the raw `ConnectionsSnapshot` and activation lifecycle. However, the closures are backed by the Connections feature's `ConnectionsViewModel`, so the Connections page model currently owns the shared stream used by Overview.
-- **Impact:** This is much safer than Feature A reading Feature B presentation state, but stream ownership and page presentation ownership remain coupled. Refactoring or destroying the Connections feature model can affect Overview data availability.
-- **Fix:** Move the raw snapshot/consumer lifecycle contract to a shared domain-level connection snapshot source or service. Keep both feature models as consumers; do not duplicate the websocket stream and do not expose the Connections UI model publicly.
-- **Test:** Overview-only navigation starts exactly one stream consumer, Connections/Overview overlap still uses one stream, and both consumers disappearing cancels it.
-- **Status:** Open P2; no current incorrect data path reproduced.
+- **Evidence:** The deeper dependency review confirms that `OverviewView` neither imports nor holds `ConnectionsViewModel`, and never reads Connections row, selection, filter, inspector or mutation state. The App composition root adapts the one application-owned Connections runtime consumer into a four-operation `OverviewConnectionsSource` (`snapshot`, `refresh`, `activate`, `deactivate`). The model's private `StreamConsumer` set is the authoritative ownership boundary for the shared websocket and deliberately distinguishes `.connectionsPage` from `.overviewPage`.
+- **Impact:** There is no Feature A View → Feature B ViewModel dependency in the feature layer. Moving the stream solely to satisfy a nominal layer rule would modify the CRITICAL `DailyDriverFeatureHub` dependency hub, duplicate lifecycle machinery, or create a second websocket without removing a demonstrated correctness defect.
+- **Fix:** Preserve the narrow source at the composition root. Treat the raw `ConnectionsSnapshot` plus acquire/release lifecycle as the shared-domain projection contract; do not expose the page model to Overview and do not split the proven single-stream owner absent a reproduced lifecycle or performance defect.
+- **Test:** `ConnectionsServiceTests.overlappingConsumersShareOneStream` proves Overview and Connections share one stream, an intermediate consumer departure keeps it alive, and the final departure closes it. Overview snapshot tests separately prove the raw runtime snapshot is projected without depending on Connections presentation state.
+- **Status:** Closed after dependency analysis; the original P2 classification was a false positive. GitNexus reports `DailyDriverFeatureHub` as CRITICAL (458 direct dependents), so speculative extraction would be materially riskier than the current narrow composition-root adapter.
 
 ### UI-CONFIG-001
 
@@ -84,15 +84,15 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 
 ### UI-ACCESS-001
 
-- **Severity:** P2 verification gap
+- **Severity:** P2 accessibility defect and verification gap
 - **File:** Overview, Proxies, Connections, Rules, Logs, Configuration and Settings feature views
 - **Line/Type:** critical controls and row presentation
-- **Evidence:** The reviewed views include explicit accessibility identifiers/labels for many states and rows, Logs builds complete row labels, and animated feature views read Reduce Motion in several key surfaces. There is no single automated matrix proving labels, keyboard focus and reduced-motion behavior for every critical System Proxy, TUN, mode, node selection, log filter and Configuration Apply action.
-- **Impact:** A visual refactor can regress keyboard/VoiceOver semantics without failing domain tests.
-- **Fix:** Add targeted accessibility UI/harness assertions for critical actions. Reuse semantic controls and existing visual harness; do not add duplicate visual-only labels.
-- **Test:** VoiceOver labels/values, keyboard activation/focus order, Escape/cancel behavior, and Reduce Motion snapshots for critical workflows.
-- **Status:** Open verification gap, not evidence that all listed controls are inaccessible.
+- **Evidence:** The reviewed views include explicit accessibility identifiers/labels for many states and rows, Logs builds complete row labels, and animated feature views read Reduce Motion in several key surfaces. One concrete defect remained: the Proxies node row was activated only by `onTapGesture`, so it had no button trait, default assistive action, focus target or Return/Space keyboard path. Configuration Apply already had a stable identifier but no explicit state-aware accessible label.
+- **Impact:** Keyboard and VoiceOver users could inspect a proxy row without having a reliable semantic activation path, and an applying Configuration action did not announce its current operation state explicitly. Visual refactors also lacked one compact regression contract covering the existing Overview, Logs and Reduce Motion semantics.
+- **Fix:** Keep the existing pointer gesture and selection transaction, but expose the proxy row as a semantic button with selected state, default accessibility action, focusability and Return/Space activation. Give Configuration Apply an explicit state-aware label. Add a focused source-contract suite covering these fixes and the already-established Overview, Logs and Reduce Motion contracts; do not introduce duplicate visible labels or a second interaction implementation.
+- **Test:** `CriticalControlsAccessibilityTests` verifies stateful Overview network/route semantics, pointer/assistive/keyboard proxy activation, Logs/Configuration discoverability and Reduce Motion adoption on the daily-driver pages. A clean independent-DerivedData build completed with no Swift compile error. Two isolated `xcodebuild test` attempts then stalled before worker materialization (`waiting for workers to materialize` / `Waiting for -runningDidFinish`) and were terminated; therefore runtime test completion remains an environment-blocked verification item rather than being reported as passing.
+- **Status:** Concrete proxy/configuration defects fixed; compact regression suite added and compiled. Runtime execution of that suite remains pending after the local Xcode test-host infrastructure is healthy.
 
 ## Feature audit conclusion
 
-No new P0/P1 implementation defect was reproduced in the feature layer. The strongest existing boundaries are the Connections/Rules/Logs single-worker pipelines, the Configuration Workbench debounce/cache/stale-result guards, bounded/redacted Logs storage and operation-aware Settings mutations. The remaining highest-value feature refactors are a narrow Proxies projection and moving shared connection stream ownership below the Connections page model. These are strangler changes after correctness coverage, not reasons to rewrite the views wholesale.
+No new P0/P1 implementation defect was reproduced in the feature layer. The strongest existing boundaries are the Connections/Rules/Logs single-worker pipelines, the Configuration Workbench debounce/cache/stale-result guards, bounded/redacted Logs storage and operation-aware Settings mutations. The remaining evidence-backed feature work is the residual O(n) proxy delay-state capture and runtime execution of the new critical-control accessibility contract after the local Xcode test host can materialize a worker. The shared Connections runtime consumer is already exposed to Overview through a narrow composition-root projection and should not be moved absent a reproduced defect.

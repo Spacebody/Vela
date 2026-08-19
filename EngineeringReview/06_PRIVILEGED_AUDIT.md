@@ -60,14 +60,14 @@ Review baseline: `main` at `50de407d`, after the first bounded Core lifecycle fi
 
 ### PRIV-TASK-001
 
-- **Severity:** P2
+- **Severity:** Reviewed cancellation boundary (finding withdrawn)
 - **File:** `VelaHelper/VelaHelperXPCService.swift`
 - **Line/Type:** per-request `Task` wrappers in exported RPC methods
-- **Evidence:** Each XPC method creates an unstructured Swift task that is not registered against its owning `NSXPCConnection`. Client cancellation/timeout closes the app-side wait but cannot directly cancel helper-side work already accepted.
-- **Impact:** Correctness remains fail closed because transaction identity, lease expiry and app reconciliation handle late completion. However, expensive rejected/disconnected work may outlive its caller and task ownership is not directly inspectable.
-- **Fix:** In a bounded helper-only change, introduce connection/session-scoped task registration and cancel only work whose operation contract is cancellation-safe. Do not cancel cleanup/rollback work and do not change the frozen RPC schema.
-- **Test:** Disconnect during staging and validation; prove cancellable work terminates, cleanup still completes and a late reply cannot mutate a later session.
-- **Status:** Open; no P1 state-corruption path reproduced.
+- **Evidence:** Each exported XPC method delegates to one generic reply-once `perform` task, but the accepted operation—not the transport connection—is its lifetime owner. Mutating calls enter the actor-isolated `PrivilegedHelperCoordinator`; transaction-changing calls additionally pass through `AsyncExclusiveOperationGate`, session/connection identity checks and lease validation. Connection invalidation notifies the coordinator, while app-side timeout/interruption is deliberately reconciled against authoritative helper status because commit, stop, rollback and cleanup may have crossed an irreversible boundary. Cancelling every task when `NSXPCConnection` disappears would therefore be unsafe: Swift cancellation is cooperative and several low-level filesystem/process operations have no atomic cancellation contract.
+- **Impact:** A disconnected client can no longer receive the reply, but an already accepted privileged transaction reaches its defined terminal path and cannot mutate a later session without passing exact identity checks. Treating transport lifetime as operation lifetime would create the more serious risk of abandoning staged or rollback work midway.
+- **Fix:** Preserve operation-owned completion for transaction-changing RPCs and the existing fail-closed reconciliation contract. Do not introduce a connection-wide task registry or a second cancellation state machine. If profiling later proves a pure read-only RPC wastes material resources after disconnect, add cancellation only to that operation after its full call chain has explicit cancellation points.
+- **Test:** Existing helper coordinator suites prove exclusive mutation, lease/session mismatch rejection, staged-resource cleanup and rollback/recovery. Privileged integration tests prove late completion is reconciled rather than trusted from a local timeout result.
+- **Status:** Closed after cancellation-semantics review; the original P2 recommendation would have weakened the privileged transaction contract.
 
 ### PRIV-STREAM-001
 

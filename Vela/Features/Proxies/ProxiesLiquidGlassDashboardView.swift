@@ -615,7 +615,21 @@ struct ProxiesLiquidGlassDashboardView: View {
             selectedCandidateID = candidate.id
         }
         .accessibilityElement(children: .contain)
+        .accessibilityLabel(candidate.name)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+        .accessibilityAction {
+            selectedCandidateID = candidate.id
+        }
         .accessibilityIdentifier("proxies.node.\(candidate.name)")
+        .focusable()
+        .onKeyPress(.return) {
+            selectedCandidateID = candidate.id
+            return .handled
+        }
+        .onKeyPress(.space) {
+            selectedCandidateID = candidate.id
+            return .handled
+        }
     }
 
     private var inspectorPane: some View {

@@ -796,6 +796,7 @@ struct ConfigurationLiquidGlassWorkbenchView: View {
         }
         .buttonStyle(ConfigurationPrimaryGlassButtonStyle())
         .disabled(!snapshot.canApply || !snapshot.mutationAllowed)
+        .accessibilityLabel(snapshot.isLoading ? strings.applying : strings.applyChanges)
         .accessibilityIdentifier(applyIdentifier)
     }
 
