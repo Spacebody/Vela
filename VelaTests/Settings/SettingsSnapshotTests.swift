@@ -218,6 +218,63 @@ struct SettingsSnapshotTests {
     }
   }
 
+  @Test("Settings transfer file coordinator performs a private atomic round trip")
+  func transferFileCoordinatorRoundTrip() async throws {
+    let fileManager = FileManager.default
+    let root = fileManager.temporaryDirectory.appendingPathComponent(
+      "Vela-Settings-Transfer-\(UUID().uuidString)",
+      isDirectory: true
+    )
+    try fileManager.createDirectory(at: root, withIntermediateDirectories: true)
+    defer { try? fileManager.removeItem(at: root) }
+
+    let destination = root.appendingPathComponent("settings.json")
+    let document = SettingsTransferDocument(
+      exportedAt: Date(timeIntervalSince1970: 1_700_000_000),
+      preferences: .defaults,
+      tunSettings: .defaults,
+      restoreSystemProxyAfterTun: true,
+      updateChannel: .stable
+    )
+
+    try await SettingsTransferFileCoordinator.shared.export(
+      document,
+      to: destination
+    )
+    let imported = try await SettingsTransferFileCoordinator.shared
+      .importDocument(from: destination)
+    let attributes = try fileManager.attributesOfItem(atPath: destination.path)
+    let permissions = try #require(attributes[.posixPermissions] as? NSNumber)
+
+    #expect(imported == document)
+    #expect(permissions.intValue & 0o777 == 0o600)
+  }
+
+  @Test("Settings transfer file coordinator preserves the document size limit")
+  func transferFileCoordinatorRejectsOversizedDocument() async throws {
+    let fileManager = FileManager.default
+    let source = fileManager.temporaryDirectory.appendingPathComponent(
+      "Vela-Oversized-Settings-\(UUID().uuidString).json"
+    )
+    defer { try? fileManager.removeItem(at: source) }
+    try Data(
+      repeating: 0,
+      count: SettingsTransferCodec.maximumDocumentBytes + 1
+    ).write(to: source)
+
+    do {
+      _ = try await SettingsTransferFileCoordinator.shared
+        .importDocument(from: source)
+      Issue.record("The oversized Settings document was accepted.")
+    } catch let error as SettingsTransferError {
+      #expect(
+        error == .documentTooLarge(
+          maximumBytes: SettingsTransferCodec.maximumDocumentBytes
+        )
+      )
+    }
+  }
+
   @Test("Unsupported storage preferences fail closed during import")
   func invalidPreferencesFailClosed() {
     let document = SettingsTransferDocument(

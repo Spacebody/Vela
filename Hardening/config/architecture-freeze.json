@@ -200,9 +200,9 @@
   ],
   "surfaceDiscovery": {
     "filesystemLiteralSHA256": "38d99f14a4be35349e15d462db4a4a86e34afb528bfafde33b4e40f9144f5057",
-    "scannedFileCount": 306,
+    "scannedFileCount": 308,
     "securitySignalSHA256": "d66e3b5388944f631f54cd43fe759773af5dbaf26d63e2b60dc08ebb4777b64c",
-    "sourcePathListSHA256": "afdec64de182003a30ab92ea8a81f90f8084cb5b70038ce4a2c92d8a358a1b7b",
+    "sourcePathListSHA256": "30ae4b27c01fc9bef2caeea1a6e8a252726bc6494a5b1b2185c61b5506dbb274",
     "urlLiteralSHA256": "2970c9e83263b87a1ddd7f24f8f5134e87a78a99b19ea8e8b56f157efa26acf2"
   },
   "trustRoots": [

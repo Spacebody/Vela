@@ -30,6 +30,8 @@ struct SettingsLiquidGlassView: View {
   @State private var pendingConfirmation: SettingsConfirmation?
   @State private var operationMessage: SettingsOperationMessage?
   @State private var isChangingIPv6 = false
+  @State private var transferTask: Task<Void, Never>?
+  @State private var transferGeneration: UInt64 = 0
   @FocusState private var searchIsFocused: Bool
 
   private var copy: SettingsPageCopy {
@@ -114,6 +116,11 @@ struct SettingsLiquidGlassView: View {
     }
     .onReceive(NotificationCenter.default.publisher(for: .velaFocusSearch)) { _ in
       searchIsFocused = true
+    }
+    .onDisappear {
+      transferGeneration &+= 1
+      transferTask?.cancel()
+      transferTask = nil
     }
   }
 
@@ -505,6 +512,7 @@ struct SettingsLiquidGlassView: View {
         ) {
           Button(copy.exportAction) { performExport() }
             .buttonStyle(SettingsGlassButtonStyle(radius: 8))
+            .disabled(transferTask != nil)
             .accessibilityIdentifier("settings.export")
         }
         SettingsRowDivider()
@@ -514,6 +522,7 @@ struct SettingsLiquidGlassView: View {
         ) {
           Button(copy.importAction) { performImport() }
             .buttonStyle(SettingsGlassButtonStyle(radius: 8))
+            .disabled(transferTask != nil)
             .accessibilityHint(copy.importSettingsDetail)
             .accessibilityIdentifier("settings.import")
         }
@@ -669,19 +678,31 @@ struct SettingsLiquidGlassView: View {
     panel.allowedContentTypes = [.json]
     panel.canCreateDirectories = true
     guard panel.runModal() == .OK, let destination = panel.url else { return }
+    let document = exportDocument()
 
-    do {
-      let data = try SettingsTransferCodec.encode(exportDocument())
-      try data.write(to: destination, options: .atomic)
-      try FileManager.default.setAttributes(
-        [.posixPermissions: NSNumber(value: 0o600)],
-        ofItemAtPath: destination.path
-      )
-      operationMessage = .success(copy.exportSucceeded)
-    } catch {
-      operationMessage = .failure(
-        copy.exportFailed(error.localizedDescription)
-      )
+    transferGeneration &+= 1
+    let generation = transferGeneration
+    transferTask?.cancel()
+    transferTask = Task { @MainActor in
+      defer {
+        if transferGeneration == generation {
+          transferTask = nil
+        }
+      }
+      do {
+        try await SettingsTransferFileCoordinator.shared.export(
+          document,
+          to: destination
+        )
+        try Task.checkCancellation()
+        operationMessage = .success(copy.exportSucceeded)
+      } catch is CancellationError {
+        return
+      } catch {
+        operationMessage = .failure(
+          copy.exportFailed(error.localizedDescription)
+        )
+      }
     }
   }
 
@@ -693,15 +714,28 @@ struct SettingsLiquidGlassView: View {
     panel.canChooseFiles = true
     guard panel.runModal() == .OK, let source = panel.url else { return }
 
-    do {
-      let data = try Data(contentsOf: source, options: [.mappedIfSafe])
-      let document = try SettingsTransferCodec.decode(data)
-      try onImportDocument(document)
-      operationMessage = .success(copy.importSucceeded)
-    } catch {
-      operationMessage = .failure(
-        copy.importFailed(error.localizedDescription)
-      )
+    transferGeneration &+= 1
+    let generation = transferGeneration
+    transferTask?.cancel()
+    transferTask = Task { @MainActor in
+      defer {
+        if transferGeneration == generation {
+          transferTask = nil
+        }
+      }
+      do {
+        let document = try await SettingsTransferFileCoordinator.shared
+          .importDocument(from: source)
+        try Task.checkCancellation()
+        try onImportDocument(document)
+        operationMessage = .success(copy.importSucceeded)
+      } catch is CancellationError {
+        return
+      } catch {
+        operationMessage = .failure(
+          copy.importFailed(error.localizedDescription)
+        )
+      }
     }
   }
 

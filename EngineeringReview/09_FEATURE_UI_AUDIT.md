@@ -54,11 +54,11 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 - **Severity:** P2 MainActor responsiveness risk
 - **File:** `Vela/Features/Configuration/ConfigurationView.swift`; `Vela/Features/Configuration/ConfigurationLiquidGlassWorkbenchView.swift`; `Vela/Features/Settings/SettingsLiquidGlassView.swift`
 - **Line/Type:** Workbench preview/export actions; settings transfer `performExport`/`performImport`, approximately lines 660-705
-- **Evidence:** Workbench analysis is correctly debounced by 150 ms, performed through a detached analysis cache, and guarded against stale YAML. Some user-initiated save/import/export paths still perform `Data(contentsOf:)` or atomic `Data.write` synchronously after a modal panel returns. These are bounded by settings document size for settings transfer, but configuration YAML can be materially larger.
-- **Impact:** Large imported/exported documents can briefly block the MainActor without compromising transaction safety.
-- **Fix:** Keep AppKit panels and state mutation on MainActor, but move file read/write to an existing bounded IO actor/helper and return immutable `Data`/result values. Do not bypass configuration validation, atomic persistence or transaction coordinators.
-- **Test:** Import/export a maximum supported document while probing MainActor latency; cancellation/error leaves no partial destination and surfaces a redacted operation error.
-- **Status:** Open P2; no data-loss path found.
+- **Evidence:** Workbench analysis remains debounced by 150 ms, runs through the detached analysis cache and rejects stale YAML. Settings transfer encoding/decoding plus bytes IO now runs through the feature-owned `SettingsTransferFileCoordinator` actor. Configuration YAML export runs through `ConfigurationExportWriter`. AppKit panels and UI-facing result commits remain on MainActor; the settings task has an explicit view owner, cancellation and generation guard.
+- **Impact:** User-selected document IO no longer blocks MainActor. The existing validation, settings commit compensation and configuration transaction contracts are unchanged.
+- **Fix:** Completed with two domain-specific serial actors rather than a cross-feature generic manager. Both outputs use atomic writes and `0600` permissions because exported settings/configuration may contain sensitive remote or proxy material.
+- **Test:** Settings backup round-trip and the 1 MiB rejection path pass from real files. An approximately 8 MB configuration export preserves UTF-8 and records a MainActor scheduling marker below 250 ms (37 ms total test runtime on the review host). All 13 focused tests pass.
+- **Status:** Fixed and verified.
 
 ### UI-TASK-001
 
@@ -76,7 +76,7 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 - **Severity:** Verified mechanism with a P2 consistency follow-up
 - **File:** `Vela/Features/Settings/SettingsView.swift`; `Vela/Features/Settings/SettingsLiquidGlassView.swift`
 - **Line/Type:** `setTun`, `performTunChange`, `performIPv6Change`, `clearTransientData`
-- **Evidence:** TUN changes await engine verification and publish failure; IPv6 uses a guarded operation and restores the previous preference on failure; transient cleanup runs in detached utility work. System Proxy delegates to the engine's serialized request task/operation state. Settings import validates, checks runtime/update barriers, commits all values, verifies read-back and compensates if commit proof fails. The remaining synchronous settings import/export IO is addressed by `UI-CONFIG-001`.
+- **Evidence:** TUN changes await engine verification and publish failure; IPv6 uses a guarded operation and restores the previous preference on failure; transient cleanup runs in detached utility work. System Proxy delegates to the engine's serialized request task/operation state. Settings import validates, checks runtime/update barriers, commits all values, verifies read-back and compensates if commit proof fails. Settings transfer file IO is serialized off MainActor and the view cancels its owned transfer task when it disappears.
 - **Impact:** Dangerous toggles are not implemented as bare optimistic preference writes. Operation feedback and rollback behavior exist.
 - **Fix:** Preserve the operation-state path. In a later UI pass, surface applying/verified/rollback states consistently without changing the native-switch interaction workaround.
 - **Test:** Existing Settings snapshot/transfer/TUN feedback tests plus system network suites.

@@ -283,7 +283,7 @@ struct ConfigurationView: View {
         )
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
-            try yaml.write(to: url, atomically: true, encoding: .utf8)
+            try await ConfigurationExportWriter.shared.write(yaml, to: url)
         } catch {
             exportErrorMessage = VelaL10n.string(
                 "configuration.export.error.write",

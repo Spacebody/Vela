@@ -69,11 +69,11 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 - **Severity:** P2
 - **File:** `Vela/Features/Configuration/ConfigurationView.swift`; `Vela/Features/Configuration/ConfigurationLiquidGlassWorkbenchView.swift`
 - **Line/Type:** preview debounce/analysis cache and file import/export
-- **Evidence:** Preview refresh waits 150 ms, cancels superseded generations and rejects analysis for stale YAML. YAML analysis is detached, de-duplicated in flight and cached with capacity two. Some panel-completion paths still synchronously read/write documents on MainActor.
-- **Impact:** Editing computation is controlled, but large file transfer can pause the UI.
-- **Fix:** Move bytes IO behind an existing bounded actor/helper, leaving panel presentation and state commits on MainActor. Keep validation and transaction ownership unchanged.
-- **Test:** rapid typing, stale analysis, maximum-size import/export, cancellation and no partial destination.
-- **Status:** Open P2.
+- **Evidence:** Preview refresh waits 150 ms, cancels superseded generations and rejects analysis for stale YAML. YAML analysis remains detached, de-duplicated in flight and cached with capacity two. Settings transfer and configuration export bytes IO now run on feature-owned serial actors; panel presentation and result mutation remain on MainActor.
+- **Impact:** Editing computation and user document IO are both bounded away from the UI actor without changing validation or transaction ownership.
+- **Fix:** Added `SettingsTransferFileCoordinator` and `ConfigurationExportWriter`, retained atomic writes, and made exported documents private (`0600`). The settings view owns, cancels and generation-guards the transfer task.
+- **Test:** 13 focused tests pass, including real-file settings round-trip, file-based oversize rejection and an approximately 8 MB YAML export with a MainActor marker under the 250 ms budget.
+- **Status:** Closed; fixed and verified.
 
 ### PERF-OBS-001
 
@@ -99,4 +99,4 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 
 ## Performance conclusion
 
-Connections already exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Logs now follows the same serial latest-wins direction with a 50k MainActor responsiveness assertion; Rules and Configuration already use bounded worker/debounce mechanisms. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are now off MainActor. The remaining evidence-backed priorities are therefore not broad rewrites: cache or pipeline Proxies projection, move remaining Configuration panel IO off MainActor, add a Rules scale threshold and instrument Observation invalidation before extracting EngineStore state. All reviewed retained data is bounded, including privileged lease event buffering.
+Connections exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Logs and Proxies now use serial latest-wins presentation workers; Rules has a verified 50,000-rule budget; Configuration uses bounded debounce/cache workers and serial user-document actors. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are off MainActor. The remaining evidence-backed priority is therefore measurement before further extraction: instrument Observation invalidation and the residual O(n) Proxies delay-state capture rather than introducing a broad architecture rewrite. All reviewed retained data is bounded, including privileged lease event buffering.
