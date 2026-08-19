@@ -10,7 +10,7 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 | Connections | current snapshot only; 10,000-row tests and 500 search changes | single detached worker in actor pipeline | verified scalable architecture |
 | Traffic | Overview history keeps 120 samples | sample state is published through wide EngineStore/Overview state | bounded; Observation measurement needed |
 | Rules | current snapshot only; search is debounced | detached, serial latest-wins pipeline | verified architecture; explicit large-rule benchmark gap |
-| Proxies | current catalog plus delay dictionary; delay cache clears on profile/catalog/reset | full view projection on MainActor; delay requests bounded | bounded cache, P2 UI CPU risk |
+| Proxies | current catalog plus delay dictionary; delay cache clears on profile/catalog/reset | serial latest-wins `@concurrent` projection worker; delay requests bounded | bounded cache and off-MainActor projection; O(n) delay capture remains |
 | Configuration structure | YAML analysis cache capacity 2; structure output capped at 2,000 items | detached analyzer, 150 ms preview debounce | verified bounded projection; large-YAML IO measurement needed |
 | Health reports | latest report/state, not an append-only history | monitor actor; UI projection in EngineStore | bounded |
 | Scenes | maximum 128 scenes | actor-backed persistence | bounded |
@@ -47,11 +47,11 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 - **Severity:** P2
 - **File:** `Vela/Features/Proxies/ProxiesView.swift`; `Vela/Features/Proxies/ProxiesPresentation.swift`
 - **Line/Type:** catalog-to-dashboard projection and delay-state scan
-- **Evidence:** The view walks all catalog nodes to rebuild delay state and then rebuilds all presentation groups/rows. Delay testing is not an unbounded fan-out: controller group testing limits concurrency and multi-group UI tests execute groups sequentially. Engine delay cache entries are profile-scoped and are cleared when configured catalog, runtime catalog or controller state resets (`EngineStore.swift:3418`, `6205-6212`, `6879`).
+- **Evidence:** The original view walked all catalog nodes to rebuild delay state and then rebuilt all presentation groups/rows synchronously. The 100-group/10,000-candidate test measured 100 projections in 7.105 seconds (about 71 ms each). Delay testing is not an unbounded fan-out: controller group testing limits concurrency and multi-group UI tests execute groups sequentially. Engine delay cache entries are profile-scoped and are cleared when configured catalog, runtime catalog or controller state resets (`EngineStore.swift:3418`, `6205-6212`, `6879`).
 - **Impact:** Large node catalogs can make selection/delay updates more expensive than the underlying bounded network operation.
-- **Fix:** Revision-keyed Proxies projection and incremental group replacement after characterization; keep request concurrency/cancellation unchanged.
-- **Test:** 100/1,000/10,000 node build budget, one-node delay mutation, rapid catalog replacement and stale-result rejection.
-- **Status:** Open P2; no unbounded cache found.
+- **Fix:** Implemented a revision-triggered Proxies presentation pipeline that cancels and joins superseded workers and performs the existing pure factory projection off MainActor. It deliberately keeps the immutable snapshot shape and EngineStore/request contracts stable. Incremental group replacement is deferred because it would widen the snapshot change surface without current allocation evidence.
+- **Test:** The 10,000-candidate baseline remains covered. Added rapid catalog replacement/latest-wins, maximum-worker-count-one and MainActor responsiveness tests; all focused Proxies presentation tests pass.
+- **Status:** MainActor full-projection risk fixed and verified. Residual P2: delay-state capture is O(n), so a one-node delay update still scans the catalog before off-actor projection.
 
 ### PERF-RULES-001
 

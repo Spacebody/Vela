@@ -359,6 +359,50 @@ struct ProxiesPresentationTests {
         }
     }
 
+    @Test("Presentation pipeline serializes replacement workers and publishes only the latest catalog")
+    func presentationPipelineSerializesLatestRequest() async throws {
+        let pipeline = ProxiesPresentationPipeline()
+        let large = try largeCatalog(groupCount: 100, candidatesPerGroup: 100)
+        let latest = try largeCatalog(groupCount: 2, candidatesPerGroup: 3)
+        let first = Task {
+            await pipeline.project(processingRequest(catalog: large))
+        }
+        await Task.yield()
+        let second = Task {
+            await pipeline.project(processingRequest(catalog: latest))
+        }
+
+        let firstResult = await first.value
+        let latestResult = try #require(await second.value)
+        let diagnostics = await pipeline.diagnostics()
+
+        #expect(firstResult == nil)
+        #expect(latestResult.rows.count == 2)
+        #expect(latestResult.groups.values.allSatisfy { $0.candidates.count == 3 })
+        #expect(diagnostics.submittedRequestCount == 2)
+        #expect(diagnostics.maximumConcurrentWorkerCount == 1)
+        #expect(diagnostics.activeWorkerCount == 0)
+    }
+
+    @Test("Ten-thousand-node projection does not monopolize MainActor")
+    @MainActor
+    func largeProjectionKeepsMainActorResponsive() async throws {
+        let pipeline = ProxiesPresentationPipeline()
+        let catalog = try largeCatalog(groupCount: 100, candidatesPerGroup: 100)
+        let request = processingRequest(catalog: catalog)
+        let projection = Task { await pipeline.project(request) }
+
+        let clock = ContinuousClock()
+        let startedAt = clock.now
+        await Task.yield()
+        let mainActorDelay = startedAt.duration(to: clock.now)
+        let snapshot = try #require(await projection.value)
+
+        #expect(snapshot.rows.count == 100)
+        #expect(snapshot.groups.count == 100)
+        #expect(mainActorDelay < .milliseconds(50))
+    }
+
     private func makeSnapshot(
         catalog: ProxyCatalog,
         selection: ProxiesGroupID? = nil
@@ -371,6 +415,18 @@ struct ProxiesPresentationTests {
             delayStates: [:],
             selectedGroupID: selection,
             errorSummary: nil
+        )
+    }
+
+    private func processingRequest(catalog: ProxyCatalog) -> ProxiesProcessingRequest {
+        ProxiesProcessingRequest(
+            catalog: catalog,
+            controllerState: .connected,
+            isLoading: false,
+            operation: nil,
+            delayStates: [:],
+            errorSummary: nil,
+            referenceDate: Date(timeIntervalSince1970: 1_700_000_600)
         )
     }
 

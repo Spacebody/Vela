@@ -7,7 +7,7 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 | Feature | UI-facing owner | Expensive projection / IO owner | Lifecycle boundary |
 |---|---|---|---|
 | Overview | `OverviewView` local state plus `EngineStore` facade | `OverviewProxySnapshotCache`; shared connection snapshot source | `onAppear`/`onDisappear` activates and deactivates the connection consumer |
-| Proxies | `ProxiesView` local selection and `EngineStore` facade | `ProxiesPresentationFactory` currently called from the view | page tasks follow profile/catalog generation; engine owns request tasks |
+| Proxies | `ProxiesView` local selection and `EngineStore` facade | serial latest-wins `ProxiesPresentationPipeline`; factory remains pure | page tasks follow profile/catalog revision; engine owns request tasks |
 | Connections | dedicated `ConnectionsViewModel` | `ConnectionsPresentationPipeline` actor with one detached worker | explicit `.connectionsPage` / `.overviewPage` consumers own the stream |
 | Rules | dedicated `RulesViewModel` | `RulesPresentationPipeline` actor with one detached worker | model cancels superseded search/projection work |
 | Configuration Workbench | `ConfigurationView` and `ConfigurationEditorViewModel` | configuration actors plus `ConfigurationWorkbenchYAMLAnalysisCache` | 150 ms cancellable preview task with stale-YAML rejection |
@@ -32,11 +32,11 @@ Review baseline: `main` at `9454542`. This audit covers the app shell and the Ov
 - **Severity:** P2 performance risk
 - **File:** `Vela/Features/Proxies/ProxiesView.swift`
 - **Line/Type:** `snapshot` and `delayStates`, lines 35-62
-- **Evidence:** Every snapshot construction walks every group/node to query delay state, creates a new dictionary, then calls `ProxiesPresentationFactory.make`, which maps the catalog into all group and node presentation rows. This work is performed from the SwiftUI view on MainActor. Delay testing itself is bounded and cancellation-aware; the issue is projection placement, not network fan-out.
+- **Evidence:** The original computed snapshot walked every group/node to query delay state, created a new dictionary, then called `ProxiesPresentationFactory.make`, which maps the catalog into all group and node presentation rows. The 100-group/10,000-candidate characterization measured 100 full projections in 7.105 seconds (about 71 ms each) on the test host. Delay testing itself is bounded and cancellation-aware; the issue was projection placement, not network fan-out.
 - **Impact:** Large subscriptions and frequent delay-state updates can cause repeated full-catalog work and visible selection/test latency.
-- **Fix:** Add a Proxies feature projection pipeline or revision-keyed cache using the existing catalog generation and delay revision. Preserve `EngineStore` as the temporary facade and existing request/cancellation semantics. Measure before deciding whether a dedicated observable projection is necessary.
-- **Test:** Characterize 100, 1,000 and 10,000 candidate-node catalogs; verify one delay update does not rebuild unrelated groups and that stale projection results never replace a newer catalog.
-- **Status:** Open P2.
+- **Fix:** Added a feature-owned, serial latest-wins projection actor. `ProxiesView` captures an immutable request from EngineStore truth, expensive factory work runs in an `@concurrent` worker, superseded work is cancelled and joined, and only the newest ticket can publish. The snapshot contract, selection semantics, delay request concurrency and EngineStore authority are unchanged.
+- **Test:** Existing 10,000-candidate characterization remains as a regression baseline. New tests prove rapid large-to-small replacement publishes only the newest catalog, maximum concurrent workers stays one, and a 10,000-candidate projection does not monopolize MainActor.
+- **Status:** Fixed and verified for MainActor projection placement and stale-result safety. Residual P2 optimization: delay-state capture is still O(n), and incremental single-group replacement should be considered only after an Instruments trace proves it worthwhile.
 
 ### UI-FEATURE-001
 

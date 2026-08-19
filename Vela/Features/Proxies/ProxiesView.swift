@@ -9,6 +9,28 @@ struct ProxiesView: View {
 
     @State private var selectedGroupID: ProxiesGroupID?
     @State private var showsInspector = true
+    @State private var snapshot = ProxiesPresentationFactory.make(
+        catalog: .empty,
+        controllerState: .disconnected,
+        isLoading: false,
+        operation: nil,
+        delayStates: [:],
+        selectedGroupID: nil,
+        errorSummary: nil
+    )
+    @State private var presentationPipeline = ProxiesPresentationPipeline()
+
+    private var presentationRevision: ProxiesPresentationRevision {
+        ProxiesPresentationRevision(
+            catalog: engineStore.proxyCatalog,
+            controllerState: engineStore.controllerState,
+            isLoading: engineStore.isLoadingProxies,
+            operation: engineStore.proxyOperation,
+            errorSummary: engineStore.proxyCatalogError.map(
+                DiagnosticTextSanitizer.redact
+            )
+        )
+    }
 
     var body: some View {
         ProxiesLiquidGlassDashboardView(
@@ -27,23 +49,30 @@ struct ProxiesView: View {
             }
 #endif
         }
+        .task(id: presentationRevision) {
+            await refreshPresentation()
+        }
         .task(id: engineStore.selectedProfileID) {
             await engineStore.refreshConfiguredProxyCatalog()
         }
     }
 
-    private var snapshot: ProxiesPresentationSnapshot {
-        ProxiesPresentationFactory.make(
+    private func refreshPresentation() async {
+        let request = ProxiesProcessingRequest(
             catalog: engineStore.proxyCatalog,
             controllerState: engineStore.controllerState,
             isLoading: engineStore.isLoadingProxies,
             operation: engineStore.proxyOperation,
             delayStates: delayStates,
-            selectedGroupID: selectedGroupID,
             errorSummary: engineStore.proxyCatalogError.map(
                 DiagnosticTextSanitizer.redact
-            )
+            ),
+            referenceDate: Date()
         )
+        guard let updated = await presentationPipeline.project(request),
+              !Task.isCancelled
+        else { return }
+        snapshot = updated
     }
 
     private var delayStates: [ProxiesDelayKey: ProxyDelayState] {
@@ -65,9 +94,15 @@ struct ProxiesView: View {
     private func perform(_ action: ProxiesDashboardAction) {
         switch action {
         case .refresh:
-            Task { await engineStore.refreshProxies() }
+            Task {
+                await engineStore.refreshProxies()
+                await refreshPresentation()
+            }
         case let .testGroup(groupID):
-            Task { await engineStore.testProxyGroupDelay(group: groupID.rawValue) }
+            Task {
+                await engineStore.testProxyGroupDelay(group: groupID.rawValue)
+                await refreshPresentation()
+            }
         case let .testGroups(groupIDs):
             Task {
                 for groupID in groupIDs {
@@ -77,6 +112,7 @@ struct ProxiesView: View {
                         showsFailureAlert: false
                     )
                 }
+                await refreshPresentation()
             }
         case let .testProxy(groupID, nodeID):
             Task {
@@ -84,6 +120,7 @@ struct ProxiesView: View {
                     group: groupID.rawValue,
                     nodeID: nodeID
                 )
+                await refreshPresentation()
             }
         case let .selectProxy(groupID, nodeID):
             engineStore.requestProxySelection(
@@ -95,6 +132,34 @@ struct ProxiesView: View {
         case .openDiagnostics:
             SettingsMainNavigationRequest.navigateInCurrentWindow(.diagnostics)
         }
+    }
+}
+
+nonisolated private struct ProxiesPresentationRevision: Equatable {
+    let updatedAt: Date?
+    let groupCount: Int
+    let nodeCount: Int
+    let fetchErrorCount: Int
+    let controllerState: ControllerConnectionState
+    let isLoading: Bool
+    let operation: ProxyOperationState?
+    let errorSummary: String?
+
+    init(
+        catalog: ProxyCatalog,
+        controllerState: ControllerConnectionState,
+        isLoading: Bool,
+        operation: ProxyOperationState?,
+        errorSummary: String?
+    ) {
+        updatedAt = catalog.updatedAt
+        groupCount = catalog.groups.count
+        nodeCount = catalog.nodes.count
+        fetchErrorCount = catalog.fetchErrors.count
+        self.controllerState = controllerState
+        self.isLoading = isLoading
+        self.operation = operation
+        self.errorSummary = errorSummary
     }
 }
 
