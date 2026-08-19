@@ -1,53 +1,51 @@
 # Executive Summary
 
-Status: audit in progress. This report intentionally does not reuse the older `c063aa8` review as proof for the current public `main` snapshot.
+Review baseline: `main` through `693158b7cc2e`, plus the documentation and deterministic Release Candidate resource reconciliation in the current review worktree.
 
-## Current baseline
+## Outcome
 
-- Branch/commit under active review: `main` / `e999591` plus the independently verified probation test/documentation batch described below.
-- Swift source volume: 171,535 lines including tests and harnesses.
-- Largest production file: `Vela/Core/Engine/EngineStore.swift`, 7,760 lines.
-- Largest production workflow type: `CoreLifecycleController`, 2,408-line type body.
-- Largest composition function: `AppEnvironment.live()`, 559 lines.
-- Hardening configuration and workflow-pin validation pass.
-- All 30 Hardening Python tests pass; the architecture freeze is current for this source snapshot.
+The repository-wide review found no open P0 and no untreated P1 defect in the reviewed source. Confirmed P1 failures were repaired through bounded changes that preserved the existing lifecycle, configuration, privileged, trust and recovery contracts:
 
-## Initial risk assessment
+- Core activation now releases the shared runtime-mutation lease before public operations return.
+- Core transaction verification compares canonical durable bytes rather than an impossible subsecond in-memory timestamp round trip.
+- Legacy structured profile migration preserves prepended rules.
+- Runtime/update journal persistence failures are no longer silently suppressed.
+- Long-lived routed telemetry and privileged lease streams have explicit retention bounds.
 
-No new P0 is asserted at this stage. The previously recorded architecture-freeze mismatch has been reconciled through the repository's existing ADR/baseline process and all documented Hardening commands pass. Confirmed lifecycle P1 defects are being closed before architecture and style work continues.
+The review did **not** replace `EngineStore`, `CoreLifecycleController`, the privileged boundary, the configuration transaction layer or the Hardening architecture. Existing reliable owners remain authoritative.
 
-The primary maintainability and correctness risks under active audit are:
+## Current architecture assessment
 
-1. `EngineStore` is both a broad observable root and a lifecycle façade. It exposes many unrelated high-frequency projections while also retaining task, transition, lease, recovery, and update orchestration state.
-2. `CoreLifecycleController` and `CoreStore` are large and contain workflow, persistence, verification, and presentation responsibilities that require boundary-by-boundary review.
-3. `AppEnvironment.live()` is a very large composition function. It correctly centralizes shared instances, so cleanup must not duplicate authoritative services.
-4. Large feature views (Rules, Configuration Workbench, Diagnostics, Connections, Proxies, Logs) mix rendering with local coordination. Some already have dedicated pipelines/stores, which should be reused rather than replaced.
+1. `EngineStore` remains a broad `@MainActor @Observable` runtime facade. It owns legitimate aggregate state but also exposes high-rate feature projections. File IO already proven to run on MainActor was moved behind existing concurrent owners; further splitting requires measured Observation evidence.
+2. `CoreLifecycleController` remains the Core workflow facade. Low-level durable state stays in `CoreStore`, download/staging work stays in `CoreFileDownloader`, and the shared runtime mutation gate remains the cross-workflow exclusion boundary.
+3. Configuration apply retains validate → stage → persist → apply/restart → health proof → rollback/recovery semantics with atomic durable writes and revision checks.
+4. System Proxy and TUN remain independent, composable controls. Their ownership, verification, rollback and helper lease contracts were preserved.
+5. Logs, Connections, Rules, Proxies and Configuration presentation work now use bounded or serial latest-wins pipelines where repository evidence showed material MainActor or recomputation risk.
 
-## Existing mechanisms to preserve
+## Verification summary
 
-- `RuntimeMutationGate` as the cross-workflow exclusion boundary.
-- `EngineTransitionCoordinator` actor and its cancellation/rollback barrier.
-- Runtime configuration journals, staging, validation, verification, and rollback.
-- System Proxy recovery/verification ownership.
-- Helper protocol/session/lease/payload/signing checks and frozen `VelaIPC` contract.
-- Existing redaction policy, FaultInjection framework, Hardening gates, and test targets.
+- Hardening configuration: 12 files validated.
+- GitHub workflow pin validation: 9 workflows passed.
+- Hardening unit suite: 30/30 passed.
+- Static CI lane: 109/109 tests passed; Xcode/Swift tests intentionally excluded by `--static-only`.
+- `VelaIPC`: 127/127 tests passed.
+- Unsigned arm64 Debug build: passed.
+- Unsigned arm64 Release build: passed.
+- Focused regression suites for every implementation batch passed before commit; details are retained in the domain reports.
+- The generated `Vela/Resources/ReleaseCandidate/baseline.json` was reconciled through the repository's existing deterministic generator and revalidated by the static CI lane.
 
-## Review policy
+No signing, notarization, installation, TUN mutation or native System Proxy mutation was performed during this final review pass.
 
-No production symbol will be edited without current impact analysis. HIGH or CRITICAL blast radius will be reported before proceeding. Each implementation batch will remain independently buildable/testable and will end with `detect_changes()` scope review before any commit.
+## Remaining known risks
 
-## Confirmed Finding ER-HARD-001
+The remaining items are evidence or measurement gaps, not known P0/P1 product defects:
 
-- **ID:** ER-HARD-001
-- **Severity:** P1 (release correctness / security-gate integrity)
-- **File:** `Hardening/config/architecture-freeze.json:198-204`; `Hardening/config/attack-surface.json:2`
-- **Line/Type:** generated architecture baseline
-- **Evidence:** the initial review snapshot produced `scannedFileCount = 306` instead of 295 and failed the architecture baseline prerequisite. The reconciled current snapshot passes configuration validation, workflow validation and all 30 Hardening tests.
-- **Impact:** while open, the repository could not satisfy its mandatory Hardening source gate. Blind hash regeneration would have bypassed the intended Security/Release review.
-- **Fix:** identify the 11 newly scanned production files and their security signals, confirm no unintended attack-surface change, then generate manifests and add a matching ADR with exact canonical hashes and owners.
-- **Test:** all three documented Hardening commands plus deterministic generator test.
-- **Status:** Closed and verified through the existing baseline/ADR mechanism. `validate_hardening_config.py`, `validate_github_workflows.py .github/workflows`, and the 30-test Hardening unittest suite all pass on the current snapshot.
+1. Native System Proxy and installed-helper/TUN end-to-end matrices require an explicitly authorized, signed privileged host.
+2. Full production-adapter configuration/Core probation integration remains a P2 integration target.
+3. EngineStore Observation invalidation and the residual O(n) proxy-delay capture require Instruments/signpost measurements before another extraction is justified.
+4. The local Xcode test service stalled before materializing the accessibility test worker; the deterministic source contract is present, but that runtime lane must be rerun on a healthy test host.
+5. Release feed, signing identity, production Core trust/evidence and compatibility values remain deliberately fail-closed placeholders. Static validation confirms that they cannot be mistaken for a production release.
 
-## Next audit stage
+## Decision
 
-The confirmed Core probation and lifecycle P1 paths are now covered by seven focused controller tests. The first dependency-proven EngineStore strangler batch moved runtime fingerprint IO and profile-import cleanup off MainActor while keeping the façade and contracts intact; the complete 84-test EngineStore suite passes. The next stage continues bounded performance and architecture work without weakening the already-verified privileged, network and configuration contracts.
+The current source is materially safer and more maintainable than the starting snapshot without a giant architecture diff. The next work should follow `14_REFACTOR_PLAN.md`: collect runtime measurements and privileged integration evidence first, then extract only the boundaries whose cost or ownership problem is proven.

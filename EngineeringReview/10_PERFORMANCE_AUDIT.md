@@ -8,13 +8,14 @@ Review baseline: `main` at `9454542`. This review is code- and test-evidence bas
 |---|---|---|---|
 | Logs | `LogBuffer.maximumCapacity == 2_000`; telemetry uses `.bufferingNewest(2_000)` | serial latest-wins `@concurrent` presentation worker; export actor | bounded and verified off MainActor |
 | Connections | current snapshot only; 10,000-row tests and 500 search changes | single detached worker in actor pipeline | verified scalable architecture |
-| Traffic | Overview history keeps 120 samples | sample state is published through wide EngineStore/Overview state | bounded; Observation measurement needed |
+| Traffic | Overview history keeps 120 samples; routed telemetry retains newest 1 | sample state is published through wide EngineStore/Overview state | bounded; Observation measurement needed |
 | Rules | current snapshot only; search is debounced | detached, serial latest-wins pipeline | 50,000-rule decode, refresh, search and MainActor budgets verified |
 | Proxies | current catalog plus delay dictionary; delay cache clears on profile/catalog/reset | serial latest-wins `@concurrent` projection worker; delay requests bounded | bounded cache and off-MainActor projection; O(n) delay capture remains |
 | Configuration structure | YAML analysis cache capacity 2; structure output capped at 2,000 items | detached analyzer, 150 ms preview debounce | verified bounded projection; large-YAML IO measurement needed |
 | Health reports | latest report/state, not an append-only history | monitor actor; UI projection in EngineStore | bounded |
 | Scenes | maximum 128 scenes | actor-backed persistence | bounded |
 | Update/reliability export | retained export history capped at 50 | actor/service work | bounded |
+| Core download | catalog/envelope/resource contracts cap accepted assets; executable 64 MiB and other resources 5 MiB | existing concurrent downloader, lossless 64 KiB chunks, exact size/SHA-256 verification | finite and integrity preserving |
 
 The first bounded EngineStore performance batch moved runtime-configuration fallback reads/hashing and profile-import staging cleanup off MainActor. A second bounded Core lifecycle batch moved download workspace IO and streamed transfer behind explicit `@concurrent` methods on the existing downloader. These changes preserve the runtime digest, import, trust and install contracts and are covered by focused EngineStore/Core downloader tests.
 
@@ -89,14 +90,14 @@ The first bounded EngineStore performance batch moved runtime-configuration fall
 ### PERF-LONGRUN-001
 
 - **Severity:** Verified mechanism with one P3 follow-up
-- **File:** telemetry/log buffers, Overview traffic history, SceneStore, proxy delay cache, privileged lease events
+- **File:** telemetry/log buffers and `RuntimeControllerRouter`, Overview traffic history, SceneStore, proxy delay cache, privileged lease events
 - **Line/Type:** retained state and AsyncStream buffering
-- **Evidence:** Major long-lived collections are bounded or replace current snapshots. Proxy delay state is reset on catalog/profile/runtime changes. Long-lived streams use bounded newest buffering; `PrivilegedLeaseCoordinator.events()` now retains only the newest eight events per subscriber while preserving termination cleanup.
+- **Evidence:** Major long-lived collections are bounded or replace current snapshots. Proxy delay state is reset on catalog/profile/runtime changes. Long-lived streams use bounded newest buffering; `PrivilegedLeaseCoordinator.events()` retains the newest eight events, routed logs retain the configured log capacity and routed traffic retains only the newest sample while preserving termination cleanup.
 - **Impact:** No major application history leak was found. A stalled low-frequency lease subscriber is now bounded as well.
 - **Fix:** Completed without changing lease authority or IPC contracts.
-- **Test:** `PrivilegedLeaseCoordinatorTests` proves a stalled subscriber receives exactly the newest bounded suffix.
+- **Test:** `PrivilegedLeaseCoordinatorTests` proves a stalled subscriber receives exactly the newest bounded suffix; `RuntimeControllerRouterTests.trafficRoutingKeepsNewestSample` proves the routed traffic bridge cannot accumulate a stale burst.
 - **Status:** Closed.
 
 ## Performance conclusion
 
-Connections exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Logs and Proxies now use serial latest-wins presentation workers; Rules has a verified 50,000-rule budget; Configuration uses bounded debounce/cache workers and serial user-document actors. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are off MainActor. The remaining evidence-backed priority is therefore measurement before further extraction: instrument Observation invalidation and the residual O(n) Proxies delay-state capture rather than introducing a broad architecture rewrite. All reviewed retained data is bounded, including privileged lease event buffering.
+Connections exceeds the requested 1k/5k validation with a 10k latest-wins pipeline and explicit MainActor/worker assertions. Logs and Proxies now use serial latest-wins presentation workers; Rules has a verified 50,000-rule budget; Configuration uses bounded debounce/cache workers and serial user-document actors. EngineStore runtime fingerprint IO, import staging cleanup, Core download workspace IO and streamed download transfer are off MainActor. The remaining evidence-backed priority is therefore measurement before further extraction: instrument Observation invalidation and the residual O(n) Proxies delay-state capture rather than introducing a broad architecture rewrite. All reviewed retained data and long-lived routing queues are bounded; signed Core downloads additionally enforce finite role size, exact length and digest integrity without using a lossy stream policy.

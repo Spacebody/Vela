@@ -1,6 +1,6 @@
 # Concurrency and Lifecycle Audit
 
-Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the bounded `CORE-LIFE-001` fix recorded in `04_CORE_LIFECYCLE_AUDIT.md`.
+Review baseline: `main` through `693158b`, including the bounded Core lifecycle, lease-event and routed-telemetry fixes recorded below.
 
 ## Ownership map
 
@@ -10,7 +10,7 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the 
 | `RuntimeMutationGate` actor | Serializes engine lifecycle, Controller mutation, configuration transaction, Core activation and update barriers | Callers must hold a lease for the complete public async operation and release it before returning, except when ownership is deliberately transferred to probation/update recovery. |
 | `EngineStore` | App-owned observation tasks and recovery workers | `prepareForTermination()` cancels and joins transitions, holds the mutation gate during the cleanup barrier and only then stops and joins environment observers. |
 | `MihomoControllerSession` actor | Controller session, telemetry, proxy operations and batched log publication | Uses generation IDs to reject stale events; the public event stream is bounded to the newest 64 events and removes continuations on termination. |
-| `PrivilegedLeaseCoordinator` actor | One helper-lease renewal loop | `stop()` and sleep suspension cancel and await the renewal task before clearing authority; subscriber removal is installed, but the event stream currently has no explicit buffer bound. |
+| `PrivilegedLeaseCoordinator` actor | One helper-lease renewal loop | `stop()` and sleep suspension cancel and await the renewal task before clearing authority; each subscriber retains the newest eight state events and is removed on termination. |
 | `MihomoProcessManager` / `ProcessExecutor` | Owned Mihomo/child process and pipe capture | Termination races are bounded, owned processes receive termination escalation, capture cleanup is deferred and the process event stream is bounded. |
 
 ## Correct mechanisms that must be preserved
@@ -79,18 +79,40 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`, plus the 
 - **Test:** Existing `EngineStoreTests` termination-barrier cases, plus new branch-specific observer/lease tests.
 - **Status:** No defect found in the reviewed route.
 
+### CONC-STREAM-002
+
+- **Severity:** P2
+- **File:** `Vela/Core/Controller/RuntimeControllerRouter.swift`; `VelaTests/RuntimeControllerRouterTests.swift`
+- **Line/Type:** routed telemetry stream bridge
+- **Evidence:** The concrete Mihomo log and traffic sources were bounded, but the routing façade wrapped either source in a default `AsyncThrowingStream`. A stalled routed subscriber could therefore accumulate an unbounded second queue after the bounded source.
+- **Impact:** Long-running log routing could retain old batches behind a slow consumer even though the transport-level buffers were correctly bounded.
+- **Fix:** The routing bridge now requires an explicit buffering policy: logs retain the newest `LogBuffer.maximumCapacity` entries and traffic retains only the newest sample. Termination still cancels the forwarding task.
+- **Test:** `RuntimeControllerRouterTests.trafficRoutingKeepsNewestSample` bursts samples into a stalled subscriber and proves that only the latest sample survives; the focused router suite passes 3/3.
+- **Status:** Fixed and verified in `693158b`.
+
+### CONC-STREAM-003
+
+- **Severity:** Verified mechanism
+- **File:** `Vela/Core/CoreLifecycle/CoreDownloader.swift`; `Vela/Core/CoreLifecycle/CoreCatalog.swift`
+- **Line/Type:** signed asset streaming and size enforcement
+- **Evidence:** Core downloads are delivered losslessly in 64 KiB chunks. Catalog/envelope/resource roles declare maximum byte counts (64 MiB for the executable and 5 MiB for other resources), and the consumer rejects cumulative overflow, final-size mismatch and SHA-256 mismatch before installation.
+- **Impact:** The stream is intentionally not configured with a dropping newest/oldest policy: dropping bytes would corrupt a signed asset. Retained transfer data nevertheless has a finite contract-level upper bound and cannot be accepted without exact size and digest proof.
+- **Fix:** Preserve the lossless bounded-by-contract mechanism. Introduce explicit lossless backpressure only if profiling demonstrates material buffering pressure.
+- **Test:** Existing Core downloader size, integrity, cancellation and install-contract tests.
+- **Status:** No defect found.
+
 ## Task classification status
 
 - **App-owned:** EngineStore process/Controller/health/network/sleep/transition/lease observers; AppDelegate bootstrap and reconciliation tasks.
 - **Operation-owned:** validation, proxy selection, system-proxy convergence, Core activation/download and configuration transactions.
 - **Recovery-owned:** local-network, network-change, wake and lease recovery workers; identity/generation fields prevent stale workers from publishing authority.
 - **Process-owned:** process wait, output capture and Controller telemetry loops.
-- **View-owned:** remains to be completed in `09_FEATURE_UI_AUDIT.md`; every `.task` and view-created `Task` will be checked against disappearance/cancellation.
+- **View-owned:** `.task` work is tied to SwiftUI lifetime; explicit feature tasks are stored and cancelled on disappearance, replacement or coordinator teardown. File panels and export/import tasks are generation guarded before UI publication.
+
+The repository-wide inventory of `Task {`, `Task.detached`, `AsyncStream`, `AsyncThrowingStream`, continuation and NotificationCenter bridges found no additional unowned mutation task or unbounded long-lived stream. Detached work is awaited, owned by a serial/latest-wins actor pipeline, or paired with timeout/cancellation. NotificationCenter bridges either own explicit observer tokens or are process-lifetime observers.
 
 ## Remaining proof work
 
-1. Enumerate every `Task {` and `Task.detached` outside the reviewed engine/core paths and record its owner and terminal condition.
-2. Audit every NotificationCenter bridge and AsyncStream for termination cleanup and buffering policy.
-3. Add overlap/fault-injection tests for engine start, stop, restart and profile switch. Core activation now covers cancellation after journal creation, rollback failure, candidate health failure and healthy probation commit.
-4. Verify AppDelegate's bounded termination resolution against slow XPC and slow Controller shutdown fault injection.
-5. Treat any no-layer/degraded GitNexus PDG result as unknown risk rather than proof of safety.
+1. Run the separately authorized privileged integration lane on a signed helper-capable host; ordinary unsigned CI cannot prove helper lease/crash cleanup end to end.
+2. Preserve and extend the existing overlap/fault-injection matrix whenever a new lifecycle mutation route is added; the current start/stop/restart/profile/Core paths are serialized by `RuntimeMutationGate` and transition tests.
+3. Treat any no-layer/degraded GitNexus PDG result as unknown risk rather than proof of safety.

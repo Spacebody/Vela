@@ -1,6 +1,6 @@
 # EngineStore Responsibility Map
 
-Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`.
+Review baseline: `main` through the staged review batches ending at `1afafc0`.
 
 `EngineStore` is the application-owned, `@MainActor @Observable` facade for the runtime. It is intentionally not being replaced wholesale. This map establishes the current boundaries before any strangler refactor.
 
@@ -12,7 +12,7 @@ Review baseline: `main` at `1aece344b57c7ce660206eb49772b686d923208b`.
 | Transition serialization | `EngineTransitionCoordinator.swift:41-295` owns one active transition, cancellation, rollback barrier and bounded events | Existing `EngineTransitionCoordinator` actor | Keep; it is the authoritative transition coordinator |
 | Runtime mutation serialization | Start/stop, profile, TUN and system-proxy operations acquire the shared `RuntimeMutationGate` constructed by `AppEnvironment.live()` | Existing `RuntimeMutationGate` | Keep and make lease ownership/release mechanically provable |
 | Profile catalog and active profile projection | `EngineStore` exposes profile catalog, active profile, validation and mutation state | Existing profile services/stores; `EngineStore` as facade | Keep UI projection; move durable IO/parsing to the existing services |
-| Configuration validation and fingerprinting | Validation tasks use existing validators, while `configurationSHA256(for:)` contains a synchronous file-read fallback around `EngineStore.swift:5055` | Existing configuration validation/fingerprint services | P2 candidate: eliminate MainActor fallback IO after profiling and tests |
+| Configuration validation and fingerprinting | Validation tasks use existing validators; runtime fingerprint reads/hashing now execute through `RuntimeConfigurationInspector` or a detached user-initiated task | Existing configuration validation/fingerprint services | Closed for the proven MainActor file-read path; retain façade projection |
 | Controller connection and controller-derived presentation | Controller session state, controller events, static catalog fallback, proxy selections and traffic/log projections | Existing controller session/service plus narrow feature projections | Keep controller state distinct from engine-running and traffic-takeover state |
 | Traffic samples | `handleControllerEvent` around `EngineStore.swift:6175` mutates the global observable root for high-frequency samples | Dedicated traffic projection already consumed by feature state | P2 performance candidate; benchmark before extraction |
 | Logs | Controller events replace/append log presentation on the global root | Existing log buffer/redaction pipeline plus Logs feature projection | P2 strangler candidate; preserve the single redaction policy |
@@ -47,7 +47,7 @@ Durable storage, file/network IO, parsing, crypto, process ownership, privileged
 - **Impact:** A bypass can create transient combinations such as a running backend with stale active-runtime presentation, or a connected Controller while the product correctly remains “not connected.”
 - **Fix:** Audit every backend mutation and close bypasses; do not add another boolean flag.
 - **Test:** Table-driven invariant tests over start, stop, restart, profile switch, core activation, cancellation and rollback.
-- **Status:** Open audit; no inconsistency has yet been proven in the current baseline.
+- **Status:** Closed for the audited mutation routes. Runtime start/stop/restart/profile/TUN/System Proxy and termination operations use the shared transition/mutation coordinators, and focused overlap/cancellation tests cover the invariant. Re-open only with a reproduced bypass or inconsistent snapshot.
 
 ### ES-LIFE-001
 
@@ -58,7 +58,7 @@ Durable storage, file/network IO, parsing, crypto, process ownership, privileged
 - **Impact:** Non-standard construction/destruction in tests or future scenes can leave tasks/continuations alive longer than their owner.
 - **Fix:** Make one idempotent async shutdown owner; keep `deinit` as a last-resort synchronous cancellation only.
 - **Test:** Deallocate a test store after bootstrap and prove all injected streams observe termination.
-- **Status:** Open; lower priority than mutation correctness.
+- **Status:** Closed. `deinit` now terminates every stored lifecycle continuation and cancels every observer/refresh task as a synchronous fallback, while explicit async shutdown remains authoritative. `EngineStoreTests` proves stream termination after deallocation.
 
 ## MainActor work classification
 
@@ -67,7 +67,7 @@ Durable storage, file/network IO, parsing, crypto, process ownership, privileged
 | UI state mutation | Direct MainActor property updates | Correct |
 | Network/controller calls | Delegated to async services/session | Correct direction |
 | Parsing/validation | Mostly delegated; results applied on MainActor | Correct direction; inspect individual fallbacks |
-| Filesystem | Profile import uses detached reads/writes, but cleanup and fingerprint fallback include synchronous `FileManager`/`Data(contentsOf:)` work | P2 candidate |
+| Filesystem | Profile import reads/writes, staging cleanup and runtime fingerprint fallback execute off MainActor; only UI-facing result mutation returns to the façade | Corrected for the reproduced paths; continue auditing newly touched fallbacks |
 | Proxy transforms/sorting | Some catalog/delay projection occurs while handling Controller events | Benchmark and move only proven heavy transforms |
 | Logs/traffic | High-frequency collection/sample updates land on the wide observable facade | P2 performance/observation candidate |
 | Crypto/core verification | Delegated to services/CoreStore | Preserve |
@@ -77,7 +77,7 @@ Durable storage, file/network IO, parsing, crypto, process ownership, privileged
 1. Close P1 mutation-gate/lifecycle ordering issues across Core activation and runtime transitions.
 2. Extract update-recovery and scene-runtime transaction ownership into their existing coordinators while retaining facade calls.
 3. Narrow logs and traffic projections only after signpost/ETTrace evidence.
-4. Move remaining synchronous fingerprint/cleanup IO off MainActor.
+4. Measure remaining MainActor work before extracting another owner; the proven fingerprint/cleanup IO has already moved off MainActor.
 5. Re-evaluate health and proxy-delay projection invalidation with feature benchmarks.
 
 This order deliberately does not split by file size. Each step must preserve the current public facade, pass its focused tests, then pass the hardening and regression suites.

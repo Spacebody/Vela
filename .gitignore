@@ -66,6 +66,13 @@ __pycache__/
 !/EngineeringReview/06_PRIVILEGED_AUDIT.md
 !/EngineeringReview/07_SYSTEM_NETWORK_AUDIT.md
 !/EngineeringReview/08_CONFIGURATION_AUDIT.md
+!/EngineeringReview/09_FEATURE_UI_AUDIT.md
+!/EngineeringReview/10_PERFORMANCE_AUDIT.md
+!/EngineeringReview/11_SECURITY_AUDIT.md
+!/EngineeringReview/12_TEST_GAPS.md
+!/EngineeringReview/13_DEAD_CODE_AND_DUPLICATION.md
+!/EngineeringReview/14_REFACTOR_PLAN.md
+!/EngineeringReview/15_FINAL_REPORT.md
 !/EngineeringReview/ENGINESTORE_RESPONSIBILITY_MAP.md
 !/EngineeringReview/complexity.md
 /Docs/
