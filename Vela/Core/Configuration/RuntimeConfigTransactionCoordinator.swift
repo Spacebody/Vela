@@ -153,6 +153,26 @@ actor RuntimeConfigTransactionCoordinator {
         let continuation: CheckedContinuation<Void, any Error>
     }
 
+    /// Durable inputs captured before compilation begins. Keeping this phase
+    /// explicit makes the transaction's authoritative pre-mutation snapshot
+    /// visible without changing the public apply façade or recovery contract.
+    private struct PreparedTransaction {
+        let candidateURL: URL
+        let previousProfileRevisionID: UUID?
+        let profileRevisionID: UUID?
+        let isActiveProfile: Bool
+        let engineRunning: Bool
+        let previousData: Data?
+        var journal: RuntimeConfigTransactionJournal
+    }
+
+    /// A candidate that has passed both deterministic compilation and Mihomo
+    /// validation, but has not replaced the active configuration yet.
+    private struct ValidatedTransaction {
+        var preparation: PreparedTransaction
+        let runtimeData: Data
+    }
+
     private let directories: ApplicationDirectories
     private let fileSystem: any FileSystemProviding
     private let profileStore: ProfileStore
@@ -249,140 +269,25 @@ actor RuntimeConfigTransactionCoordinator {
         }
         try Task.checkCancellation()
 
-        do {
-            try directories.prepare(fileSystem: fileSystem)
-            try await profileStore.prepareWorkingDirectories(for: profileID)
-        } catch {
-            throw RuntimeConfigTransactionError.stagingFailed
-        }
-        guard !fileSystem.fileExists(at: directories.runtimeTransactionJournal) else {
-            // Never overwrite recovery evidence from an earlier interrupted or
-            // failed transaction. Startup recovery must resolve it first.
-            throw RuntimeConfigTransactionError.recoveryFailed
-        }
-
-        let rawURL = directories.profileStagingURL(transactionID: transactionID)
-        let previousRawURL = directories.profileRollbackURL(transactionID: transactionID)
-        let candidateURL = directories.runtimeCandidateURL(transactionID: transactionID)
-        let selectedProfileID: UUID?
-        let previousProfileRevisionID: UUID?
-        let previousProfileRawData: Data?
-        let profileRevisionID = commitRawRevision ? UUID() : nil
-        do {
-            selectedProfileID = try await profileStore.selectedProfileID()
-            previousProfileRevisionID = commitRawRevision
-                ? try await profileStore.profile(id: profileID)?.currentRevisionID
-                : nil
-            if commitRawRevision {
-                let profileConfigurationURL = await profileStore.configurationURL(for: profileID)
-                previousProfileRawData = fileSystem.fileExists(at: profileConfigurationURL)
-                    ? try fileSystem.readData(at: profileConfigurationURL)
-                    : nil
-            } else {
-                previousProfileRawData = nil
-            }
-        } catch {
-            throw RuntimeConfigTransactionError.stagingFailed
-        }
-        try Task.checkCancellation()
-        let isActiveProfile = selectedProfileID == profileID
-        let engineRunning = await processManager.isRunning()
-        let previousData: Data?
-        if isActiveProfile, fileSystem.fileExists(at: directories.activeConfiguration) {
-            do {
-                previousData = try fileSystem.readData(at: directories.activeConfiguration)
-            } catch {
-                throw RuntimeConfigTransactionError.activeReplacementFailed
-            }
-        } else {
-            previousData = nil
-        }
-
-        var journal = RuntimeConfigTransactionJournal(
+        let prepared = try await prepareTransaction(
             transactionID: transactionID,
+            rawData: rawData,
             profileID: profileID,
-            phase: .downloaded,
-            candidateRawPath: rawURL.path,
-            candidateRuntimePath: candidateURL.path,
-            previousRuntimePath: previousData == nil ? nil : directories.previousConfiguration.path,
-            startedAt: now(),
-            commitEvidence: commitRawRevision
-                ? .profileRevision(
-                    rawData: rawData,
-                    previousRevisionID: previousProfileRevisionID,
-                    revisionID: profileRevisionID,
-                    previousRawURL: previousProfileRawData == nil ? nil : previousRawURL
-                )
-                : commitAction?.evidence
+            commitRawRevision: commitRawRevision,
+            commitAction: commitAction
         )
-        do {
-            try writePrivate(rawData, to: rawURL)
-            if let previousProfileRawData {
-                try writePrivate(previousProfileRawData, to: previousRawURL)
-            }
-            try saveJournal(journal)
-        } catch {
-            cleanup(journal)
-            throw RuntimeConfigTransactionError.stagingFailed
-        }
-
-        let runtimeData: Data
-        do {
-            let runtimeSource = commitRawRevision
-                ? try applyingPersistedOverrides(to: rawData, profileID: profileID)
-                : rawData
-            let layers = try await configurationLayerStore?.layers(
-                profileID: profileID,
-                sceneID: nil
-            ) ?? []
-            runtimeData = try runtimeBuilder.build(
-                from: runtimeSource,
-                parameters: runtimeParameters,
-                context: ConfigurationCompilationContext(
-                    profileID: profileID,
-                    profileRevisionID: profileRevisionID ?? previousProfileRevisionID,
-                    layers: layers
-                )
-            )
-            try writePrivate(runtimeData, to: candidateURL)
-            journal.phase = .built
-            try saveJournal(journal)
-        } catch is CancellationError {
-            cleanup(journal)
-            throw CancellationError()
-        } catch {
-            cleanup(journal)
-            throw RuntimeConfigTransactionError.runtimeBuildFailed
-        }
-
-        let executable: ResolvedMihomoExecutable
-        do {
-            executable = try await executableResolver.resolve()
-        } catch {
-            cleanup(journal)
-            throw RuntimeConfigTransactionError.executableResolutionFailed
-        }
-        let validation = await validator.validate(
-            configurationURL: candidateURL,
-            dataDirectoryURL: directories.mihomo,
-            using: executable,
-            timeout: .seconds(15)
+        let validated = try await compileAndValidateTransaction(
+            prepared,
+            rawData: rawData,
+            profileID: profileID,
+            commitRawRevision: commitRawRevision
         )
-        if Task.isCancelled {
-            cleanup(journal)
-            throw CancellationError()
-        }
-        guard validation.isValid else {
-            cleanup(journal)
-            throw RuntimeConfigTransactionError.configurationValidationFailed(validation)
-        }
-        do {
-            journal.phase = .validated
-            try saveJournal(journal)
-        } catch {
-            cleanup(journal)
-            throw RuntimeConfigTransactionError.stagingFailed
-        }
+        let preparation = validated.preparation
+        var journal = preparation.journal
+        let runtimeData = validated.runtimeData
+        let previousData = preparation.previousData
+        let isActiveProfile = preparation.isActiveProfile
+        let engineRunning = preparation.engineRunning
 
         guard isActiveProfile else {
             if Task.isCancelled {
@@ -556,6 +461,170 @@ actor RuntimeConfigTransactionCoordinator {
             )
             throw RuntimeConfigTransactionError.hotReloadFailed
         }
+    }
+
+    private func prepareTransaction(
+        transactionID: UUID,
+        rawData: Data,
+        profileID: UUID,
+        commitRawRevision: Bool,
+        commitAction: RuntimeConfigTransactionCommitAction?
+    ) async throws -> PreparedTransaction {
+        do {
+            try directories.prepare(fileSystem: fileSystem)
+            try await profileStore.prepareWorkingDirectories(for: profileID)
+        } catch {
+            throw RuntimeConfigTransactionError.stagingFailed
+        }
+        guard !fileSystem.fileExists(at: directories.runtimeTransactionJournal) else {
+            // Never overwrite recovery evidence from an earlier interrupted or
+            // failed transaction. Startup recovery must resolve it first.
+            throw RuntimeConfigTransactionError.recoveryFailed
+        }
+
+        let rawURL = directories.profileStagingURL(transactionID: transactionID)
+        let previousRawURL = directories.profileRollbackURL(transactionID: transactionID)
+        let candidateURL = directories.runtimeCandidateURL(transactionID: transactionID)
+        let selectedProfileID: UUID?
+        let previousProfileRevisionID: UUID?
+        let previousProfileRawData: Data?
+        let profileRevisionID = commitRawRevision ? UUID() : nil
+        do {
+            selectedProfileID = try await profileStore.selectedProfileID()
+            previousProfileRevisionID = commitRawRevision
+                ? try await profileStore.profile(id: profileID)?.currentRevisionID
+                : nil
+            if commitRawRevision {
+                let profileConfigurationURL = await profileStore.configurationURL(for: profileID)
+                previousProfileRawData = fileSystem.fileExists(at: profileConfigurationURL)
+                    ? try fileSystem.readData(at: profileConfigurationURL)
+                    : nil
+            } else {
+                previousProfileRawData = nil
+            }
+        } catch {
+            throw RuntimeConfigTransactionError.stagingFailed
+        }
+        try Task.checkCancellation()
+
+        let isActiveProfile = selectedProfileID == profileID
+        let engineRunning = await processManager.isRunning()
+        let previousData: Data?
+        if isActiveProfile, fileSystem.fileExists(at: directories.activeConfiguration) {
+            do {
+                previousData = try fileSystem.readData(at: directories.activeConfiguration)
+            } catch {
+                throw RuntimeConfigTransactionError.activeReplacementFailed
+            }
+        } else {
+            previousData = nil
+        }
+
+        let journal = RuntimeConfigTransactionJournal(
+            transactionID: transactionID,
+            profileID: profileID,
+            phase: .downloaded,
+            candidateRawPath: rawURL.path,
+            candidateRuntimePath: candidateURL.path,
+            previousRuntimePath: previousData == nil ? nil : directories.previousConfiguration.path,
+            startedAt: now(),
+            commitEvidence: commitRawRevision
+                ? .profileRevision(
+                    rawData: rawData,
+                    previousRevisionID: previousProfileRevisionID,
+                    revisionID: profileRevisionID,
+                    previousRawURL: previousProfileRawData == nil ? nil : previousRawURL
+                )
+                : commitAction?.evidence
+        )
+        do {
+            try writePrivate(rawData, to: rawURL)
+            if let previousProfileRawData {
+                try writePrivate(previousProfileRawData, to: previousRawURL)
+            }
+            try saveJournal(journal)
+        } catch {
+            cleanup(journal)
+            throw RuntimeConfigTransactionError.stagingFailed
+        }
+
+        return PreparedTransaction(
+            candidateURL: candidateURL,
+            previousProfileRevisionID: previousProfileRevisionID,
+            profileRevisionID: profileRevisionID,
+            isActiveProfile: isActiveProfile,
+            engineRunning: engineRunning,
+            previousData: previousData,
+            journal: journal
+        )
+    }
+
+    private func compileAndValidateTransaction(
+        _ preparation: PreparedTransaction,
+        rawData: Data,
+        profileID: UUID,
+        commitRawRevision: Bool
+    ) async throws -> ValidatedTransaction {
+        var preparation = preparation
+        let runtimeData: Data
+        do {
+            let runtimeSource = commitRawRevision
+                ? try applyingPersistedOverrides(to: rawData, profileID: profileID)
+                : rawData
+            let layers = try await configurationLayerStore?.layers(
+                profileID: profileID,
+                sceneID: nil
+            ) ?? []
+            runtimeData = try runtimeBuilder.build(
+                from: runtimeSource,
+                parameters: runtimeParameters,
+                context: ConfigurationCompilationContext(
+                    profileID: profileID,
+                    profileRevisionID: preparation.profileRevisionID
+                        ?? preparation.previousProfileRevisionID,
+                    layers: layers
+                )
+            )
+            try writePrivate(runtimeData, to: preparation.candidateURL)
+            preparation.journal.phase = .built
+            try saveJournal(preparation.journal)
+        } catch is CancellationError {
+            cleanup(preparation.journal)
+            throw CancellationError()
+        } catch {
+            cleanup(preparation.journal)
+            throw RuntimeConfigTransactionError.runtimeBuildFailed
+        }
+
+        let executable: ResolvedMihomoExecutable
+        do {
+            executable = try await executableResolver.resolve()
+        } catch {
+            cleanup(preparation.journal)
+            throw RuntimeConfigTransactionError.executableResolutionFailed
+        }
+        let validation = await validator.validate(
+            configurationURL: preparation.candidateURL,
+            dataDirectoryURL: directories.mihomo,
+            using: executable,
+            timeout: .seconds(15)
+        )
+        if Task.isCancelled {
+            cleanup(preparation.journal)
+            throw CancellationError()
+        }
+        guard validation.isValid else {
+            cleanup(preparation.journal)
+            throw RuntimeConfigTransactionError.configurationValidationFailed(validation)
+        }
+        do {
+            preparation.journal.phase = .validated
+            try saveJournal(preparation.journal)
+        } catch {
+            cleanup(preparation.journal)
+            throw RuntimeConfigTransactionError.stagingFailed
+        }
+        return ValidatedTransaction(preparation: preparation, runtimeData: runtimeData)
     }
 
     func recoverIfNeeded() async throws {

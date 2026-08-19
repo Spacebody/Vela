@@ -22,33 +22,33 @@ The repository already has unusually strong unit coverage for the transition coo
 - **Severity:** P2 integration gap
 - **File:** `VelaTests/SystemProxy/`; `VelaPrivilegedIntegrationTests/`
 - **Line/Type:** native network adapter composition
-- **Evidence:** `SystemProxyManagerTests` provides deterministic partial failure, external modification, verification and recovery coverage. The privileged integration target currently contains only the handshake/status smoke path and does not exercise the real macOS network service adapter.
+- **Evidence:** `SystemProxyManagerTests` provides deterministic partial failure, external modification, verification and recovery coverage. The signed privileged integration target exercises helper identity/session handshake and status, malformed payload rejection, traversal and unsafe-configuration rejection, plus a minimal real TUN lifecycle. It intentionally does not mutate the host's selected macOS System Configuration network service.
 - **Impact:** An entitlement, command-output or OS-version integration regression can pass the pure actor suite.
 - **Fix:** Add an opt-in, environment-gated native integration scenario that snapshots and restores the exact test service. Never run it unguarded in ordinary unit CI.
 - **Test:** Enable -> verify -> restore, partial failure, stale ownership and external modification.
-- **Status:** Open P2 integration proof gap.
+- **Status:** Repository-controlled P2 correctness is closed by deterministic manager tests. Native network-service mutation remains an explicit signed-host release-validation item because running it would alter external machine state.
 
 ### TEST-TUN-001
 
 - **Severity:** P2 integration gap
 - **File:** `VelaPrivilegedIntegrationTests/`; `VelaIPC/Tests/VelaPrivilegedCoreTests/`
 - **Line/Type:** helper/TUN long-running lifecycle
-- **Evidence:** IPC and privileged-core suites cover schema, leases, cleanup and bounded process waits. No installed-helper integration matrix was found for lease expiry, helper crash, sleep/wake and stop timeout through production AppEnvironment wiring.
+- **Evidence:** IPC and privileged-core suites cover schema, lease ownership/expiry, sleep/wake grace, dead-process and abandoned-runtime cleanup, symlink-safe cleanup and bounded process waits. `PrivilegedHandshakeStatusIntegrationTests` additionally proves signed helper identity/session handling, fail-closed malformed/traversal/unsafe configuration paths, and start -> Controller/interface/route/DNS/lease health -> stop/cleanup for mixed, system and gVisor TUN stacks. The signed target does not deliberately crash the installed helper or force host sleep/wake/stop-timeout conditions.
 - **Impact:** Cross-process lifecycle regressions can escape unit fakes.
 - **Fix:** Reuse the privileged integration target and existing fault injection. Keep tests opt-in where root/helper installation is required.
 - **Test:** Start TUN -> lease active -> controller ready -> stop -> cleanup proof; helper crash; lease expiry; sleep/wake; stop timeout.
-- **Status:** Open P2 integration proof gap.
+- **Status:** Closed for repository-controlled lifecycle logic and the safe signed-helper start/stop matrix. Destructive helper-crash and host power/timing scenarios remain authorization-gated release validation, not an untreated code finding.
 
 ### TEST-CONFIG-001
 
 - **Severity:** P2 integration gap
 - **File:** `VelaTests/Configuration/RuntimeConfigTransactionCoordinatorTests.swift`; `VelaTests/App/`
 - **Line/Type:** production wiring composition
-- **Evidence:** The coordinator suite covers health-failure rollback, reload/restart failure, crash recovery and journal retention. `AppEnvironmentCompositionTests` now constructs the real live-services graph in a private startup-smoke directory and proves the resulting EngineStore reaches its termination barrier. It intentionally does not mutate a native network service or run a complete configuration failure transaction.
-- **Impact:** Production adapter ordering can regress independently from the authoritative transaction actor.
-- **Fix:** The production dependency assembly now has an injectable root/launch seam without changing the zero-argument production contract. Extend that harness with existing process/controller faults while retaining the real composition order.
-- **Test:** Apply -> restart -> health proof -> prior-state restore; controller timeout; process failure; relaunch recovery.
-- **Status:** Partially closed: live-services construction and termination are proven. Apply/restart/health/rollback through the complete adapter graph remains an open P2 integration proof gap.
+- **Evidence:** The coordinator suite covers health-failure rollback, reload/restart failure, crash recovery and journal retention. `RuntimeConfigFaultInjectionTests` reuses the canonical `FaultInjector` at `configuration.apply` and proves prior active bytes/revision restoration, bounded reload behavior, durable expected-state evidence and journal cleanup. `AppEnvironmentCompositionTests` constructs the real live-services graph in a private startup-smoke directory and proves the resulting EngineStore reaches its termination barrier.
+- **Impact:** Repository-owned transaction ordering, rollback and production composition assembly now have deterministic regression proof. Native process launch and Controller transport behavior can still vary by host/toolchain.
+- **Fix:** Completed without changing the zero-argument production contract or adding a second failure framework. Keep a real-process apply/restart/health run in release validation.
+- **Test:** 28 transaction/fault-injection tests plus production `AppEnvironment` construction and termination.
+- **Status:** Closed for repository-controlled P2 proof. Native Mihomo/Controller execution remains environment-sensitive release evidence, not an open implementation defect.
 
 ### TEST-PERF-001
 
@@ -74,6 +74,6 @@ The repository already has unusually strong unit coverage for the transition coo
 
 ## Priority order
 
-1. Add opt-in native integration proof without weakening or bypassing Hardening gates.
-2. Extend the Core matrix with late-probation runtime degradation and production-adapter snapshots during the integration-test phase.
-3. Extend the isolated live-services composition harness with configuration and late-probation faults before attempting broader facade extraction.
+1. Run the opt-in native System Proxy/helper matrices only on an explicitly authorized signed host; these are release evidence, not ordinary CI mutations.
+2. Extend the Core matrix with late-probation runtime degradation and production-adapter snapshots before any broader Core facade extraction.
+3. Keep the deterministic configuration fault-injection and live-services composition suites as required regression gates for transaction edits.

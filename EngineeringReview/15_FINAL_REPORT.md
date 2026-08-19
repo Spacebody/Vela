@@ -1,6 +1,6 @@
 # Final Engineering Review Report
 
-Review baseline: public `main` through `693158b7cc2e`, plus the final canonical review-document and generated Release Candidate baseline reconciliation.
+Review baseline: public `main` through `38927e49843a`, plus the current configuration transaction/fault-injection review batch.
 
 ## Scope
 
@@ -14,8 +14,8 @@ Evidence came from current repository source, CodeGraph call paths, GitNexus con
 |---|---|
 | P0 | No known finding. |
 | P1 | No untreated finding. Confirmed lifecycle, journal, migration and test-gate defects were fixed and regression-tested. |
-| P2 | Remaining items are explicitly documented integration/measurement/refactor candidates; none is a reproduced data-loss, security or lifecycle-authority defect. |
-| P3 | Duplicate local review artifacts were removed; speculative production deletion was rejected where active references exist. |
+| P2 | No untreated repository-controlled finding. Remaining signed-host and hardware-sensitive activities are explicitly identified as release validation, not represented as completed evidence. |
+| P3 | No untreated finding. Duplicate local review artifacts were removed; speculative production deletion was rejected where active references exist. |
 
 ## Principal fixes
 
@@ -29,6 +29,8 @@ Evidence came from current repository source, CodeGraph call paths, GitNexus con
 8. Added executable member-scoped Observation and live-services AppEnvironment composition/termination proofs.
 9. Completed critical-control accessibility/Reduce Motion source contracts.
 10. Reconciled deterministic Release Candidate resources through the existing generator after the reviewed architecture-freeze changes.
+11. Split configuration capture/staging and compilation/validation into explicit private transaction phases while preserving the sole workflow owner, public API and journal contract.
+12. Reused the canonical `FaultInjector` to prove controller-apply rollback, previous-revision authority and cleanup without adding a second test failure framework.
 
 ## Architecture result
 
@@ -108,7 +110,7 @@ Expected release-preparation blockers (feed/public key, production Core distribu
 ## Known residual risks
 
 1. Native System Proxy/TUN/helper integration proof on a signed host.
-2. Complete configuration rollback and late Core-probation fault composition through the now-testable live-services AppEnvironment graph.
+2. Exercise native configuration process execution and late Core-probation fault composition through the now-testable live-services AppEnvironment graph.
 3. Full rendered-page Instruments evidence under sustained production telemetry, retained as release validation rather than a reproduced defect.
 4. Accessibility runtime rerun after the local Xcode test-host/session service recovers; current result bundles show cancellation from the wedged host, not an assertion failure.
 5. Production release values and evidence required by the intentionally fail-closed release tooling.

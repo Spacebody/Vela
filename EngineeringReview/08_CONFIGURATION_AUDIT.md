@@ -86,12 +86,12 @@ Any failure after destructive mutation enters rollback. Recovery on next launch 
 
 - **Severity:** P2
 - **File:** `Vela/Core/Configuration/RuntimeConfigTransactionCoordinator.swift`
-- **Line/Type:** `applyExclusively` (approximately 325 lines)
-- **Evidence:** One actor-isolated method owns capture, staging, validation, active replacement, Controller wait, catalog/selection restoration, health proof, durable commit and rollback dispatch.
-- **Impact:** Correct ordering is currently strong, but small changes have a broad review surface and individual phases are difficult to fault-inject independently.
-- **Fix:** Strangler refactor only after characterization tests: extract private phase values/functions or bounded existing collaborators for stage, validate, activate/prove and durable commit. Keep the coordinator as the sole public workflow owner and keep journal phase writes adjacent to their mutations.
-- **Test:** Fault injection before/after every phase with unchanged journal and rollback outcomes.
-- **Status:** Planned after correctness/test expansion; no wholesale rewrite.
+- **Line/Type:** `applyExclusively`, `prepareTransaction`, `compileAndValidateTransaction`
+- **Evidence:** The original workflow placed capture, durable staging and compilation/validation inside one approximately 325-line actor-isolated method. The coordinator now models the pre-mutation and validated boundaries as private `PreparedTransaction` and `ValidatedTransaction` values and delegates those two phases to private methods. Active replacement, Controller wait, health proof, commit and rollback remain in the sole public workflow owner, and every journal write remains adjacent to the mutation it proves.
+- **Impact:** The most failure-prone pre-mutation phases can now be reviewed and tested without widening the public API or creating a second coordinator. Transaction ordering and recovery authority remain unchanged.
+- **Fix:** Completed the first evidence-driven Strangler extraction. Further activation/commit extraction is deferred unless a reproduced defect or review surface warrants it; file size alone is not sufficient.
+- **Test:** The complete 27-test coordinator characterization suite plus `RuntimeConfigFaultInjectionTests.controllerApplyFailureRollsBack` prove unchanged phase ordering, rollback, durable evidence and cleanup.
+- **Status:** Closed. The identified mixed pre-mutation responsibility was separated behind private boundaries with no contract or journal-phase change.
 
 ### CONFIG-PERF-001
 
@@ -109,19 +109,19 @@ Any failure after destructive mutation enters rollback. Recovery on next launch 
 - **Severity:** P2 integration proof gap
 - **File:** `VelaTests/`
 - **Line/Type:** cross-feature transaction failure matrix
-- **Evidence:** `RuntimeConfigTransactionCoordinatorTests` already proves health-failure rollback, candidate-reload failure, controlled restart fallback, rollback-failure journal retention, crash recovery of profile/raw/runtime state and phase-aware idempotent recovery. `AppEnvironmentCompositionTests` now constructs the production live-services graph in an isolated startup-smoke directory and proves the termination barrier. The remaining gap is native Mihomo/Controller fault execution through that graph.
-- **Impact:** The transaction owner is characterized, but a composition regression in AppEnvironment, native Controller startup or production adapter wiring could still escape the actor-level suite.
-- **Fix:** Add an integration-style app test using existing fault injection; do not create a second fake failure framework.
-- **Test:** Preserve the existing coordinator matrix; add production-wiring coverage for Controller timeout, process health failure and launch recovery in an environment where the native adapters are available.
-- **Status:** Partially closed. Production composition and teardown are executable; native process/controller fault injection remains environment-sensitive. No current data-loss path was reproduced and the core workflow is covered at its authoritative coordinator boundary.
+- **Evidence:** `RuntimeConfigTransactionCoordinatorTests` proves health-failure rollback, candidate-reload failure, controlled restart fallback, rollback-failure journal retention, crash recovery of profile/raw/runtime state and phase-aware idempotent recovery. `RuntimeConfigFaultInjectionTests` now reuses the repository's real deterministic `FaultInjector` at `configuration.apply`, proves the previous active bytes and revision remain authoritative, requires exactly one restoration reload, verifies journal cleanup and records the expected `previousRevisionActive` evidence. `AppEnvironmentCompositionTests` constructs the production live-services graph in an isolated startup-smoke directory and proves the termination barrier.
+- **Impact:** Deterministic transaction failure behavior and production dependency assembly are now executable regression proof. A native Mihomo process/Controller run remains host-dependent release evidence rather than an untested in-process correctness branch.
+- **Fix:** Completed using the existing fault-injection framework. Do not add a parallel fake framework; retain native adapter scenarios in the explicit release-validation lane.
+- **Test:** 28 tests across `RuntimeConfigTransactionCoordinatorTests` and `RuntimeConfigFaultInjectionTests`; production `AppEnvironment` construction/teardown tests.
+- **Status:** Closed for repository-controlled P2 proof. Native process execution remains an environment-gated release validation item and is not represented as completed evidence.
 
 ## Configuration conclusion
 
-No known P0/P1 implementation defect was found in the reviewed configuration paths. The durable transaction/journal/atomic-write design is substantially stronger than a simple edit-and-restart flow. The measured editor path is bounded away from MainActor; remaining work is native-process composition evidence and cautious phase extraction only after additional characterization.
+No known P0/P1 implementation defect was found in the reviewed configuration paths. The durable transaction/journal/atomic-write design is substantially stronger than a simple edit-and-restart flow. The measured editor path is bounded away from MainActor, the pre-mutation workflow now has explicit private phase boundaries, and deterministic fault injection proves controller-apply rollback without introducing another failure framework. Native-process execution remains release validation on an authorized host.
 
 ## Verification
 
-- `RuntimeConfigTransactionCoordinatorTests`: 27 tests passed, including FIFO/cancellation, cross-operation serialization, validation, health-proof rollback, reload/restart fallback, rollback failure evidence, phase-aware recovery, stale paths and post-commit cleanup.
+- `RuntimeConfigTransactionCoordinatorTests` plus `RuntimeConfigFaultInjectionTests`: 28 tests passed, including FIFO/cancellation, cross-operation serialization, validation, health-proof rollback, injected controller-apply failure, reload/restart fallback, rollback failure evidence, phase-aware recovery, stale paths and post-commit cleanup.
 - `ConfigurationLayerStoreTests`: 5 tests passed, including precedence, revision persistence, conflict protection and failed final-replacement rollback.
 - `ProfileStoreTests`: 9 tests passed, including malformed import rejection, independent filenames, active runtime output, Scene layer application and deletion compensation.
 - Combined targeted Xcode run: 66 tests in 5 suites passed with `CODE_SIGNING_ALLOWED=NO`. The only runtime messages were the existing unavailable `com.apple.linkd.autoShortcut` test-environment diagnostics; the selected tests succeeded.

@@ -29,7 +29,7 @@ Exit criteria: focused fault/cancellation tests, Hardening gates and build passe
 
 Exit criteria: focused concurrency/performance suites and current unsigned Debug/Release build passed. Completed.
 
-## Next batch A — privileged integration evidence
+## Release validation A — privileged integration evidence
 
 Scope:
 
@@ -45,7 +45,9 @@ Constraints:
 
 Exit criterion: every mutation ends in verified applied or verified restored state, with no ambiguous half-configured network state.
 
-## Next batch B — production composition proof
+Repository status: deterministic ownership, rollback, lease, cleanup, timeout and sleep/wake logic is covered; the signed integration target also proves safe helper start/health/stop for every supported TUN stack. The remaining host network-service and destructive helper-crash scenarios require explicit authorization and are release evidence, not an open repository-controlled implementation defect.
+
+## Integration batch B — production composition proof
 
 Scope:
 
@@ -60,7 +62,7 @@ Constraints:
 
 Exit criterion: fault-injected composition tests prove ordering and durable rollback across the real dependency assembly.
 
-Progress: the real live-services `AppEnvironment` graph now constructs against an isolated startup-smoke directory and reaches the EngineStore termination barrier. The zero-argument production call remains unchanged. Transactional fault scenarios above remain pending.
+Progress: the real live-services `AppEnvironment` graph constructs against an isolated startup-smoke directory and reaches the EngineStore termination barrier. The zero-argument production call remains unchanged. The canonical `FaultInjector` now drives a configuration-apply failure through the authoritative transaction owner and proves previous-revision restoration, bounded reload, journal cleanup and expected-state evidence. Native process execution and late Core probation remain release/integration evidence candidates.
 
 ## Completed batch C — deterministic measurement before EngineStore extraction
 
@@ -84,7 +86,7 @@ Preferred extraction candidates, in dependency order:
 
 Proxy delay and Logs already have bounded feature projections, so another owner is not currently justified.
 
-## Next batch D — bounded maintainability cleanup
+## Remaining bounded maintainability cleanup
 
 1. Consolidate latency domain-to-presentation mapping inside the proxy feature with exhaustive state tests.
 2. Consider a parameterized internal byte formatter only during a coordinated multi-surface edit.
