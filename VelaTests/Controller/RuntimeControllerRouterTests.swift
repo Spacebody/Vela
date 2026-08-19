@@ -45,6 +45,26 @@ struct RuntimeControllerRouterTests {
         #expect(await router.binding() == nil)
     }
 
+    @Test("Traffic routing keeps only the newest buffered sample")
+    func trafficRoutingKeepsNewestSample() async throws {
+        let transport = RuntimeRouterBurstTransport(downloadValues: [1, 2, 3, 4])
+        let router = RuntimeControllerRouter(
+            initialInstanceID: UUID(),
+            endpoint: URL(string: "http://127.0.0.1:19090")!,
+            secret: SecretValue("secret"),
+            telemetryTransport: transport,
+            connectionsTransport: transport
+        )
+
+        let stream = router.traffic()
+        while transport.deliveredCount < 4 {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+
+        let sample = try await firstValue(from: stream)
+        #expect(sample.downloadBytesPerSecond == 4)
+    }
+
     @Test("Non-loopback controller bindings are rejected")
     func rejectsNonLoopbackBinding() async throws {
         let router = RuntimeControllerRouter()
@@ -88,6 +108,50 @@ private actor RuntimeRouterConnection: TelemetryWebSocketConnection {
         delivered = true
         return .data(Data("""
         {"up":1,"down":2,"upTotal":3,"downTotal":4}
+        """.utf8))
+    }
+
+    func close() async {}
+}
+
+private final class RuntimeRouterBurstTransport: TelemetryWebSocketTransporting, Sendable {
+    private let downloadValues: [UInt64]
+    private let delivered = Mutex(0)
+
+    init(downloadValues: [UInt64]) {
+        self.downloadValues = downloadValues
+    }
+
+    var deliveredCount: Int {
+        delivered.withLock { $0 }
+    }
+
+    func connect(request _: URLRequest) async throws -> any TelemetryWebSocketConnection {
+        RuntimeRouterBurstConnection(downloadValues: downloadValues) { [weak self] in
+            self?.recordDelivery()
+        }
+    }
+
+    private func recordDelivery() {
+        delivered.withLock { $0 += 1 }
+    }
+}
+
+private actor RuntimeRouterBurstConnection: TelemetryWebSocketConnection {
+    private var downloadValues: [UInt64]
+    private let didDeliver: @Sendable () -> Void
+
+    init(downloadValues: [UInt64], didDeliver: @escaping @Sendable () -> Void) {
+        self.downloadValues = downloadValues
+        self.didDeliver = didDeliver
+    }
+
+    func receive() async throws -> TelemetryWebSocketMessage {
+        guard !downloadValues.isEmpty else { throw CancellationError() }
+        let value = downloadValues.removeFirst()
+        didDeliver()
+        return .data(Data("""
+        {"up":1,"down":\(value),"upTotal":3,"downTotal":4}
         """.utf8))
     }
 

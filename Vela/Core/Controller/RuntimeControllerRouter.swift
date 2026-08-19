@@ -88,11 +88,13 @@ actor RuntimeControllerRouter: MihomoAPIProviding, MihomoTelemetryStreaming,
     }
 
     nonisolated func logs(level: LogLevel?) -> AsyncThrowingStream<LogEntry, Error> {
-        routedTelemetryStream { $0.logs(level: level) }
+        routedTelemetryStream(
+            bufferingPolicy: .bufferingNewest(LogBuffer.maximumCapacity)
+        ) { $0.logs(level: level) }
     }
 
     nonisolated func traffic() -> AsyncThrowingStream<TrafficSample, Error> {
-        routedTelemetryStream { $0.traffic() }
+        routedTelemetryStream(bufferingPolicy: .bufferingNewest(1)) { $0.traffic() }
     }
 
     nonisolated func snapshots(
@@ -230,11 +232,12 @@ actor RuntimeControllerRouter: MihomoAPIProviding, MihomoTelemetryStreaming,
     }
 
     private nonisolated func routedTelemetryStream<Element: Sendable>(
+        bufferingPolicy: AsyncThrowingStream<Element, Error>.Continuation.BufferingPolicy,
         _ makeSource: @escaping @Sendable (
             MihomoTelemetryService
         ) -> AsyncThrowingStream<Element, Error>
     ) -> AsyncThrowingStream<Element, Error> {
-        AsyncThrowingStream { continuation in
+        AsyncThrowingStream(bufferingPolicy: bufferingPolicy) { continuation in
             let worker = Task {
                 do {
                     let route = try await self.telemetryRoute()
