@@ -58,7 +58,7 @@ Scope: current `main`, production targets, test targets, visual harnesses, relea
 - **Impact:** The same latency state may receive different wording or semantics across the proxy dashboard, inspector, and reusable badge.
 - **Fix:** Move the domain-to-presentation mapping into one internal latency presentation model; keep layout in the feature view. Do not widen public API.
 - **Test:** Unit tests over every `VelaLatencyState` and UI snapshot coverage for testing/failed/unknown values.
-- **Status:** Retained P2 refactor candidate. The duplicated mapping is real, but no correctness defect justifies a cross-surface cosmetic diff in this review. Handle it as one proxy-feature batch with exhaustive latency-state tests.
+- **Status:** Closed. `ProxyLatencyPresentation` now owns latency text and signal-strength mapping, while semantic color delegates to the shared `VelaLatencyState.status` design-system contract. The dashboard retains layout only, no public API was widened, and exhaustive state tests cover text and signal mapping.
 
 ### DUP-003
 

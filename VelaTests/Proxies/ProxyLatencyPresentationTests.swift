@@ -74,4 +74,31 @@ struct ProxyLatencyPresentationTests {
         #expect(measured.state == .medium)
         #expect(measured.milliseconds == 241)
     }
+
+    @Test("Display text covers every latency state")
+    func displayTextCoversEveryState() {
+        let measurement = VelaL10n.string(
+            "latency.measurement.millisecondsFormat",
+            defaultValue: "%lld ms",
+            arguments: Int64(241)
+        )
+
+        #expect(ProxyLatencyPresentation.displayText(state: .unknown, milliseconds: nil) == "—")
+        #expect(ProxyLatencyPresentation.displayText(state: .testing, milliseconds: nil) == VelaLatencyState.testing.label)
+        #expect(ProxyLatencyPresentation.displayText(state: .good, milliseconds: 241) == measurement)
+        #expect(ProxyLatencyPresentation.displayText(state: .medium, milliseconds: 241) == measurement)
+        #expect(ProxyLatencyPresentation.displayText(state: .slow, milliseconds: 241) == measurement)
+        #expect(ProxyLatencyPresentation.displayText(state: .failed, milliseconds: nil) == VelaLatencyState.failed.label)
+        #expect(ProxyLatencyPresentation.displayText(state: .good, milliseconds: nil) == "—")
+    }
+
+    @Test("Signal strength covers every latency state")
+    func signalStrengthCoversEveryState() {
+        #expect(ProxyLatencyPresentation.signalStrength(for: .unknown) == 1)
+        #expect(ProxyLatencyPresentation.signalStrength(for: .testing) == 2)
+        #expect(ProxyLatencyPresentation.signalStrength(for: .good) == 4)
+        #expect(ProxyLatencyPresentation.signalStrength(for: .medium) == 3)
+        #expect(ProxyLatencyPresentation.signalStrength(for: .slow) == 2)
+        #expect(ProxyLatencyPresentation.signalStrength(for: .failed) == 1)
+    }
 }

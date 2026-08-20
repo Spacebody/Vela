@@ -88,10 +88,11 @@ Proxy delay and Logs already have bounded feature projections, so another owner 
 
 ## Remaining bounded maintainability cleanup
 
-1. Consolidate latency domain-to-presentation mapping inside the proxy feature with exhaustive state tests.
-2. Consider a parameterized internal byte formatter only during a coordinated multi-surface edit.
-3. Tighten access control only after an ownership extraction makes the correct boundary explicit.
-4. Re-run CodeGraph, target membership, scripts/contracts and tests before deleting newly orphaned production code.
+1. Consider a parameterized internal byte formatter only during a coordinated multi-surface edit.
+2. Tighten access control only after an ownership extraction makes the correct boundary explicit.
+3. Re-run CodeGraph, target membership, scripts/contracts and tests before deleting newly orphaned production code.
+
+Completed in this review: proxy latency text, semantic color and signal-strength presentation now share one internal mapping with exhaustive state tests.
 
 ## Permanent guardrails
 

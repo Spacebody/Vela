@@ -1393,39 +1393,18 @@ struct ProxiesLiquidGlassDashboardView: View {
 
     private func latencyValue(_ latency: ProxiesLatencySnapshot?) -> String {
         guard let latency else { return "—" }
-        if latency.state == .testing { return strings.testing }
-        if let milliseconds = latency.milliseconds { return "\(milliseconds) ms" }
-        return latency.state == .failed ? strings.failed : "—"
+        return ProxyLatencyPresentation.displayText(
+            state: latency.state,
+            milliseconds: latency.milliseconds
+        )
     }
 
     private func latencyColor(_ state: VelaLatencyState) -> Color {
-        switch state {
-        case .good:
-            .green
-        case .medium:
-            .orange
-        case .slow, .failed:
-            .red
-        case .testing:
-            .blue
-        case .unknown:
-            .secondary
-        }
+        state.status.tint
     }
 
     private func signalStrength(_ state: VelaLatencyState) -> Int {
-        switch state {
-        case .good:
-            4
-        case .medium:
-            3
-        case .slow:
-            2
-        case .testing:
-            2
-        case .unknown, .failed:
-            1
-        }
+        ProxyLatencyPresentation.signalStrength(for: state)
     }
 
     private func availabilityText(_ availability: Bool?) -> String {

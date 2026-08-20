@@ -1,6 +1,6 @@
 # Final Engineering Review Report
 
-Review baseline: public `main` through `38927e49843a`, plus the current configuration transaction/fault-injection review batch.
+Review baseline: public `main` through `6504328d7bd1`, plus the proxy latency presentation review batch in this commit.
 
 ## Scope
 
@@ -31,6 +31,7 @@ Evidence came from current repository source, CodeGraph call paths, GitNexus con
 10. Reconciled deterministic Release Candidate resources through the existing generator after the reviewed architecture-freeze changes.
 11. Split configuration capture/staging and compilation/validation into explicit private transaction phases while preserving the sole workflow owner, public API and journal contract.
 12. Reused the canonical `FaultInjector` to prove controller-apply rollback, previous-revision authority and cleanup without adding a second test failure framework.
+13. Centralized proxy latency wording, semantic color and signal-strength mapping in the existing feature presentation model with exhaustive state coverage and no public API growth.
 
 ## Architecture result
 
@@ -81,6 +82,7 @@ No known P0/P1 security or system-network corruption path was found.
 | `swift test --package-path VelaIPC` | 127/127 passed. |
 | arm64 Debug Xcode build | Passed unsigned. |
 | arm64 Release Xcode build | Passed unsigned. |
+| Proxy latency presentation tests | 5/5 passed across thresholds, precedence, fallback, text and signal mapping. |
 | Focused implementation regressions | Passed for each committed batch; domain reports record exact suites. |
 | Signed application/UI lane | Not rerun in this final pass; signing requires explicit user approval. |
 | Installed-helper/native network integration | Not run; requires explicit privileged host authorization. |

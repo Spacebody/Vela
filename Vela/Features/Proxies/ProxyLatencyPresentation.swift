@@ -6,6 +6,38 @@ nonisolated struct ProxyLatencyPresentation: Sendable {
     let milliseconds: Int?
     let diagnostic: String?
 
+    static func displayText(
+        state: VelaLatencyState,
+        milliseconds: Int?
+    ) -> String {
+        switch state {
+        case .testing, .failed:
+            return state.label
+        case .good, .medium, .slow:
+            guard let milliseconds else { return "—" }
+            return VelaL10n.string(
+                "latency.measurement.millisecondsFormat",
+                defaultValue: "%lld ms",
+                arguments: Int64(milliseconds)
+            )
+        case .unknown:
+            return "—"
+        }
+    }
+
+    static func signalStrength(for state: VelaLatencyState) -> Int {
+        switch state {
+        case .good:
+            4
+        case .medium:
+            3
+        case .slow, .testing:
+            2
+        case .unknown, .failed:
+            1
+        }
+    }
+
     init(sessionState: ProxyDelayState?, catalogDelay: ProxyDelay) {
         switch sessionState {
         case .testing:
