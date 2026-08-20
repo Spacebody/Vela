@@ -1,6 +1,6 @@
 # Final Engineering Review Report
 
-Review baseline: public `main` through `6504328d7bd1`, plus the proxy latency presentation review batch in this commit.
+Review baseline: public `main` through `98743c1`, plus the Core activation-preparation review batch in this commit.
 
 ## Scope
 
@@ -32,6 +32,7 @@ Evidence came from current repository source, CodeGraph call paths, GitNexus con
 11. Split configuration capture/staging and compilation/validation into explicit private transaction phases while preserving the sole workflow owner, public API and journal contract.
 12. Reused the canonical `FaultInjector` to prove controller-apply rollback, previous-revision authority and cleanup without adding a second test failure framework.
 13. Centralized proxy latency wording, semantic color and signal-strength mapping in the existing feature presentation model with exhaustive state coverage and no public API growth.
+14. Established the first stable Core activation strangler boundary by isolating candidate resolution, prevalidation and runtime snapshot preparation without changing transaction, rollback, probation or public API behavior.
 
 ## Architecture result
 
@@ -83,6 +84,7 @@ No known P0/P1 security or system-network corruption path was found.
 | arm64 Debug Xcode build | Passed unsigned. |
 | arm64 Release Xcode build | Passed unsigned. |
 | Proxy latency presentation tests | 5/5 passed across thresholds, precedence, fallback, text and signal mapping. |
+| Core lifecycle controller tests | 7/7 passed across lease release, cancellation rollback, rollback failure retention and probation commit/rollback. |
 | Focused implementation regressions | Passed for each committed batch; domain reports record exact suites. |
 | Signed application/UI lane | Not rerun in this final pass; signing requires explicit user approval. |
 | Installed-helper/native network integration | Not run; requires explicit privileged host authorization. |

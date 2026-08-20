@@ -94,6 +94,8 @@ Proxy delay and Logs already have bounded feature projections, so another owner 
 
 Completed in this review: proxy latency text, semantic color and signal-strength presentation now share one internal mapping with exhaustive state tests.
 
+Completed in this review: Core activation candidate preparation now has an explicit bounded phase (`PreparedCoreActivation` / `prepareCoreActivation`) while `CoreLifecycleController` remains the sole workflow facade and transaction/rollback/probation ordering is unchanged.
+
 ## Permanent guardrails
 
 - Preserve `RuntimeMutationGate`, `EngineTransitionCoordinator`, configuration journals, system-network ownership/recovery, helper lease/session checks and the frozen IPC schema.

@@ -56,6 +56,15 @@ nonisolated enum CoreActivationState: Equatable, Sendable {
     case failed(String)
 }
 
+private struct PreparedCoreActivation {
+    var storeState: CoreStoreState
+    let previousCoreID: CoreID
+    let runtimeWasRunning: Bool
+    let candidateResolver: (any MihomoExecutableResolving)?
+    let backend: CoreBackendSelection
+    let runtimeSnapshot: CoreActivationSnapshot
+}
+
 @MainActor
 @Observable
 final class CoreLifecycleController {
@@ -687,67 +696,15 @@ final class CoreLifecycleController {
         var transaction: CoreActivationTransaction?
         var runtimeWasRunning = false
         do {
-            guard var state = snapshot?.state else {
-                throw CoreLifecycleError.notBootstrapped
-            }
-            guard coreID != state.activeCoreID else {
+            guard var preparation = try await prepareCoreActivation(coreID) else {
                 await runtimeMutationGate.release(lease)
                 return
             }
-            guard let profileID = engineStore.selectedProfileID else {
-                throw CoreLifecycleError.profileRequired
-            }
-            let oldCoreID = state.activeCoreID
-            runtimeWasRunning = engineStore.isRunning
-            let candidateResolver: (any MihomoExecutableResolving)?
-            if coreID.isFactory {
-                guard coreID == factoryDescriptor.coreID else {
-                    throw CoreLifecycleError.coreUnavailable(coreID)
-                }
-                candidateResolver = nil
-            } else {
-                guard let record = state.record(for: coreID),
-                    record.status != .blocked,
-                    record.status != .quarantined
-                else { throw CoreLifecycleError.coreUnavailable(coreID) }
-                let entry = try await store.catalogEntry(
-                    for: record,
-                    verifier: catalogVerifier
-                )
-                guard entry.status != .blocked else {
-                    throw CoreLifecycleError.coreBlocked(coreID)
-                }
-                if engineStore.isTunActive {
-                    guard rootInventory?.cores.contains(where: { $0.coreID == coreID }) == true else {
-                        throw CoreLifecycleError.rootStoreMissing(coreID)
-                    }
-                    try await ensureHelperPolicyReadyForTun(coreID: coreID)
-                }
-                candidateResolver = try makeInstalledResolver(record: record, entry: entry)
-            }
-
-            activationState = .validatingCandidate
-            let candidateExecutable: ResolvedMihomoExecutable
-            if let candidateResolver {
-                candidateExecutable = try await candidateResolver.resolve()
-            } else {
-                candidateExecutable = try await activeResolver.resolveFactory()
-            }
-            try await engineStore.validateCoreCandidateForActivation(
-                candidateExecutable
-            )
-            activationState = .snapshotting
-            let backend: CoreBackendSelection = engineStore.isTunActive
-                ? .tun
-                : (engineStore.isSystemProxyApplied ? .systemProxy : .user)
-            let activationSnapshot = try await engineStore.captureCoreActivationSnapshot(
-                previousCoreID: oldCoreID,
-                backend: backend,
-                configurationGenerationID: configurationGeneration()
-            )
-            guard activationSnapshot.profileID == profileID else {
-                throw CoreLifecycleError.activeResolverMismatch
-            }
+            runtimeWasRunning = preparation.runtimeWasRunning
+            let oldCoreID = preparation.previousCoreID
+            let candidateResolver = preparation.candidateResolver
+            let backend = preparation.backend
+            let activationSnapshot = preparation.runtimeSnapshot
             var created = CoreActivationTransaction(
                 coreID: coreID,
                 phase: .activating,
@@ -758,11 +715,13 @@ final class CoreLifecycleController {
             transaction = created
             activationJournal = created
 
-            state.activeCoreID = coreID
-            if let index = state.installed.firstIndex(where: { $0.coreID == coreID }) {
-                state.installed[index].lastUsedAt = now()
+            preparation.storeState.activeCoreID = coreID
+            if let index = preparation.storeState.installed.firstIndex(where: {
+                $0.coreID == coreID
+            }) {
+                preparation.storeState.installed[index].lastUsedAt = now()
             }
-            try await store.saveState(state)
+            try await store.saveState(preparation.storeState)
             if let candidateResolver {
                 try await activeResolver.select(coreID: coreID, resolver: candidateResolver)
             } else {
@@ -797,9 +756,9 @@ final class CoreLifecycleController {
             activationJournal = created
             snapshot = try await store.snapshot(
                 factoryDescriptor: factoryDescriptor,
-                state: state
+                state: preparation.storeState
             )
-            await updateResolverMetadata(state: state)
+            await updateResolverMetadata(state: preparation.storeState)
             beginProbation(
                 transaction: created,
                 previousCoreID: oldCoreID,
@@ -856,6 +815,77 @@ final class CoreLifecycleController {
         if !leaseTransferredToProbation {
             await runtimeMutationGate.release(lease)
         }
+    }
+
+    private func prepareCoreActivation(
+        _ coreID: CoreID
+    ) async throws -> PreparedCoreActivation? {
+        guard let state = snapshot?.state else {
+            throw CoreLifecycleError.notBootstrapped
+        }
+        guard coreID != state.activeCoreID else { return nil }
+        guard let profileID = engineStore.selectedProfileID else {
+            throw CoreLifecycleError.profileRequired
+        }
+        let runtimeWasRunning = engineStore.isRunning
+
+        let candidateResolver: (any MihomoExecutableResolving)?
+        if coreID.isFactory {
+            guard coreID == factoryDescriptor.coreID else {
+                throw CoreLifecycleError.coreUnavailable(coreID)
+            }
+            candidateResolver = nil
+        } else {
+            guard let record = state.record(for: coreID),
+                record.status != .blocked,
+                record.status != .quarantined
+            else { throw CoreLifecycleError.coreUnavailable(coreID) }
+            let entry = try await store.catalogEntry(
+                for: record,
+                verifier: catalogVerifier
+            )
+            guard entry.status != .blocked else {
+                throw CoreLifecycleError.coreBlocked(coreID)
+            }
+            if engineStore.isTunActive {
+                guard rootInventory?.cores.contains(where: { $0.coreID == coreID }) == true else {
+                    throw CoreLifecycleError.rootStoreMissing(coreID)
+                }
+                try await ensureHelperPolicyReadyForTun(coreID: coreID)
+            }
+            candidateResolver = try makeInstalledResolver(record: record, entry: entry)
+        }
+
+        activationState = .validatingCandidate
+        let candidateExecutable: ResolvedMihomoExecutable
+        if let candidateResolver {
+            candidateExecutable = try await candidateResolver.resolve()
+        } else {
+            candidateExecutable = try await activeResolver.resolveFactory()
+        }
+        try await engineStore.validateCoreCandidateForActivation(candidateExecutable)
+
+        activationState = .snapshotting
+        let backend: CoreBackendSelection = engineStore.isTunActive
+            ? .tun
+            : (engineStore.isSystemProxyApplied ? .systemProxy : .user)
+        let runtimeSnapshot = try await engineStore.captureCoreActivationSnapshot(
+            previousCoreID: state.activeCoreID,
+            backend: backend,
+            configurationGenerationID: configurationGeneration()
+        )
+        guard runtimeSnapshot.profileID == profileID else {
+            throw CoreLifecycleError.activeResolverMismatch
+        }
+
+        return PreparedCoreActivation(
+            storeState: state,
+            previousCoreID: state.activeCoreID,
+            runtimeWasRunning: runtimeWasRunning,
+            candidateResolver: candidateResolver,
+            backend: backend,
+            runtimeSnapshot: runtimeSnapshot
+        )
     }
 
     func rollback() async {

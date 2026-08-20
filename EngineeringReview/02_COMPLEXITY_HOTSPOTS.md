@@ -10,7 +10,7 @@ Metrics are from the current `main` source tree and the refreshed GitNexus index
 | 2 | 5,443 | `VelaTests/Engine/EngineStoreTests.swift` |
 | 3 | 3,190 | `Vela/Features/Rules/RulesView.swift` |
 | 4 | 2,724 | `Vela/Features/Configuration/ConfigurationLiquidGlassWorkbenchView.swift` |
-| 5 | 2,580 | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift` |
+| 5 | 2,612 | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift` |
 | 6 | 2,554 | `Vela/Features/Diagnostics/DiagnosticsView.swift` |
 | 7 | 2,104 | `VelaTests/Configuration/RuntimeConfigTransactionCoordinatorTests.swift` |
 | 8 | 2,051 | `Vela/App/DailyDriverFeatureHub.swift` |
@@ -46,13 +46,13 @@ Metrics are from the current `main` source tree and the refreshed GitNexus index
 | 271 | `convert` | `Vela/Core/Subscriptions/Conversion/SingBoxSubscriptionParser.swift:79-349` |
 | 246 | `start` | `VelaIPC/Sources/VelaPrivilegedCore/LivePrivilegedRuntimeController.swift:201-446` |
 | 240 | `beginBootstrapIfReady` | `Vela/App/AppDelegate.swift:329-568` |
-| 202 | `activate` | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift:658-859` |
 | 199 | `performEnable` | `Vela/Core/SystemProxy/SystemProxyManager.swift:130-328` |
 | 190 | `editRemoteProfile` | `Vela/Core/Subscriptions/SubscriptionProfileService.swift:403-592` |
 | 174 | `fetch` | `Vela/Core/Subscriptions/SubscriptionHTTPClient.swift:172-345` |
-| 169 | `rollbackAfterFailure` | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift:2011-2179` |
+| 173 | `rollbackAfterFailure` | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift:2040-2212` |
 | 167 | `commitRawRevision` | `Vela/Core/Configuration/ProfileStore.swift:191-357` |
 | 155 | `PatchEngine.apply` | `Vela/Core/ConfigurationWorkbench/PatchEngine.swift:305-459` |
+| 153 | `activate` | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift:666-818` |
 
 ## Types with the highest method count
 
@@ -61,7 +61,7 @@ Metrics are from the current `main` source tree and the refreshed GitNexus index
 | 69 | `RootCoreStore` | `VelaIPC/Sources/VelaPrivilegedCore/RootCoreStore.swift` |
 | 55 | `RootTransactionStore` | `VelaIPC/Sources/VelaPrivilegedCore/RootTransactionStore.swift` |
 | 52 | `ProfileStore` | `Vela/Core/Configuration/ProfileStore.swift` |
-| 52 | `CoreLifecycleController` | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift` |
+| 53 | `CoreLifecycleController` | `Vela/Core/CoreLifecycle/CoreLifecycleController.swift` |
 | 49 | `CoreStore` | `Vela/Core/CoreLifecycle/CoreStore.swift` |
 | 47 | `MihomoControllerSession` | `Vela/Core/Controller/MihomoControllerSession.swift` |
 | 38 | `POSIXRootFileSystem` | `VelaIPC/Sources/VelaPrivilegedCore/POSIXRootFileSystem.swift` |

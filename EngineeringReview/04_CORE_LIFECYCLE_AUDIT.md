@@ -74,12 +74,12 @@ Remains the runtime facade and source of the runtime snapshot/operations consume
 
 - **Severity:** P2
 - **File:** `Vela/Core/CoreLifecycle/CoreLifecycleController.swift`
-- **Line/Type:** 2,580-line controller, 52 methods
-- **Evidence:** Workflow orchestration, scheduling, UI presentation and some low-level staging mechanics coexist. `activate` is about 202 lines.
+- **Line/Type:** 2,612-line controller, 53 methods after the first bounded extraction
+- **Evidence:** Workflow orchestration, scheduling, UI presentation and some low-level staging mechanics coexist. Before this batch, `activate` mixed candidate resolution, trust/preflight validation and runtime snapshot preparation into its transaction/rollback orchestration across about 202 lines.
 - **Impact:** Large change surface and difficult phase-level testing, but size alone is not a correctness defect.
-- **Fix:** After P1 stabilization, extract bounded workflow steps around existing CoreStore/download/verification/runtime owners while keeping the controller facade and public contract.
+- **Fix:** Keep the controller facade and public contract, but extract only stable workflow phases around existing CoreStore/download/verification/runtime owners. The first step introduced `PreparedCoreActivation` and `prepareCoreActivation(_:)`, reducing `activate` to 153 lines while preserving the authoritative transaction, rollback and probation sequence.
 - **Test:** Characterization tests before each extraction plus unchanged public behavior.
-- **Status:** Planned strangler refactor; no wholesale rewrite.
+- **Status:** First strangler boundary completed and verified. Candidate lookup, helper-policy readiness, executable prevalidation, backend selection and authoritative runtime snapshot preparation now have one named owner. The controller deliberately remains the workflow facade; further extraction requires new dependency or measurement evidence rather than file-size pressure alone.
 
 ## Activation invariants to preserve
 
@@ -105,3 +105,9 @@ Remains the runtime facade and source of the runtime snapshot/operations consume
 2. Workspace trust validation and private permissions remain in the existing downloader boundary.
 3. Workspace cleanup is awaited before the runtime-mutation lease is released on success and failure.
 4. `@concurrent` explicitly moves workspace IO and streamed download work away from the caller actor under the project's Swift 6.2 executor settings.
+
+## Verification for the activation-preparation batch
+
+1. GitNexus upstream impact for `CoreLifecycleController.activate` was LOW: three direct callers, one affected process and one module.
+2. `CoreLifecycleControllerTests`: 7/7 passed, covering same-Core and failed-activation lease release, cancellation rollback, rollback failure retention, probation rollback and healthy commit.
+3. Candidate preparation preserves the original runtime-running snapshot point, occurs before journal creation and does not alter the public activation contract.
