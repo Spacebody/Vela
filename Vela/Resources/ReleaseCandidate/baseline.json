@@ -13,7 +13,7 @@
   },
   "publicContractSHA256": "c88f541b23a9bcf1254ecabb2a789be1d253f796c2c9bf5d51edb68dfedc4be9",
   "publicContractFileSHA256": "335304ceda1bc98f40242cd582e74524c450d4091a6f48ea056eab1640c4025c",
-  "architectureFreezeSHA256": "8db901a1e4f5a385d99811d7abdf604450ae16c43f696505fad23d6bab885400",
+  "architectureFreezeSHA256": "5d00d0a986cf4a6036fe1c3f36d6107e1aa89482b142a77680d165701b194ed1",
   "dataSchemaVersion": 3,
   "helperProtocol": {
     "minimum": 2,
