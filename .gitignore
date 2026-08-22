@@ -73,6 +73,10 @@ __pycache__/
 !/EngineeringReview/13_DEAD_CODE_AND_DUPLICATION.md
 !/EngineeringReview/14_REFACTOR_PLAN.md
 !/EngineeringReview/15_FINAL_REPORT.md
+!/EngineeringReview/16_PRODUCTION_EVIDENCE_DELTA.md
+!/EngineeringReview/17_RENDERED_RUNTIME_EVIDENCE.md
+!/EngineeringReview/18_SIGNED_HOST_EVIDENCE.md
+!/EngineeringReview/19_RELEASE_CLOSURE_REPORT.md
 !/EngineeringReview/ENGINESTORE_RESPONSIBILITY_MAP.md
 !/EngineeringReview/complexity.md
 /Docs/
