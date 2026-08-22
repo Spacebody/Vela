@@ -1,7 +1,7 @@
 # Vela 72-Hour Soak Qualification
 
 Date: 2026-08-22
-Source baseline: `a353fad1047a190f07821db0c77c52e597aaa556`
+Source baseline: `80cc6e490eae65c542d4936cf52c157a3b5bd58d`
 
 ## Status
 

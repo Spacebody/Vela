@@ -73,16 +73,29 @@ Date: 2026-08-22
 - Regression proof: preflight must show no Vela Helper registration, executable, daemon plist, process, lease or TUN interface before candidate installation.
 - Status: OPEN — CLEAN HOST OR EXPLICIT CLEANUP AUTHORIZATION REQUIRED.
 
-## RQ-007 — Current-source archive is signed but unnotarized
+## RQ-007 — Exact production release candidate is not yet qualified
 
 - Severity: P1 (release artifact blocker).
-- Environment: isolated Release archive for `a353fad1047a190f07821db0c77c52e597aaa556`.
-- Reproduction: archive with Developer ID, then run strict nested signature, stapler and Gatekeeper checks.
+- Environment: isolated Release archive and Developer ID export for `80cc6e490eae65c542d4936cf52c157a3b5bd58d`.
+- Reproduction: archive, export, strictly verify, notarize and staple the current-source integration sample; compare its inputs with the reviewed production-candidate contract.
 - Expected: exact production candidate is signed, notarized, stapled and Gatekeeper accepted.
-- Actual: App/Helper/nested signatures and Hardened Runtime pass; no ticket is stapled and Gatekeeper reports `Unnotarized Developer ID`.
+- Actual: the original archive sample had no ticket. A later current-source exported integration sample was accepted by Apple, stapled and Gatekeeper accepted, but it is not the production release candidate and does not satisfy ephemeral credential or production-configuration requirements.
 - Owner: release credentials/configuration and candidate pipeline.
 - Fix: resolve production stop-ships and execute the reviewed ephemeral-Keychain candidate pipeline with notary API credentials.
 - Regression proof: accepted notary receipt, stapler validation, Gatekeeper acceptance and clean-machine launch for the exact candidate bytes.
-- Status: OPEN — NOTARIZATION/RELEASE CONFIGURATION GATED.
+- Status: PARTIALLY CLOSED — CURRENT-SOURCE NOTARIZATION INTEGRATION PASSED; EXACT PRODUCTION CANDIDATE REMAINS RELEASE-CONFIGURATION GATED.
 
-24h/72h soak, signed-host System Proxy/TUN, network/sleep mutation, notarization, clean install and upgrade remain explicitly unexecuted. They are evidence gaps, not fabricated product findings.
+## RQ-008 — Archive intermediate App was submitted instead of the Developer ID export
+
+- Severity: P2 (qualification procedure; no production runtime defect).
+- Environment: isolated current-source Release archive for `80cc6e490eae65c542d4936cf52c157a3b5bd58d`.
+- Reproduction: submit `Vela.xcarchive/Products/Applications/Vela.app` directly to Apple before `xcodebuild -exportArchive`.
+- Expected: qualification submits the same exported App shape used by the reviewed production pipeline.
+- Actual: Apple submission `4b7f8e80-c9b0-42df-a885-613e63733f16` returned `Invalid`; Sparkle's Autoupdate, Updater, Downloader and Installer components still had upstream ad-hoc signatures and no secure timestamps.
+- Evidence: Apple's notary log reports both missing valid Developer ID signatures and missing secure timestamps for both architectures of all four components.
+- Owner: qualification procedure.
+- Fix: preserve the existing production order `archive -> exportArchive -> verify -> notarize`; do not notarize the archive intermediate App.
+- Regression proof: the Developer ID export re-signed all Sparkle components with Team `2E56T94S33`, Hardened Runtime and secure timestamps. Submission `1a651f09-1e81-409b-9f6e-818e2b5e7a2f` was `Accepted`; stapler and Gatekeeper passed.
+- Status: CLOSED — NO PRODUCTION SOURCE CHANGE REQUIRED.
+
+24h/72h soak, signed-host System Proxy/TUN, network/sleep mutation, production-candidate packaging, clean install and upgrade remain explicitly unexecuted. Current-source signing/notarization integration passed, but it does not close those exact-candidate lanes. They are evidence gaps, not fabricated product findings.

@@ -1,7 +1,7 @@
 # Vela Final Release Qualification
 
 Date: 2026-08-23
-Source baseline: `a353fad1047a190f07821db0c77c52e597aaa556`
+Source baseline: `80cc6e490eae65c542d4936cf52c157a3b5bd58d`
 
 ## Decision
 
@@ -11,7 +11,7 @@ Repository-controlled qualification reproduced no P0. Two full-suite-load eviden
 
 Release remains blocked by evidence that cannot be inferred from repository tests:
 
-- exact production-pipeline Developer-ID signed, notarized and stapled candidate (a current-source signing integration archive passes strict nested verification but is not notarized or release-eligible);
+- exact immutable production-pipeline candidate built with production endpoints/trust inputs and ephemeral credentials (a current-source Developer ID export was accepted by Apple, stapled and Gatekeeper accepted, but remains an integration sample rather than a release-eligible candidate);
 - production trust/endpoints/legal/release-readiness inputs;
 - signed-host System Proxy and TUN/Helper destructive matrices;
 - combined Proxy+TUN transitions;
@@ -47,15 +47,17 @@ Existing rendered evidence applies to the same production UI source and shows no
 
 ### Release credential/configuration evidence
 
-`PARTIAL — CURRENT-SOURCE SIGNING INTEGRATION PASSED; PRODUCTION CANDIDATE/NOTARIZATION NOT EXECUTED`
+`PARTIAL — CURRENT-SOURCE SIGNING, EXPORT AND NOTARIZATION INTEGRATION PASSED; PRODUCTION CANDIDATE NOT EXECUTED`
 
-The isolated current-source archive proves Developer ID, nested Helper/Core/Sparkle signing and Hardened Runtime integration. Gatekeeper correctly rejects it as unnotarized. The installed `/Applications/Vela.app` remains an old invalid/non-candidate artifact and cannot close any release lane.
+The exported current-source sample proves Developer ID, nested Helper/Core/Sparkle signing, Hardened Runtime, Apple notarization, stapling and Gatekeeper acceptance. Apple submission `1a651f09-1e81-409b-9f6e-818e2b5e7a2f` was accepted. The sample used persistent local credentials and placeholder release configuration, so it is not the immutable production candidate. The installed `/Applications/Vela.app` remains an old invalid/non-candidate artifact and cannot close any release lane.
+
+The earlier invalid submission `4b7f8e80-c9b0-42df-a885-613e63733f16` used the archive intermediate App before `exportArchive`; it is retained as a negative control and did not require a production-code fix.
 
 ### Upgrade and accessibility evidence
 
 `PARTIAL — REPOSITORY MIGRATION AND ISOLATED UI INVARIANTS PASS; REAL CANDIDATE LANES NOT EXECUTED`
 
-The current source passes 11 transaction/recovery/idempotence tests for profile schema migration and four rendered accessibility UI scenarios in addition to four source-contract tests. A previous signed Vela package to the exact notarized candidate upgrade, and a healthy signed-host VoiceOver/focus pass, remain unexecuted and must not be inferred from these repository-controlled results.
+The current source passes 11 transaction/recovery/idempotence tests for profile schema migration and four rendered accessibility UI scenarios in addition to four source-contract tests. A previous signed Vela package to the exact production candidate upgrade, and a healthy signed-host VoiceOver/focus pass, remain unexecuted and must not be inferred from these repository-controlled results.
 
 ## Architecture preservation
 

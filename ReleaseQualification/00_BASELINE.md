@@ -1,16 +1,16 @@
 # Vela Release Qualification Baseline
 
-Date: 2026-08-22
-Qualification source: `a353fad1047a190f07821db0c77c52e597aaa556`
+Date: 2026-08-23
+Qualification source: `80cc6e490eae65c542d4936cf52c157a3b5bd58d`
 
 ## Source identity
 
 - Branch: `main`.
-- Local `HEAD`: `a353fad1047a190f07821db0c77c52e597aaa556`.
-- `origin/main`: `a353fad1047a190f07821db0c77c52e597aaa556` at continuation capture.
+- Local `HEAD`: `80cc6e490eae65c542d4936cf52c157a3b5bd58d`.
+- `origin/main`: `80cc6e490eae65c542d4936cf52c157a3b5bd58d` at continuation capture.
 - Worktree: clean before qualification evidence was created.
 - Previous release-evidence source baseline: `aef42b560b56dcf5a056e6f720d2d0cb33c6d4cc`.
-- The current continuation adds `a353fad fix: close release qualification evidence` after the original qualification baseline. The source and qualification-document changes in that commit were already covered by its repository gates; this continuation does not reopen a closed finding without contradictory runtime evidence.
+- Commits since the previous release-evidence baseline are `bcc0c25`, `a353fad`, `2e40b14` and `80cc6e4`. They close repository-controlled evidence gaps and add migration/accessibility qualification; this continuation does not reopen a closed finding without contradictory runtime evidence.
 - No prior engineering finding is reopened by source drift at baseline.
 
 ## Required prior evidence read
@@ -39,7 +39,7 @@ Historical engineering reports remain historical. This directory records qualifi
 | Architecture | arm64 |
 | Xcode | 26.6 (17F113) |
 | Minimum supported macOS | 15.0 |
-| Qualification build intent | unsigned repository gates plus an isolated Developer ID signing-integration archive under `/tmp`; no installation, notarization or network mutation |
+| Qualification build intent | unsigned repository gates plus an isolated Developer ID export/notarization integration sample under `/tmp`; no installation, launch or network mutation |
 
 Machine serial, hardware UUID and provisioning identifiers are intentionally excluded from committed evidence.
 
@@ -70,26 +70,31 @@ Static read-only inspection found:
 
 Disposition: **FAIL — NON-CANDIDATE LOCAL ARTIFACT**. It is neither launched nor treated as proof for current source. Creating, signing, installing, notarizing or launching an exact candidate requires explicit authorization and release credentials.
 
-## Current-source signing integration sample
+## Current-source signing and notarization integration sample
 
-An isolated Release archive was produced from the exact continuation SHA at:
+An isolated Release archive and Developer ID export were produced from the exact continuation SHA at:
 
-`/tmp/Vela-RQ-a353fad.xcarchive`
+`/tmp/Vela-RQ-80cc6e4.xcarchive`
+
+`/tmp/Vela-RQ-80cc6e4-export/Vela.app`
 
 This is a **signing integration sample, not a release candidate**. It was signed from the user's persistent Keychain to prove project integration; the reviewed release process requires an ephemeral per-run Keychain and the complete production release inputs.
 
 Verified facts:
 
-- archive completed with manual Developer ID identity `Developer ID Application: YILIN ZHENG (2E56T94S33)`;
+- archive and Developer ID export completed with identity `Developer ID Application: YILIN ZHENG (2E56T94S33)`;
 - App and Helper use Team ID `2E56T94S33`, expected identifiers and Hardened Runtime;
 - strict deep App verification and strict Helper verification pass;
 - nested Sparkle services, bundled Mihomo and sealed resources pass deep validation;
-- App CDHash is `3186f94606492dab0f682c88669de5d2877b801d`;
-- Helper CDHash is `2bdac21550ee9dbcf9477c0ed17983785497b603`;
-- App, Helper and Mihomo executable SHA-256 values are respectively `bb4c541de02d50df395c80d9814e2ba08402f1f487eab36d92b57870c0c1d22d`, `f96d097207c3add1bf69f8c06ab3cdb9344560b130b3c3af3fc914ef044fcd81` and `af170fb4feb7fec45fff595cf6e45c2dafa019c12eed4a5f9f2970b6c8640c61`;
-- no notarization ticket is stapled and Gatekeeper correctly rejects it as `Unnotarized Developer ID`.
+- App CDHash is `d2cff70e4fca88ee588f8928bb789046fa3ee43f`;
+- Helper CDHash is `b4a06b6626de89642ae8df66976931de6fa3ad2c`;
+- App, Helper and Mihomo executable SHA-256 values are respectively `90013db071062629baca33db5cb1e5e48fc7f51f91c8885a57e2e7f12844cdcb`, `9c47699f9a36f7e6c7eb23b7db9747564134f8b20b23b9ec627369caf4731bfb` and `84f3ccfac6048b35e53daf1cd2a96e79961bac093d047904166164247a905ad0`;
+- exported App notarization submission `1a651f09-1e81-409b-9f6e-818e2b5e7a2f` was `Accepted`;
+- stapler validation and Gatekeeper assessment passed as `Notarized Developer ID`.
 
-The sample is not installed, launched, submitted to Apple, packaged, appcast-signed or accepted as migration/soak/signed-host evidence.
+The sample is not installed, launched, packaged as the production DMG, appcast-signed or accepted as migration/soak/signed-host evidence. It used persistent local credentials rather than the production ephemeral credential contract and contains fail-closed placeholder release configuration.
+
+An earlier negative-control submission of the archive intermediate App, `4b7f8e80-c9b0-42df-a885-613e63733f16`, was invalid because the pre-export Sparkle components remained ad-hoc signed. The production pipeline already performs `exportArchive`; the accepted exported sample confirms that no source change is required.
 
 ## Runtime and privileged baseline
 
@@ -105,7 +110,7 @@ The sample is not installed, launched, submitted to Apple, packaged, appcast-sig
 
 ## Authorization boundary
 
-A Developer ID signing-integration archive was created under `/tmp`; no exact production candidate was created, installed, launched or notarized. No helper was installed. No System Proxy, TUN/system network card, route, sleep state, network service or user configuration was mutated.
+A Developer ID signing/notarization integration sample was created under `/tmp`; no exact production candidate was created, installed or launched. No helper was installed. No System Proxy, TUN/system network card, route, sleep state, network service or user configuration was mutated.
 
 Signed-host and destructive qualification remains:
 
