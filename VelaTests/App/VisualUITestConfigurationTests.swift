@@ -105,12 +105,24 @@ struct VisualUITestConfigurationTests {
     }
 
     @Test("Production feature-view verification only accepts proven routes")
-    func productionFeatureViewRouteMustBeAllowlisted() {
+    func productionFeatureViewRouteMustBeAllowlisted() throws {
+        let supportedConfiguration = try VisualUITestConfiguration.resolve(
+            arguments: validArguments() + [
+                VisualUITestConfiguration.productionFeatureViewsKey,
+                "YES",
+            ]
+        )
+        #expect(supportedConfiguration?.usesProductionFeatureViews == true)
+
         #expect(throws: VisualUITestConfigurationError.unsupportedProductionFeatureView(
-            "overview.loadedHealthy"
+            "overview.loading"
         )) {
             try VisualUITestConfiguration.resolve(
                 arguments: validArguments() + [
+                    VisualUITestConfiguration.fixtureKey,
+                    "overview.loading",
+                    VisualUITestConfiguration.stateKey,
+                    "loading",
                     VisualUITestConfiguration.productionFeatureViewsKey,
                     "YES",
                 ]

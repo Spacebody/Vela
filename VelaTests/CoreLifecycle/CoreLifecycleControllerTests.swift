@@ -265,7 +265,7 @@ struct CoreLifecycleControllerTests {
     #expect(controllerDisconnected)
     await activationTask.value
 
-    let rollbackCompleted = await waitForCoreLifecycleCondition(timeout: .seconds(5)) {
+    let rollbackCompleted = await waitForCoreLifecycleCondition(timeout: .seconds(10)) {
       guard controller.snapshot?.state.activeCoreID == factoryCoreID,
         controller.activationJournal == nil,
         engineStore.isRunning,

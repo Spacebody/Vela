@@ -547,13 +547,15 @@ actor MihomoProcessManager: MihomoProcessManaging {
         outputBuffer: ProcessOutputBuffer
     ) {
         handle.readabilityHandler = { [weak self] readableHandle in
-            let data = readableHandle.availableData
+            let data = outputBuffer.captureAvailableData(
+                from: readableHandle,
+                channel: channel
+            )
             guard !data.isEmpty else {
                 readableHandle.readabilityHandler = nil
                 return
             }
 
-            outputBuffer.append(data, to: channel)
             let output = MihomoProcessOutput(
                 id: UUID(),
                 channel: channel,
@@ -1455,8 +1457,14 @@ nonisolated private final class ManagedMihomoProcess {
     func drainRemainingOutput() {
         stdoutPipe.fileHandleForReading.readabilityHandler = nil
         stderrPipe.fileHandleForReading.readabilityHandler = nil
-        outputBuffer.append(stdoutPipe.fileHandleForReading.readDataToEndOfFile(), to: .stdout)
-        outputBuffer.append(stderrPipe.fileHandleForReading.readDataToEndOfFile(), to: .stderr)
+        outputBuffer.drainRemainingData(
+            from: stdoutPipe.fileHandleForReading,
+            channel: .stdout
+        )
+        outputBuffer.drainRemainingData(
+            from: stderrPipe.fileHandleForReading,
+            channel: .stderr
+        )
     }
 
     func closeHandles() {
@@ -1480,22 +1488,44 @@ nonisolated private final class ProcessOutputBuffer: Sendable {
 
     private let storage = Mutex(Storage())
 
-    func append(_ data: Data, to channel: MihomoProcessOutputChannel) {
-        guard !data.isEmpty else { return }
+    func captureAvailableData(
+        from handle: FileHandle,
+        channel: MihomoProcessOutputChannel
+    ) -> Data {
         storage.withLock { storage in
-            switch channel {
-            case .stdout:
-                storage.stdout.append(data)
-                Self.trim(&storage.stdout)
-            case .stderr:
-                storage.stderr.append(data)
-                Self.trim(&storage.stderr)
-            }
+            let data = handle.availableData
+            Self.append(data, to: channel, storage: &storage)
+            return data
+        }
+    }
+
+    func drainRemainingData(
+        from handle: FileHandle,
+        channel: MihomoProcessOutputChannel
+    ) {
+        storage.withLock { storage in
+            Self.append(handle.readDataToEndOfFile(), to: channel, storage: &storage)
         }
     }
 
     func snapshot() -> Storage {
         storage.withLock { $0 }
+    }
+
+    private static func append(
+        _ data: Data,
+        to channel: MihomoProcessOutputChannel,
+        storage: inout Storage
+    ) {
+        guard !data.isEmpty else { return }
+        switch channel {
+        case .stdout:
+            storage.stdout.append(data)
+            trim(&storage.stdout)
+        case .stderr:
+            storage.stderr.append(data)
+            trim(&storage.stderr)
+        }
     }
 
     private static func trim(_ data: inout Data) {
