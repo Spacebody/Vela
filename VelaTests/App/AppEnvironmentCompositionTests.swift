@@ -5,7 +5,7 @@ import Testing
 @Suite("Application composition", .serialized)
 @MainActor
 struct AppEnvironmentCompositionTests {
-    @Test("Isolated production composition builds and tears down")
+    @Test("Production dependency graph builds and tears down in an isolated directory")
     func isolatedCompositionBuildsAndTearsDown() async throws {
         let fileManager = FileManager.default
         let root = fileManager.temporaryDirectory.appendingPathComponent(
@@ -20,11 +20,13 @@ struct AppEnvironmentCompositionTests {
         defer { try? fileManager.removeItem(at: root) }
 
         let environment = try AppEnvironment.live(
-            launchConfiguration: .startupSmoke(root: root),
+            launchConfiguration: .production,
             directories: ApplicationDirectories(root: root)
         )
 
         #expect(environment.engineStore.state == .stopped)
+        #expect(!environment.engineStore.privilegedRuntimeMayBeActive)
         #expect(await environment.engineStore.prepareForTermination())
+        await environment.dailyDriver.shutdown()
     }
 }

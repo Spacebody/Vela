@@ -43,7 +43,7 @@ jobs:
 
       - name: Build Swift targets
         if: matrix.language == 'swift'
-        run: ./script/ci_build.sh
+        run: ./script/ci_build.sh --configuration Debug
 
       # github/codeql-action v3.37.0, pinned to a full upstream commit SHA.
       - name: Analyze

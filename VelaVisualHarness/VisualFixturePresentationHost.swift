@@ -94,7 +94,14 @@ struct VisualFixtureMainWindowHost: View {
 
     @ViewBuilder
     private var detailDestination: some View {
-      if configuration.page == .overview {
+      if let performanceProfile = VisualRuntimePerformanceProfile.resolve(
+        configuration: configuration
+      ) {
+        VisualRuntimePerformanceHost(
+          configuration: configuration,
+          profile: performanceProfile
+        )
+      } else if configuration.page == .overview {
         OverviewDashboardView(
           snapshot: OverviewVisualFixtureFactory.snapshot(for: configuration),
           isRefreshing: configuration.state == .loading,

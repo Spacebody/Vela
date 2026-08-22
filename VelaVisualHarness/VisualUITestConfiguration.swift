@@ -292,7 +292,15 @@ nonisolated struct VisualUITestConfiguration: Equatable, Sendable {
         state: State
     ) -> Bool {
         switch (page, state) {
-        case (.proxies, .offline), (.rules, .empty), (.providers, .empty):
+        case (.overview, .loaded),
+             (.proxies, .loaded),
+             (.connections, .loaded),
+             (.rules, .loaded),
+             (.logs, .loaded),
+             (.workbench, .loaded),
+             (.proxies, .offline),
+             (.rules, .empty),
+             (.providers, .empty):
             true
         default:
             false

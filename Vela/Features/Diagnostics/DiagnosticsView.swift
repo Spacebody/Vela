@@ -38,6 +38,7 @@ struct DiagnosticsView: View {
     @State private var isExportingReliabilityEvidence = false
     @State private var diagnosticsRun: DiagnosticsRunPresentation?
     @State private var diagnosticsRunTask: Task<Void, Never>?
+    @State private var diagnosticsExportTask: Task<Void, Never>?
     @State private var diagnosticsRunGate = DiagnosticsRunGenerationGate()
     @State private var recentRunHistory: [DiagnosticsRunHistoryEntry] = []
     @State private var showsUpdatesCoreRecovery = false
@@ -191,6 +192,8 @@ struct DiagnosticsView: View {
         }
         .onDisappear {
             abandonDiagnosticsRun()
+            diagnosticsExportTask?.cancel()
+            diagnosticsExportTask = nil
         }
     }
 
@@ -977,11 +980,7 @@ struct DiagnosticsView: View {
             panel.allowedContentTypes = [.json]
             panel.canCreateDirectories = true
             guard panel.runModal() == .OK, let destination = panel.url else { return }
-            try data.write(to: destination, options: .atomic)
-            try FileManager.default.setAttributes(
-                [.posixPermissions: NSNumber(value: 0o600)],
-                ofItemAtPath: destination.path
-            )
+            try await DiagnosticsExportWriter.shared.write(data, to: destination)
         } catch {
             exportError = VelaL10n.string(
                 "beta.evidence.export.failed",
@@ -2351,20 +2350,24 @@ struct DiagnosticsView: View {
     }
 
     private func saveDiagnostics(_ preview: DiagnosticsExportPreview) {
-        do {
-            let panel = NSSavePanel()
-            panel.nameFieldStringValue = "Vela-Diagnostics.json"
-            panel.allowedContentTypes = [.json]
-            guard panel.runModal() == .OK, let url = panel.url else { return }
-            try Data(preview.text.utf8).write(to: url, options: .atomic)
-            try FileManager.default.setAttributes(
-                [.posixPermissions: NSNumber(value: 0o600)],
-                ofItemAtPath: url.path
-            )
-            exportPreview = nil
-            includePrivilegedStartupLogs = false
-        } catch {
-            exportError = DiagnosticTextSanitizer.redact(error.localizedDescription)
+        guard diagnosticsExportTask == nil else { return }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "Vela-Diagnostics.json"
+        panel.allowedContentTypes = [.json]
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        diagnosticsExportTask = Task { @MainActor in
+            defer { diagnosticsExportTask = nil }
+            do {
+                try await DiagnosticsExportWriter.shared.writeUTF8(preview.text, to: url)
+                try Task.checkCancellation()
+                exportPreview = nil
+                includePrivilegedStartupLogs = false
+            } catch is CancellationError {
+                return
+            } catch {
+                exportError = DiagnosticTextSanitizer.redact(error.localizedDescription)
+            }
         }
     }
 

@@ -78,7 +78,7 @@ jobs:
         run: git diff --exit-code -- Vela.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved VelaIPC/Package.resolved
 
       - name: Build unsigned Release candidate for exclusion scan
-        run: ./script/ci_build.sh
+        run: ./script/ci_build.sh --configuration Release
 
       - name: Prove every bundled Release Mach-O excludes DEBUG fault controls
         run: Hardening/scripts/scan_release_fault_controls.sh "${VELA_CI_BUILD_DERIVED_DATA}/Build/Products/Release/Vela.app"

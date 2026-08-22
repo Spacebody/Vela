@@ -170,14 +170,123 @@ struct CoreLifecycleControllerTests {
 
     await engineStore.start()
     let rollbackCompleted = await waitForCoreLifecycleCondition {
-      controller.snapshot?.state.activeCoreID == factoryCoreID
-        && controller.activationJournal == nil
+      guard controller.snapshot?.state.activeCoreID == factoryCoreID,
+        controller.activationJournal == nil,
+        controller.lastError?.contains("rolled back safely") == true
+      else { return false }
+      if case .failed = controller.activationState {
+        return true
+      }
+      return false
     }
 
     #expect(rollbackCompleted)
     #expect(!controller.manualRepairRequired)
     if case .failed = controller.activationState {
       // Expected: the candidate failed health proof and rollback completed.
+    } else {
+      Issue.record("Expected failed activation state, got \(controller.activationState)")
+    }
+    #expect(controller.lastError?.contains("rolled back safely") == true)
+    try await proveUpdateBarrierIsAvailable(fixture.runtimeMutationGate)
+  }
+
+  @Test("A late probation degradation restores the previous running runtime")
+  func lateProbationDegradationRestoresPreviousRuntime() async throws {
+    let probeCounter = CoreActivationProbeCounter()
+    let registeredProtocol = URLProtocol.registerClass(MihomoMockURLProtocol.self)
+    MihomoMockURLProtocol.setHandler { request in
+      let body: String
+      switch request.url?.path {
+      case "/version":
+        _ = probeCounter.incrementAndRead()
+        body = #"{"meta":true,"version":"v1.19.28-test"}"#
+      case "/configs":
+        body = #"{"port":0,"socks-port":0,"redir-port":0,"tproxy-port":0,"mixed-port":17890,"allow-lan":false,"bind-address":"127.0.0.1","mode":"rule","log-level":"info","ipv6":false,"unified-delay":false,"tcp-concurrent":false,"find-process-mode":"off","interface-name":"","sniffing":false}"#
+      case "/proxies":
+        body = #"{"proxies":{}}"#
+      case "/rules":
+        body = #"{"rules":[]}"#
+      default:
+        return MihomoMockHTTPResponse(statusCode: 404)
+      }
+      return MihomoMockHTTPResponse(statusCode: 200, data: Data(body.utf8))
+    }
+    defer {
+      MihomoMockURLProtocol.reset()
+      if registeredProtocol {
+        URLProtocol.unregisterClass(MihomoMockURLProtocol.self)
+      }
+    }
+
+    let controllerManager = CoreActivationControllerManagerFake()
+    let controllerRouter = RuntimeControllerRouter()
+    let (controller, fixture, engineStore) = try await makeController(
+      seedActiveInstalledCore: true,
+      probationDuration: .seconds(2),
+      controllerManager: controllerManager,
+      controllerRouter: controllerRouter
+    )
+    defer {
+      ConfigurationTestSupport.removeTemporaryDirectory(fixture.temporaryDirectory)
+    }
+
+    let factoryCoreID = try #require(CoreID(rawValue: "factory:v1.19.28"))
+    let installedCoreID = try #require(CoreID(rawValue: "v1.19.28-r1"))
+    await engineStore.bootstrap()
+    await engineStore.start()
+    let controllerReady = await waitForCoreLifecycleCondition {
+      engineStore.controllerState == .connected
+    }
+    #expect(controllerReady)
+    await controller.bootstrap()
+
+    let originalProfileID = try #require(engineStore.selectedProfileID)
+    let originalMode = engineStore.runtimeMode
+    let originalBackend = try #require(engineStore.activeBackendKind)
+    probeCounter.reset()
+
+    let activationTask = Task { @MainActor in
+      await controller.activate(installedCoreID)
+    }
+    let initialHealthProofCompleted = await waitForCoreLifecycleCondition {
+      probeCounter.value > 0
+        && controller.activationJournal?.coreID == installedCoreID
+        && controller.snapshot?.state.activeCoreID == installedCoreID
+    }
+    #expect(initialHealthProofCompleted)
+    #expect(controller.activationJournal?.snapshot?.profileID == originalProfileID)
+    #expect(controller.activationJournal?.snapshot?.mihomoMode == originalMode)
+    #expect(controller.activationJournal?.snapshot?.backend == .user)
+    await controllerManager.stop()
+    let controllerDisconnected = await waitForCoreLifecycleCondition {
+      engineStore.controllerState == .disconnected
+    }
+    #expect(controllerDisconnected)
+    await activationTask.value
+
+    let rollbackCompleted = await waitForCoreLifecycleCondition(timeout: .seconds(5)) {
+      guard controller.snapshot?.state.activeCoreID == factoryCoreID,
+        controller.activationJournal == nil,
+        engineStore.isRunning,
+        engineStore.controllerState == .connected,
+        controller.lastError?.contains("rolled back safely") == true
+      else { return false }
+      if case .failed = controller.activationState {
+        return true
+      }
+      return false
+    }
+    #expect(rollbackCompleted)
+    #expect(!controller.manualRepairRequired)
+    #expect(engineStore.selectedProfileID == originalProfileID)
+    #expect(engineStore.runtimeMode == originalMode)
+    #expect(engineStore.activeBackendKind == originalBackend)
+    #expect(
+      controller.snapshot?.state.record(for: installedCoreID)?.status == .quarantined
+    )
+    if case .failed = controller.activationState {
+      // Expected: the candidate degraded after an initial health proof, and rollback completed.
     } else {
       Issue.record("Expected failed activation state, got \(controller.activationState)")
     }
@@ -517,6 +626,31 @@ private actor CoreActivationControllerManagerFake: MihomoControllerManaging {
     version: MihomoVersion(meta: true, version: "v1.19.28-test"),
     configs: TransactionTestValues.configs
   )
+}
+
+private nonisolated final class CoreActivationProbeCounter: @unchecked Sendable {
+  private let lock = NSLock()
+  private var storage = 0
+
+  var value: Int {
+    lock.lock()
+    defer { lock.unlock() }
+    return storage
+  }
+
+  func incrementAndRead() -> Int {
+    lock.lock()
+    storage += 1
+    let value = storage
+    lock.unlock()
+    return value
+  }
+
+  func reset() {
+    lock.lock()
+    storage = 0
+    lock.unlock()
+  }
 }
 
 private struct CoreActivationExecutableResolverFake: MihomoExecutableResolving {
