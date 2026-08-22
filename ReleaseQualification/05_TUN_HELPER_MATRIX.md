@@ -8,6 +8,8 @@ Date: 2026-08-22
 
 No Helper was installed, no privileged handshake/session was created, no lease was acquired and no TUN interface/runtime was mutated. UI state is not accepted as privileged proof.
 
+The host is not clean: Clash Verge owns active `utun1024` (`198.18.0.1`), and a stale inactive ServiceManagement registration for an older Vela Helper build remains in launchd while its executable is absent. The matrix must use a clean dedicated host or explicitly authorized cleanup plus interruption of the existing Clash route before it can produce admissible evidence.
+
 | Scenario | Live result |
 |---|---|
 | Helper identity → handshake → session | NOT EXECUTED |

@@ -1,16 +1,16 @@
 # Vela Release Qualification Baseline
 
 Date: 2026-08-22
-Qualification source: `bcc0c25b15535edf2930b5bfc2f2e9b15226c949`
+Qualification source: `a353fad1047a190f07821db0c77c52e597aaa556`
 
 ## Source identity
 
 - Branch: `main`.
-- Local `HEAD`: `bcc0c25b15535edf2930b5bfc2f2e9b15226c949`.
-- `origin/main`: `bcc0c25b15535edf2930b5bfc2f2e9b15226c949` at baseline capture.
+- Local `HEAD`: `a353fad1047a190f07821db0c77c52e597aaa556`.
+- `origin/main`: `a353fad1047a190f07821db0c77c52e597aaa556` at continuation capture.
 - Worktree: clean before qualification evidence was created.
 - Previous release-evidence source baseline: `aef42b560b56dcf5a056e6f720d2d0cb33c6d4cc`.
-- The commits after that evidence source are documentation-only: `bcc0c25 docs: close release evidence review`.
+- The current continuation adds `a353fad fix: close release qualification evidence` after the original qualification baseline. The source and qualification-document changes in that commit were already covered by its repository gates; this continuation does not reopen a closed finding without contradictory runtime evidence.
 - No prior engineering finding is reopened by source drift at baseline.
 
 ## Required prior evidence read
@@ -39,7 +39,7 @@ Historical engineering reports remain historical. This directory records qualifi
 | Architecture | arm64 |
 | Xcode | 26.6 (17F113) |
 | Minimum supported macOS | 15.0 |
-| Qualification build intent | unsigned Debug and unsigned Release repository gates; no signed candidate creation without explicit authorization |
+| Qualification build intent | unsigned repository gates plus an isolated Developer ID signing-integration archive under `/tmp`; no installation, notarization or network mutation |
 
 Machine serial, hardware UUID and provisioning identifiers are intentionally excluded from committed evidence.
 
@@ -70,12 +70,34 @@ Static read-only inspection found:
 
 Disposition: **FAIL — NON-CANDIDATE LOCAL ARTIFACT**. It is neither launched nor treated as proof for current source. Creating, signing, installing, notarizing or launching an exact candidate requires explicit authorization and release credentials.
 
+## Current-source signing integration sample
+
+An isolated Release archive was produced from the exact continuation SHA at:
+
+`/tmp/Vela-RQ-a353fad.xcarchive`
+
+This is a **signing integration sample, not a release candidate**. It was signed from the user's persistent Keychain to prove project integration; the reviewed release process requires an ephemeral per-run Keychain and the complete production release inputs.
+
+Verified facts:
+
+- archive completed with manual Developer ID identity `Developer ID Application: YILIN ZHENG (2E56T94S33)`;
+- App and Helper use Team ID `2E56T94S33`, expected identifiers and Hardened Runtime;
+- strict deep App verification and strict Helper verification pass;
+- nested Sparkle services, bundled Mihomo and sealed resources pass deep validation;
+- App CDHash is `3186f94606492dab0f682c88669de5d2877b801d`;
+- Helper CDHash is `2bdac21550ee9dbcf9477c0ed17983785497b603`;
+- App, Helper and Mihomo executable SHA-256 values are respectively `bb4c541de02d50df395c80d9814e2ba08402f1f487eab36d92b57870c0c1d22d`, `f96d097207c3add1bf69f8c06ab3cdb9344560b130b3c3af3fc914ef044fcd81` and `af170fb4feb7fec45fff595cf6e45c2dafa019c12eed4a5f9f2970b6c8640c61`;
+- no notarization ticket is stapled and Gatekeeper correctly rejects it as `Unnotarized Developer ID`.
+
+The sample is not installed, launched, submitted to Apple, packaged, appcast-signed or accepted as migration/soak/signed-host evidence.
+
 ## Runtime and privileged baseline
 
 - Production Vela process: not running.
 - VelaHelper process: not running.
 - Installed privileged Vela Helper under `/Library/PrivilegedHelperTools`: not present.
 - Installed Vela launch daemon under `/Library/LaunchDaemons`: not present.
+- A stale ServiceManagement registration from build `2026071403` remains in `system/dev.yilin.Vela.Helper`. It is inactive, reports `spawn failed`, last exit `78: EX_CONFIG`, and cannot resolve its missing embedded program. This is pre-candidate host contamination and must be removed or avoided by using a clean host before Helper/TUN qualification.
 - macOS System Proxy read-back: no enabled proxy dictionary entries at capture time.
 - System-extension enumeration was unavailable from the current restricted session and is not used as TUN proof.
 - A separate Clash Verge Mihomo process is active. It is outside this qualification candidate and must not be stopped or mutated.
@@ -83,7 +105,7 @@ Disposition: **FAIL — NON-CANDIDATE LOCAL ARTIFACT**. It is neither launched n
 
 ## Authorization boundary
 
-No signed candidate was created, installed or launched. No helper was installed. No System Proxy, TUN/system network card, route, sleep state, network service or user configuration was mutated.
+A Developer ID signing-integration archive was created under `/tmp`; no exact production candidate was created, installed, launched or notarized. No helper was installed. No System Proxy, TUN/system network card, route, sleep state, network service or user configuration was mutated.
 
 Signed-host and destructive qualification remains:
 

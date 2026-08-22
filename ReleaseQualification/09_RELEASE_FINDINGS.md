@@ -60,4 +60,29 @@ Date: 2026-08-22
 - Fix: terminate the fixture and record it separately from production Vela.
 - Status: CLOSED; no production source change.
 
+## RQ-006 — Qualification host contains stale Vela Helper registration
+
+- Severity: P2 (host-evidence contamination; not attributed to current source).
+- Environment: current macOS qualification host before installing the exact candidate.
+- Reproduction: read-only `launchctl print system/dev.yilin.Vela.Helper` while `/Library/PrivilegedHelperTools/dev.yilin.Vela.Helper` and `/Library/LaunchDaemons/dev.yilin.Vela.Helper.plist` are absent.
+- Expected: a clean dedicated host has no prior Vela Helper authority before candidate installation.
+- Actual: ServiceManagement retains an inactive build `2026071403` registration with `spawn failed`, last exit `78: EX_CONFIG`, and 246,544 recorded run attempts.
+- Impact: Helper/TUN startup and cleanup observations on this host would be ambiguous and cannot qualify the current candidate.
+- Owner: qualification-host preparation / prior local installation, not current production source.
+- Fix: use a clean dedicated test Mac, or explicitly authorize removal of the stale registration before installing the exact candidate.
+- Regression proof: preflight must show no Vela Helper registration, executable, daemon plist, process, lease or TUN interface before candidate installation.
+- Status: OPEN — CLEAN HOST OR EXPLICIT CLEANUP AUTHORIZATION REQUIRED.
+
+## RQ-007 — Current-source archive is signed but unnotarized
+
+- Severity: P1 (release artifact blocker).
+- Environment: isolated Release archive for `a353fad1047a190f07821db0c77c52e597aaa556`.
+- Reproduction: archive with Developer ID, then run strict nested signature, stapler and Gatekeeper checks.
+- Expected: exact production candidate is signed, notarized, stapled and Gatekeeper accepted.
+- Actual: App/Helper/nested signatures and Hardened Runtime pass; no ticket is stapled and Gatekeeper reports `Unnotarized Developer ID`.
+- Owner: release credentials/configuration and candidate pipeline.
+- Fix: resolve production stop-ships and execute the reviewed ephemeral-Keychain candidate pipeline with notary API credentials.
+- Regression proof: accepted notary receipt, stapler validation, Gatekeeper acceptance and clean-machine launch for the exact candidate bytes.
+- Status: OPEN — NOTARIZATION/RELEASE CONFIGURATION GATED.
+
 24h/72h soak, signed-host System Proxy/TUN, network/sleep mutation, notarization, clean install and upgrade remain explicitly unexecuted. They are evidence gaps, not fabricated product findings.

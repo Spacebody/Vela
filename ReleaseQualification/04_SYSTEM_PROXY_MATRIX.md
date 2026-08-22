@@ -6,7 +6,7 @@ Date: 2026-08-22
 
 `NOT EXECUTED — EXPLICIT AUTHORIZATION REQUIRED`
 
-The host is not declared disposable or authorized for System Proxy mutation. Read-only `scutil --proxy` showed no enabled proxy dictionary entries at baseline. That is not lifecycle proof.
+The host is not declared disposable or authorized for System Proxy mutation. Read-only `scutil --proxy` showed no enabled proxy dictionary entries at baseline. That is not lifecycle proof. Clash Verge is actively operating its own Mihomo/TUN runtime, so a destructive matrix on this host would invalidate both products' evidence and interrupt the user's network route.
 
 | Scenario | Live result |
 |---|---|

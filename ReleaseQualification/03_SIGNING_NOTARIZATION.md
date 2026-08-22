@@ -2,11 +2,44 @@
 
 Date: 2026-08-22
 
-## Exact candidate
+## Exact production candidate
 
-`NOT EXECUTED — SIGNING OR AUTHORIZATION REQUIRED`
+`NOT EXECUTED — RELEASE CONFIGURATION AND EPHEMERAL CREDENTIALS REQUIRED`
 
-No exact candidate was archived, Developer-ID signed, notarized, stapled, packaged, installed or launched in this qualification session.
+No exact production candidate was notarized, stapled, packaged, installed or launched in this qualification continuation.
+
+## Current-source signing integration sample
+
+An isolated Release archive was built from `a353fad1047a190f07821db0c77c52e597aaa556` at `/tmp/Vela-RQ-a353fad.xcarchive` using the configured Developer ID Application identity.
+
+PASS:
+
+- Xcode Release archive;
+- App and Helper identifiers and Team ID;
+- App/Helper Developer ID certificate chain and secure timestamps;
+- Hardened Runtime for App and Helper;
+- strict nested code-sign verification, including Sparkle services and Mihomo;
+- Helper designated requirement and embedded launch-daemon association.
+
+EXPECTED FAIL:
+
+- `stapler validate`: no ticket;
+- Gatekeeper: `Unnotarized Developer ID`.
+
+Disposition: **PARTIAL — SIGNING INTEGRATION PROVED, NOT A RELEASE CANDIDATE**. The sample used the persistent developer Keychain and therefore cannot satisfy the reviewed ephemeral release-Keychain contract. It was not submitted to Apple or installed.
+
+## Production pipeline blockers
+
+`./Release/scripts/release.sh --dry-run` passes release-tooling structure, 32 Hardening tests, workflow validation, deterministic manifests/checksums, SBOM fixtures, compatibility-lab tooling and Core release fixtures. It then deliberately remains fail-closed. Current blockers include:
+
+- non-production Sparkle feed URL and placeholder EdDSA public key;
+- public-contract requirements for absent CLI, Automation and App Intents surfaces;
+- missing production Core distribution/catalog/signature endpoints and trust roots;
+- missing reviewed dedicated-host compatibility/performance evidence;
+- absent per-run P12, notary API key/profile and Sparkle private-key inputs;
+- no historical release tags/fixtures for the required upgrade matrix.
+
+The production script forbids persistent Keychain fallback. A successful local Developer ID archive cannot bypass these gates.
 
 ## Read-only installed-bundle inspection
 

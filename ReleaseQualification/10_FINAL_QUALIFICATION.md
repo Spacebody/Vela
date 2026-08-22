@@ -1,7 +1,7 @@
 # Vela Final Release Qualification
 
 Date: 2026-08-22
-Source baseline: `bcc0c25b15535edf2930b5bfc2f2e9b15226c949`
+Source baseline: `a353fad1047a190f07821db0c77c52e597aaa556`
 
 ## Decision
 
@@ -11,7 +11,7 @@ Repository-controlled qualification reproduced no P0. Two full-suite-load eviden
 
 Release remains blocked by evidence that cannot be inferred from repository tests:
 
-- exact Developer-ID signed, notarized and stapled candidate;
+- exact production-pipeline Developer-ID signed, notarized and stapled candidate (a current-source signing integration archive passes strict nested verification but is not notarized or release-eligible);
 - production trust/endpoints/legal/release-readiness inputs;
 - signed-host System Proxy and TUN/Helper destructive matrices;
 - combined Proxy+TUN transitions;
@@ -45,9 +45,9 @@ Existing rendered evidence applies to the same production UI source and shows no
 
 ### Release credential/configuration evidence
 
-`NOT EXECUTED — SIGNING OR AUTHORIZATION REQUIRED`
+`PARTIAL — CURRENT-SOURCE SIGNING INTEGRATION PASSED; PRODUCTION CANDIDATE/NOTARIZATION NOT EXECUTED`
 
-The installed `/Applications/Vela.app` is an old invalid/non-candidate artifact and cannot close any release lane.
+The isolated current-source archive proves Developer ID, nested Helper/Core/Sparkle signing and Hardened Runtime integration. Gatekeeper correctly rejects it as unnotarized. The installed `/Applications/Vela.app` remains an old invalid/non-candidate artifact and cannot close any release lane.
 
 ## Architecture preservation
 
