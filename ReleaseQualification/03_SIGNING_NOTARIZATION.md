@@ -1,6 +1,6 @@
 # Signing and Notarization Qualification
 
-Date: 2026-08-22
+Date: 2026-08-23
 
 ## Exact production candidate
 
@@ -41,6 +41,26 @@ Disposition: **PARTIAL — SIGNING INTEGRATION PROVED, NOT A RELEASE CANDIDATE**
 
 The production script forbids persistent Keychain fallback. A successful local Developer ID archive cannot bypass these gates.
 
+## Repository-controlled migration evidence
+
+The focused `ProfileMigrationTests` lane passes 11 tests for the current source. It
+proves the repository-controlled schema path for:
+
+- transactional and idempotent v1-to-v2 migration with backup;
+- real V0.1 field and epoch-date preservation, including unknown metadata;
+- v2 no-op behavior;
+- invalid-v1 and interrupted-replacement recovery without replacing known-good data;
+- profile artifact deletion and bounded revision retention;
+- rollback after metadata persistence failure;
+- remote-profile metadata persistence without storing a raw secret URL and rejection
+  of unsafe URL components.
+
+Disposition: **PASS — REPOSITORY MIGRATION INVARIANTS**. This closes the
+repository-controlled schema-migration portion only. It is not a real previous signed
+Vela package to exact notarized candidate upgrade, because the repository contains no
+historical release artifact/tag suitable for that matrix and no exact notarized
+candidate exists yet.
+
 ## Read-only installed-bundle inspection
 
 `/Applications/Vela.app` predates the source baseline and is not the qualification candidate. Its metadata names Team `2E56T94S33`, App `dev.yilin.Vela`, Helper `dev.yilin.Vela.Helper`, Hardened Runtime, version 1.0.0 and build `2026071403`. However:
@@ -52,4 +72,4 @@ The production script forbids persistent Keychain fallback. A successful local D
 
 Disposition: **FAIL — NON-CANDIDATE LOCAL ARTIFACT**. This is a release-artifact blocker, not evidence that current source fails to build.
 
-Closure requires proof for the exact release SHA: App/Helper designated-requirement compatibility, entitlements, Hardened Runtime, bundle structure, embedded Helper/Core identity, Gatekeeper acceptance, notarization, stapling, package integrity, clean-machine install, first launch and prior-version upgrade.
+Closure requires proof for the exact release SHA: App/Helper designated-requirement compatibility, entitlements, Hardened Runtime, bundle structure, embedded Helper/Core identity, Gatekeeper acceptance, notarization, stapling, package integrity, clean-machine install, first launch and prior-version package upgrade. Repository schema-migration invariants already pass and must not be represented as that missing package-upgrade lane.

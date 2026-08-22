@@ -1,6 +1,6 @@
 # Vela Final Release Qualification
 
-Date: 2026-08-22
+Date: 2026-08-23
 Source baseline: `a353fad1047a190f07821db0c77c52e597aaa556`
 
 ## Decision
@@ -31,9 +31,11 @@ Release remains blocked by evidence that cannot be inferred from repository test
 - Vela Xcode tests report 678 tests in 88 suites passing.
 - VelaHelper reports 1 passing test.
 - Focused Mihomo/Core suites pass five iterations (95 test executions).
+- Focused profile-migration and critical-control accessibility contracts pass 15 tests in 2 suites.
+- Four isolated rendered UI accessibility scenarios pass for Overview, Settings, Help and Core/update recovery using the fail-closed `dev.yilin.Vela.VisualTests` fixture.
 - Unsigned Debug and Release builds pass.
 
-The initial in-sandbox CI attempt was not an application failure: SwiftPM was denied by `sandbox-exec`. The identical repository command passed when allowed to execute with its normal build sandbox behavior. Privileged target availability is not treated as signed-host proof.
+The initial in-sandbox CI attempt was not an application failure: SwiftPM was denied by `sandbox-exec`. The identical repository command passed when allowed to execute with its normal build sandbox behavior. Privileged target availability is not treated as signed-host proof. The isolated UI fixture results likewise do not substitute for VoiceOver and keyboard/focus verification on the exact signed candidate.
 
 ### Measured runtime performance
 
@@ -48,6 +50,12 @@ Existing rendered evidence applies to the same production UI source and shows no
 `PARTIAL — CURRENT-SOURCE SIGNING INTEGRATION PASSED; PRODUCTION CANDIDATE/NOTARIZATION NOT EXECUTED`
 
 The isolated current-source archive proves Developer ID, nested Helper/Core/Sparkle signing and Hardened Runtime integration. Gatekeeper correctly rejects it as unnotarized. The installed `/Applications/Vela.app` remains an old invalid/non-candidate artifact and cannot close any release lane.
+
+### Upgrade and accessibility evidence
+
+`PARTIAL — REPOSITORY MIGRATION AND ISOLATED UI INVARIANTS PASS; REAL CANDIDATE LANES NOT EXECUTED`
+
+The current source passes 11 transaction/recovery/idempotence tests for profile schema migration and four rendered accessibility UI scenarios in addition to four source-contract tests. A previous signed Vela package to the exact notarized candidate upgrade, and a healthy signed-host VoiceOver/focus pass, remain unexecuted and must not be inferred from these repository-controlled results.
 
 ## Architecture preservation
 
